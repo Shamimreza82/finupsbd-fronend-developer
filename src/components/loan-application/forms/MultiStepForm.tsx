@@ -70,7 +70,7 @@ export default function MultiStepForm() {
       return value !== undefined && value !== "" && value !== null;
     }).length;
     setProgress((filledFields / totalFields) * 100);
-  }, [getValues, watch()]);
+  }, [getValues]);
 
   // Autosave functionality
   useEffect(() => {
