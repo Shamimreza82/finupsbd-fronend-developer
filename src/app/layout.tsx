@@ -1,9 +1,9 @@
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Providers from "@/providers/Providers";
 import { Inter } from "next/font/google";
 import React from "react";
 import { Toaster } from "sonner";
-import "./globals.scss";
+import "./globals.css";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -23,14 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-
-    <html lang="en" className={inter.variable} >
-      <body className="antialiased">
-        <Providers>
+    <Providers>
+      <html lang="en">
+        <body className={`${inter.variable} antialiased`}>
           <Toaster position="top-center" richColors />
-          <TooltipProvider>{children}</TooltipProvider>
-        </Providers>
-      </body>
-    </html>
+          <TooltipProvider>
+          {children}
+        </TooltipProvider>
+        </body>
+      </html>
+    </Providers>
   );
 }
