@@ -91,7 +91,7 @@ export default function OTPVerificationForm({ email }: { email: string }) {
                 setError("Failed to resend OTP. Please try again.")
             }
         } catch (err) {
-            setError("Failed to resend OTP. Please try again.")
+            setError("Failed to resend OTP. Please try again")
         } finally {
             setIsResending(false)
         }
