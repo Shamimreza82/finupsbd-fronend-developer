@@ -156,11 +156,6 @@ export const forgotPassword = async (userData: FieldValues) => {
             body: JSON.stringify(userData),
         });
 
-        // if (!res.ok) {
-        //     const errorData = await res.json().catch(() => null);
-        //     console.error("API Error Response:", errorData);
-        //     throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
-        // }
         const result = await res.json()
         // console.log(result)
         // if (result.statusCode === 400) {
