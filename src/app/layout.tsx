@@ -14,7 +14,7 @@ const inter = Inter({
 export const metadata = {
   title: "Finupsbd",
   description:
-    "Brief info about FinsUp BD and its mission to empower financial decisions in Bangladesh.",
+    "Brief info about FinsUp BD and its mission to empower financial decisions in Bangladesh",
 };
 
 export default function RootLayout({
