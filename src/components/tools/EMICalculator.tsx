@@ -37,7 +37,7 @@ export default function EmiCalculator() {
       setLoading(false);
     }
   };
-
+  //--
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setInputData((prev) => ({
