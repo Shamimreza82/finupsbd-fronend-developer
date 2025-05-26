@@ -7,44 +7,36 @@ import { formatBDT } from "@/utils";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
-import { useDebounce } from "use-debounce";
-import { LoanResponse, TEligibilityCheckDataShow } from "../EligibilityTypes";
+import { EligibilityData } from "../EligibilityTypes";
 import icon_success from "/public/icon-success.svg";
 
+
 type PageProps = {
-  submissionData: LoanResponse[]; // Ensure submissionData is an array
+  submissionData: EligibilityData[]; // Ensure submissionData is an array of EligibilityData
   onSendData: (data: any) => void;
 };
 
-function EligibilityInstantLoanDataShow({
-  submissionData,
-  onSendData,
-}: PageProps) {
 
-  const [amount, setAmount] = useState<number | undefined>(undefined);
+function EligibilityInstantLoanDataShow({ submissionData, onSendData}: PageProps) {
   const [showConfetti, setShowConfetti] = useState(true);
-  const [tenure, setTenure] = useState(1);
-
-  console.log(submissionData, "eligibilityData");
-
+  const [tenure, setTenure] = useState<number>(1);  //TODO: In future, you can set a default value or fetch it from props or context
+ 
 
 
-  useEffect(() => {
-    const queryData = {
-      amount,
-      tenure,
-    };
 
-    onSendData(queryData);
-  }, [amount, tenure]);
+
+  const queryData = {
+    tenure: tenure,
+  };
 
   useEffect(() => {
-    // Don't send query data until component has mounted and user interacted
-    if (amount && tenure) {
-      onSendData({ amount, tenure });
+    if (tenure) {
+      onSendData(queryData);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, tenure]);
+  }, [tenure]);
+
+
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -52,6 +44,9 @@ function EligibilityInstantLoanDataShow({
     }, 10000);
     return () => clearTimeout(timer);
   }, []);
+
+
+
 
   return (
     <>
@@ -71,29 +66,6 @@ function EligibilityInstantLoanDataShow({
 
         {/* Sliders Section */}
         <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
-          <div>
-            <div className="mb-2 flex justify-between">
-              <span className="text-sm font-medium">Expected Amount</span>
-              <span className="text-sm font-medium">
-                {/* BDT {amount?.toLocaleString()} */}
-              </span>
-            </div>
-            {/* <Slider
-              defaultValue={[amount]}
-              max={50000}
-              step={10}
-              onValueChange={(value) => setAmount(value[0])}
-              className="mb-2"
-            /> */}
-            {/* <Input
-              type="text"
-              value={`BDT ${amount?.toLocaleString()}`}
-              onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9]/g, "");
-                if (value) setAmount(Number.parseInt(value));
-              }}
-            /> */}
-          </div>
           <div>
             <div className="mb-2 flex justify-between">
               <span className="text-sm font-medium">Tenure (in Months)</span>
@@ -117,8 +89,8 @@ function EligibilityInstantLoanDataShow({
             />
           </div>
         </div>
-        {submissionData.map((data: any) => (
-          <div key={data.bankName}>
+        {submissionData.map((data: EligibilityData) => (
+          <div key={data.id}>
             {/* Loan Details */}
             <div className="mb-8 rounded-lg border p-4">
               <div className="mb-4 flex items-center justify-between">
@@ -148,7 +120,7 @@ function EligibilityInstantLoanDataShow({
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Period (Months):</p>
-                  <p className="font-medium">{data.periodMonths} Months</p>
+                  <p className="font-medium">{data.expectedLoanTenure} Months</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Monthly EMI:</p>

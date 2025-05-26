@@ -13,6 +13,12 @@ export interface Pagination {
   totalLoans: number;
 }
 
+
+
+
+
+
+
 export interface EligibilityData {
   id: string;
   bankName: string;
@@ -20,6 +26,7 @@ export interface EligibilityData {
   periodMonths: number;
   loanType: string;
   monthlyEMI: number;
+  expectedLoanTenure?: number;
   totalRepayment: number;
   coverImage: string;
   interestRate: string;
