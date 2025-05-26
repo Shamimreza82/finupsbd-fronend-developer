@@ -33,8 +33,6 @@ const InastantLoanPage = () => {
           const parsedData = JSON.parse(data);
           const result = await eligibilityCheckData(parsedData, queryData);
           setSubmissionData(result?.data);
-
-          // sessionStorage.removeItem("eligibilityData");
         }
       } catch (error) {
         console.error("Error parsing eligibility data:", error);

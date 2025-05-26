@@ -19,19 +19,19 @@ export interface QueryData {
   sortKey: string;
 }
 
+
+
+
 const EligibilityPage = () => {
-  const [submissionData, setSubmissionData] = useState<TEligibilityCheckDataShow>({
-    data: [],
-    pagination: {page: 1, pageSize: 10, totalLoans: 0},
-  });
+  const [submissionData, setSubmissionData] = useState<TEligibilityCheckDataShow>();
   const [isLoading, setIsLoading] = useState(true);
   const [queryData, setQueryData] = useState<QueryData>({
-    sortKey: "desc",
+    sortKey: "asc",
     page: 1,
-    sortOrder: "desc",
+    sortOrder: "asc",
     interestRate: 0,
     searchTerm: [],
-    amount: 100000,
+    amount: 0,
   });
   const searchParams = useSearchParams();
   const loanType = searchParams.get("loanType");

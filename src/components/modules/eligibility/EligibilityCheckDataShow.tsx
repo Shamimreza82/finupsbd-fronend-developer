@@ -41,8 +41,7 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const router = useRouter();
 
-
-  console.log(submissionData, pagination, "submissionData");
+  console.log(wishlist)
 
   // Send filter/query data to parent
   useEffect(() => {
@@ -57,12 +56,16 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
     onSendData(queryData);
   }, [interestRate, searchTerm, sortOrder, sortKey, page, amount]);
 
+
+
   // Toggle wishlist
   const handleWishlist = (id: number) => {
     setWishlist((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
+
+
 
   // Toggle compare selection (limit to 3 items)
   const handleCompare = (id: number) => {
@@ -79,6 +82,8 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
       }
     });
   };
+
+
 
   // Open compare modal if at least 2 items are selected
   const navigateToCompare = () => {
@@ -99,16 +104,22 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
     setIsCompareModalOpen(true);
   };
 
+
+
   const handleSort = (key: string, order: string) => {
     setSortKey(key);
     setSortOrder(order);
   };
 
+
+
+
   const handelApplication = (data: EligibilityData) => {
     console.log(data);
-
     router.push(`/user/loan-application?applicationId=${data}`);
   };
+
+
 
   const totalPages = Math.ceil(pagination.totalLoans / pagination.pageSize);
 
@@ -143,14 +154,13 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
                   Loan Amount
                 </h3>
                 <div className="text-tertiary-primay flex justify-between text-sm font-semibold">
-                  <p>BDT 0</p>
-                  <p>BDT 5,00,000</p>
+                  <p>BDT 5,00,000</p> 
                 </div>
                 <Slider
                   value={[amount]}
                   onValueChange={(value) => setLoanAmount(value[0])}
-                  max={200000}
-                  step={1000}
+                  max={500000}
+                  step={5}
                   className="w-full bg-[#EAECF0]"
                 />
                 <div className="relative flex items-center gap-2">
@@ -223,8 +233,8 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
               <Button
                 variant="outline"
                 className={`cursor-pointer border-none shadow-none ${sortKey === "interestRate" && sortOrder === "asc"
-                    ? "!border-transparent bg-[#E7FDE2] text-primary"
-                    : "hover:bg-[#E7FDE2] hover:text-primary"
+                  ? "!border-transparent bg-[#E7FDE2] text-primary"
+                  : "hover:bg-[#E7FDE2] hover:text-primary"
                   }`}
                 onClick={() => handleSort("interestRate", "asc")}
               >
@@ -233,8 +243,8 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
               <Button
                 variant="outline"
                 className={`cursor-pointer border-none shadow-none ${sortKey === "interestRate" && sortOrder === "desc"
-                    ? "border-transparent bg-[#E7FDE2] text-primary"
-                    : "hover:bg-[#E7FDE2] hover:text-primary"
+                  ? "border-transparent bg-[#E7FDE2] text-primary"
+                  : "hover:bg-[#E7FDE2] hover:text-primary"
                   }`}
                 onClick={() => handleSort("interestRate", "desc")}
               >
@@ -243,8 +253,8 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
               <Button
                 variant="outline"
                 className={`cursor-pointer border-none shadow-none ${sortKey === "eligibleLoan" && sortOrder === "desc"
-                    ? "border-transparent bg-[#E7FDE2] text-primary"
-                    : "hover:bg-[#E7FDE2] hover:text-primary"
+                  ? "border-transparent bg-[#E7FDE2] text-primary"
+                  : "hover:bg-[#E7FDE2] hover:text-primary"
                   }`}
                 onClick={() => handleSort("eligibleLoan", "desc")}
               >
@@ -253,8 +263,8 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
               <Button
                 variant="outline"
                 className={`cursor-pointer border-none shadow-none ${sortKey === "eligibleLoan" && sortOrder === "asc"
-                    ? "border-transparent bg-[#E7FDE2] text-primary"
-                    : "hover:bg-[#E7FDE2] hover:text-primary"
+                  ? "border-transparent bg-[#E7FDE2] text-primary"
+                  : "hover:bg-[#E7FDE2] hover:text-primary"
                   }`}
                 onClick={() => handleSort("eligibleLoan", "asc")}
               >
@@ -513,8 +523,8 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
                           variant="outline"
                           onClick={() => handleCompare(Number(index))}
                           className={`w-full border-primary text-primary hover:bg-primary hover:text-white ${compareList.includes(index)
-                              ? "bg-primary text-white"
-                              : ""
+                            ? "bg-primary text-white"
+                            : ""
                             }`}
                         >
                           {compareList.includes(index)
