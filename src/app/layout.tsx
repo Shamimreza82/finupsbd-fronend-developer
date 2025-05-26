@@ -1,12 +1,11 @@
-
-import React from "react";
-import { Inter } from "next/font/google";
 import Providers from "@/providers/Providers";
+import { Inter } from "next/font/google";
+import React from "react";
 import { Toaster } from "sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const interFont = Inter({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
@@ -15,7 +14,7 @@ const interFont = Inter({
 export const metadata = {
   title: "Finupsbd",
   description:
-    "Brief info about FinUps BD and its mission to empower financial decisions in Bangladesh.",
+    "Brief info about FinsUp BD and its mission to empower financial decisions in Bangladesh.",
 };
 
 export default function RootLayout({
@@ -24,15 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={interFont.variable}>
-      <body className="antialiased">
-        <Providers>
+    <Providers>
+      <html lang="en">
+        <body className={`${inter.variable} antialiased`}>
           <Toaster position="top-center" richColors />
           <TooltipProvider>
             {children}
           </TooltipProvider>
-        </Providers>
-      </body>
-    </html>
+        </body>
+      </html>
+    </Providers>
   );
 }
