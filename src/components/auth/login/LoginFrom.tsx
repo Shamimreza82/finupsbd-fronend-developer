@@ -35,8 +35,8 @@ export default function LoginForm() {
   const form = useForm<z.infer<typeof loginValidationSchema>>({
     resolver: zodResolver(loginValidationSchema),
     defaultValues: {
-      email: "shamimrezabd67@gmail.com",
-      password: "1234567",
+      email: "",
+      password: "",
     },
   });
 
@@ -86,7 +86,7 @@ export default function LoginForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel >Email Address</FormLabel>
+                      <FormLabel className="text-black">Email Address</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
@@ -104,7 +104,7 @@ export default function LoginForm() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="text-black">Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -137,13 +137,13 @@ export default function LoginForm() {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="accent-primary"
+                    className="accent-primary text-black"
                   />
-                  <span>Remember me</span>
+                  <span className="text-black">Remember me</span>
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="underline hover:text-primary"
+                  className="underline hover:text-primary text-black"
                 >
                   Forgot password?
                 </Link>
@@ -156,9 +156,9 @@ export default function LoginForm() {
               </Button>
             </form>
           </Form>
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-4 text-center text-sm text-black">
             Don't have an account?{" "}
-            <Link href="/register" className="underline hover:text-primary">
+            <Link href="/register" className="underline hover:text-primary text-green-500">
               Register
             </Link>
           </div>

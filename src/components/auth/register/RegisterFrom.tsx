@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { registerUser } from "@/services/AuthService";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -26,17 +26,19 @@ import { z } from "zod";
 import { registerValidationSchema } from "./registerValidation";
 
 export default function RegisterForm() {
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof registerValidationSchema>>({
     resolver: zodResolver(registerValidationSchema),
     defaultValues: {
-      name: "reza",
-      email: "shamimrezabd47@gmail.com",
-      phone: "01910479167",
-      password: "123456",
-      confirmPassword: "123456",
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -58,8 +60,8 @@ export default function RegisterForm() {
 
       if (result.success) {
         toast.success("Cheack your email and and verify!")
-         router.push(`/otp-verification?email=${result?.data?.email}`);
-         
+        router.push(`/otp-verification?email=${result?.data?.email}`);
+
       }
     } catch (error: any) {
       console.log(error)
@@ -94,13 +96,14 @@ export default function RegisterForm() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full name</FormLabel>
+                      <FormLabel className="text-black">Full name</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Your full name"
                           {...field}
                           disabled={isLoading}
                           autoComplete="name"
+                          className="text-black"
                         />
                       </FormControl>
                       <FormMessage />
@@ -114,7 +117,7 @@ export default function RegisterForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email address</FormLabel>
+                      <FormLabel  className="text-black">Email address</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
@@ -135,7 +138,7 @@ export default function RegisterForm() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel  className="text-black">Phone Number</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="+880XXXXXXXXX"
@@ -155,15 +158,26 @@ export default function RegisterForm() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel  className="text-black">Password</FormLabel>
                       <FormControl>
-                        <Input
-                          type="password"
-                          {...field}
-                          disabled={isLoading}
-                          placeholder="Enter your password"
-                          autoComplete="new-password"
-                        />
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? 'text' : 'password'}
+                            {...field}
+                            disabled={isLoading}
+                            placeholder="Enter your password"
+                            autoComplete="new-password"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowPassword((v) => !v)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-0"
+                          >
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -176,15 +190,26 @@ export default function RegisterForm() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel  className="text-black">Confirm Password</FormLabel>
                       <FormControl>
-                        <Input
-                          type="password"
-                          {...field}
-                          disabled={isLoading}
-                          placeholder="Type your password again"
-                          autoComplete="new-password"
-                        />
+                        <div className="relative">
+                          <Input
+                            type={showConfirm ? 'text' : 'password'}
+                            {...field}
+                            disabled={isLoading}
+                            placeholder="Type your password again"
+                            autoComplete="new-password"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowConfirm((v) => !v)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-0"
+                          >
+                            {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -202,9 +227,9 @@ export default function RegisterForm() {
           </Form>
 
 
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-4 text-center text-sm text-black">
             Already have an account?{" "}
-            <Link href="/login" className="underline hover:text-primary">
+            <Link href="/login" className="underline hover:text-primary text-green-500">
               Login
             </Link>
           </div>
