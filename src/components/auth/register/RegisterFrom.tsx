@@ -51,17 +51,17 @@ export default function RegisterForm() {
       const result = await registerUser(data);
 
       if (result.message.includes("phone")) {
-        toast.error("Your phone number already use try anather number")
+        return toast.error("Your phone number already use try anather number")
       }
 
+
       if (!result.success) {
-        toast.error("You have already an account please login")
+        toast.error("Already have a account with this email please try another email!")
       }
 
       if (result.success) {
         toast.success("Cheack your email and and verify!")
         router.push(`/otp-verification?email=${result?.data?.email}`);
-
       }
     } catch (error: any) {
       console.log(error)
