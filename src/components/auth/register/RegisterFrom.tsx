@@ -117,7 +117,7 @@ export default function RegisterForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel  className="text-black">Email address</FormLabel>
+                      <FormLabel className="text-black">Email address</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
@@ -125,6 +125,7 @@ export default function RegisterForm() {
                           {...field}
                           disabled={isLoading}
                           autoComplete="email"
+                          className="text-black"
                         />
                       </FormControl>
                       <FormMessage />
@@ -138,13 +139,14 @@ export default function RegisterForm() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel  className="text-black">Phone Number</FormLabel>
+                      <FormLabel className="text-black">Phone Number</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="+880XXXXXXXXX"
                           {...field}
                           disabled={isLoading}
                           autoComplete="tel"
+                          className="text-black"
                         />
                       </FormControl>
                       <FormMessage />
@@ -158,7 +160,7 @@ export default function RegisterForm() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel  className="text-black">Password</FormLabel>
+                      <FormLabel className="text-black">Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -167,6 +169,7 @@ export default function RegisterForm() {
                             disabled={isLoading}
                             placeholder="Enter your password"
                             autoComplete="new-password"
+                            className="text-black"
                           />
                           <Button
                             type="button"
@@ -190,7 +193,7 @@ export default function RegisterForm() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel  className="text-black">Confirm Password</FormLabel>
+                      <FormLabel className="text-black">Confirm Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -199,6 +202,7 @@ export default function RegisterForm() {
                             disabled={isLoading}
                             placeholder="Type your password again"
                             autoComplete="new-password"
+                            className="text-black"
                           />
                           <Button
                             type="button"

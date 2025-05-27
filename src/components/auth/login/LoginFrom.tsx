@@ -93,6 +93,7 @@ export default function LoginForm() {
                           placeholder="Enter your email"
                           {...field}
                           disabled={isLoading}
+                          className="text-black"
                         />
                       </FormControl>
                       <FormMessage />
@@ -112,6 +113,7 @@ export default function LoginForm() {
                             placeholder="Enter your password"
                             {...field}
                             disabled={isLoading}
+                            className="text-black"
                           />
                           <button
                             type="button"

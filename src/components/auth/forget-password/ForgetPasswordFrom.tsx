@@ -91,7 +91,8 @@ export default function ForgotPasswordFrom() {
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Sending..." : "Send email"}
+                  {isSubmitting ? "Forgot Password......" : "Forgot Password"}
+                        
                 </Button>
               </form>
             </Form>

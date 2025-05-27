@@ -1,7 +1,7 @@
 import TrackApplicationForm from '@/components/modules/TrackApplication/TrackApplicationFrom'
 import React from 'react'
 
-const TrackApplicationPage = () => {
+const TrackApplicationPublic = () => {
   return (
     <div>
         <TrackApplicationForm/>
@@ -9,4 +9,4 @@ const TrackApplicationPage = () => {
   )
 }
 
-export default TrackApplicationPage
+export default TrackApplicationPublic

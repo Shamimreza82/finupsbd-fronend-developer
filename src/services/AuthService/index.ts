@@ -157,19 +157,31 @@ export const forgotPassword = async (userData: FieldValues) => {
         });
 
         const result = await res.json()
-        // console.log(result)
-        // if (result.statusCode === 400) {
-    
-        //     return result
-        // }
-
-        // if (result.success) {
-        //     const cookieStore = await cookies()
-        //     cookieStore.set("accessToken", result?.data?.accessToken)
-        // }
         return result
     } catch (error) {
         console.error("Error registering user:", { error });
+    }
+};
+
+
+export const resetPassword = async (payload: {email: string, newPassword: string}) => {
+
+    console.log(payload)
+
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/auth/reset-password`, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const result = await res.json()
+        return result
+    } catch (error) {
+        console.error("Error Reset password:", { error });
     }
 };
 
