@@ -1,19 +1,9 @@
-
-
-import MultiStepForm from "@/components/loan-application/forms/MultiStepForm"
-import ApplicationFormVercel from "@/components/loan-application/FromVercel"
-
+import { redirect } from "next/navigation";
 
 const ApplicationPage = () => {
+  return redirect("/user/loan-application/step-1");
+  // <div className="container mx-auto">
+  // </div>
+};
 
-
-  
-  return (
-    <div className="container mx-auto">
-      {/* <ApplicationFormVercel/> */}
-      <MultiStepForm/>
-    </div>
-  )
-}
-
-export default ApplicationPage
+export default ApplicationPage;

@@ -305,12 +305,14 @@ interface DatePickerProps {
   label?: string;
   name?: string;
   required?: boolean;
+  placeholder?: string;
 }
 
 export const DatePickerInput = ({
   form,
   label = "Date",
   name = "defaultDate",
+  placeholder = "Select a date",
   required = false,
 }: DatePickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -330,14 +332,14 @@ export const DatePickerInput = ({
                 <Button
                   variant="outline"
                   className={cn(
-                    "!mt-0 h-10 w-full border-[#D0D5DD] bg-white pr-2 [&_svg]:size-6",
+                    "h-10 w-full border-[#D0D5DD] bg-white pr-2 [&_svg]:size-6",
                     !field.value && "text-muted-foreground",
                   )}
                 >
                   {field.value ? (
                     format(field.value, "PPP")
                   ) : (
-                    <span>Pick a date</span>
+                    <span>{placeholder}</span>
                   )}
                   <CalendarIcon className="ml-auto text-tertiary-primary/60" />
                 </Button>
