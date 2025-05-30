@@ -57,7 +57,7 @@ export default function EditApplicationPage() {
     try {
       const result = await updateApplication(applicationId, formData);
       if (result.success) {
-        router.push("/loan-application/success");
+        router.push("/user/loan-application/success");
       } else {
         setError(result.error || "Failed to update application");
       }
@@ -95,7 +95,7 @@ export default function EditApplicationPage() {
           <p>{error}</p>
           <Button
             className="mt-4"
-            onClick={() => router.push("/loan-application")}
+            onClick={() => router.push("/user/loan-application")}
           >
             Return to Applications
           </Button>
@@ -119,19 +119,19 @@ export default function EditApplicationPage() {
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap">
           <Button
-            onClick={() => router.push("/loan-application/step-1")}
+            onClick={() => router.push("/user/loan-application/step-1")}
             variant="outline"
           >
             Edit Personal Information
           </Button>
           <Button
-            onClick={() => router.push("/loan-application/step-2")}
+            onClick={() => router.push("/user/loan-application/step-2")}
             variant="outline"
           >
             Edit Residential Information
           </Button>
           <Button
-            onClick={() => router.push("/loan-application/step-3")}
+            onClick={() => router.push("/user/loan-application/step-3")}
             variant="outline"
           >
             Edit Documents
@@ -139,7 +139,7 @@ export default function EditApplicationPage() {
         </div>
         <div className="mt-6">
           <Button
-            onClick={() => router.push("/loan-application/preview")}
+            onClick={() => router.push("/user/loan-application/preview")}
             className="mr-4"
           >
             Preview Changes

@@ -1,9 +1,5 @@
 "use client";
 
-import {
-  documentInfoSchema,
-  type DocumentInfoValues,
-} from "@/app/(withApplicationLayout)/user/loan-application/schemas/document-info-schema";
 import { FileUpload } from "@/components/loan-application/file-upload";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +24,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import {
+  documentInfoSchema,
+  type DocumentInfoValues,
+} from "../schemas/document-info-schema";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -38,9 +38,15 @@ export default function DocumentsPage() {
   const form = useForm<DocumentInfoValues>({
     resolver: zodResolver(documentInfoSchema),
     defaultValues: {
-      profileImage: null as any,
-      passport: null as any,
-      certificate: null as any,
+      passportPhoto: null as any,
+      nationalIdOrPassport: null as any,
+      proofOfIncome: null as any,
+      bankStatements: null as any,
+      tinCertificate: null as any,
+      proofOfEmployment: null as any,
+      utilityBill: null as any,
+      propertyDocuments: null as any,
+      additionalDocuments: null as any,
     },
   });
 
@@ -60,9 +66,9 @@ export default function DocumentsPage() {
 
     // If form is already submitted, go back to success page
     if (isFormSubmitted) {
-      router.push("/user/loan-application/success");
+      router.push("/loan-application/success");
     } else {
-      router.push("/user/loan-application/preview");
+      router.push("/loan-application/preview");
     }
   }
 
@@ -79,23 +85,78 @@ export default function DocumentsPage() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4">
+            <div className="space-y-6">
               <FormField
                 control={form.control}
-                name="profileImage"
-                render={({ field }) => (
+                name="passportPhoto"
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>
-                      Profile Image <span className="text-red-500">*</span>
+                      Passport Size Photo{" "}
+                      <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormDescription>
-                      Upload a clear photo of yourself
+                      Upload a clear passport-sized photo of yourself
+                    </FormDescription>
+                    <FormControl>
+                      <FileUpload
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        value={field.value ?? null}
+                        onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="Passport Size Photo"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="nationalIdOrPassport"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>
+                      National ID Card or Passport{" "}
+                      <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormDescription>
+                      Upload a copy of your national ID card or passport
+                    </FormDescription>
+                    <FormControl>
+                      <FileUpload
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        value={field.value ?? null}
+                        onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="National ID Card or Passport"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="proofOfIncome"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Proof of Income <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormDescription>
+                      Upload your latest salary slip, business income statement,
+                      etc.
                     </FormDescription>
                     <FormControl>
                       <FileUpload
                         accept="image/jpeg,image/jpg,image/png,image/webp"
                         value={field.value}
                         onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="Proof of Income"
                       />
                     </FormControl>
                     <FormMessage />
@@ -105,20 +166,23 @@ export default function DocumentsPage() {
 
               <FormField
                 control={form.control}
-                name="passport"
-                render={({ field }) => (
+                name="bankStatements"
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>
-                      Passport or ID <span className="text-red-500">*</span>
+                      Bank Statements (Last 6 months){" "}
+                      <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormDescription>
-                      Upload a copy of your passport or government-issued ID
+                      Upload your bank statements from the last 6 months
                     </FormDescription>
                     <FormControl>
                       <FileUpload
                         accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                         value={field.value}
                         onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="Bank Statements"
                       />
                     </FormControl>
                     <FormMessage />
@@ -128,20 +192,127 @@ export default function DocumentsPage() {
 
               <FormField
                 control={form.control}
-                name="certificate"
-                render={({ field }) => (
+                name="tinCertificate"
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>
-                      Certificate <span className="text-red-500">*</span>
+                      TIN Certificate <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormDescription>
-                      Upload your educational or professional certificate
+                      Upload your Tax Identification Number certificate
                     </FormDescription>
                     <FormControl>
                       <FileUpload
                         accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                         value={field.value}
                         onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="TIN Certificate"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="proofOfEmployment"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Proof of Employment{" "}
+                      <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormDescription>
+                      Upload your employer's letter or employment contract
+                    </FormDescription>
+                    <FormControl>
+                      <FileUpload
+                        accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="Proof of Employment"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="utilityBill"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Utility Bill for Address Verification{" "}
+                      <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormDescription>
+                      Upload an electricity, water, or gas bill from the last 3
+                      months
+                    </FormDescription>
+                    <FormControl>
+                      <FileUpload
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="Utility Bill"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="propertyDocuments"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Property Documents <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormDescription>
+                      Upload documents related to the property (for home or
+                      secured loans)
+                    </FormDescription>
+                    <FormControl>
+                      <FileUpload
+                        accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="Property Documents"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="additionalDocuments"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Additional Supporting Documents (if applicable)
+                    </FormLabel>
+                    <FormDescription>
+                      Upload any additional documents that may support your
+                      application
+                    </FormDescription>
+                    <FormControl>
+                      <FileUpload
+                        accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
+                        value={field.value ?? null}
+                        onChange={field.onChange}
+                        error={fieldState.error?.message}
+                        fieldName="Additional Documents"
                       />
                     </FormControl>
                     <FormMessage />
@@ -155,7 +326,7 @@ export default function DocumentsPage() {
               <ul className="mt-1 list-disc space-y-1 pl-5">
                 <li>Clear and legible</li>
                 <li>Less than 5MB in size</li>
-                <li>In JPG, PNG, WEBP, or PDF format</li>
+                <li>In the correct format for each field</li>
               </ul>
             </div>
 
@@ -164,7 +335,7 @@ export default function DocumentsPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.push("/user/loan-application/success")}
+                  onClick={() => router.push("/loan-application/success")}
                 >
                   Cancel
                 </Button>
@@ -172,7 +343,7 @@ export default function DocumentsPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.push("/user/loan-application/step-5")}
+                  onClick={() => router.push("/loan-application/step-5")}
                 >
                   Back
                 </Button>

@@ -20,6 +20,7 @@ import {
   Loader2,
   PenSquare,
 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -621,63 +622,88 @@ export default function PreviewPage() {
     const info = formData.documentInfo;
     if (!info) return <p>Document information not completed.</p>;
 
+    const documents = [
+      {
+        key: "passportPhoto",
+        label: "Passport Size Photo",
+        value: info.passportPhoto,
+      },
+      {
+        key: "nationalIdOrPassport",
+        label: "National ID Card or Passport",
+        value: info.nationalIdOrPassport,
+      },
+      {
+        key: "proofOfIncome",
+        label: "Proof of Income",
+        value: info.proofOfIncome,
+      },
+      {
+        key: "bankStatements",
+        label: "Bank Statements",
+        value: info.bankStatements,
+      },
+      {
+        key: "tinCertificate",
+        label: "TIN Certificate",
+        value: info.tinCertificate,
+      },
+      {
+        key: "proofOfEmployment",
+        label: "Proof of Employment",
+        value: info.proofOfEmployment,
+      },
+      { key: "utilityBill", label: "Utility Bill", value: info.utilityBill },
+      {
+        key: "propertyDocuments",
+        label: "Property Documents",
+        value: info.propertyDocuments,
+      },
+      {
+        key: "additionalDocuments",
+        label: "Additional Documents",
+        value: info.additionalDocuments,
+      },
+    ].filter((doc) => doc.value); // Only show uploaded documents
+
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Profile Image</p>
-            <div className="flex h-32 items-center justify-center overflow-hidden rounded-md border p-2">
-              {info.profileImage.type.startsWith("image/") ? (
-                <img
-                  src={info.profileImage.dataUrl || "/placeholder.svg"}
-                  alt="Profile"
-                  className="max-h-full max-w-full object-contain"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center text-muted-foreground">
-                  <ImageIcon className="mb-1 h-8 w-8" />
-                  <p className="text-xs">{info.profileImage.name}</p>
-                </div>
-              )}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {documents.map((doc) => (
+            <div key={doc.key} className="space-y-2">
+              <p className="text-sm font-medium">{doc.label}</p>
+              <div className="flex h-32 items-center justify-center overflow-hidden rounded-md border p-2">
+                {doc.value && doc.value.type === "application/pdf" ? (
+                  <div className="flex flex-col items-center justify-center text-muted-foreground">
+                    <FileText className="mb-1 h-8 w-8" />
+                    <p className="text-center text-xs">{doc.value.name}</p>
+                  </div>
+                ) : doc.value && doc.value.type.startsWith("image/") ? (
+                  <Image
+                    src={doc.value.dataUrl || "/placeholder.svg"}
+                    alt={doc.label}
+                    className="max-h-full max-w-full object-contain"
+                  />
+                ) : doc.value ? (
+                  <div className="flex flex-col items-center justify-center text-muted-foreground">
+                    <ImageIcon className="mb-1 h-8 w-8" />
+                    <p className="text-center text-xs">{doc.value.name}</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-muted-foreground">
+                    <ImageIcon className="mb-1 h-8 w-8" />
+                    <p className="text-center text-xs">No file</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Passport/ID</p>
-            <div className="flex h-32 items-center justify-center overflow-hidden rounded-md border p-2">
-              {info.passport.type === "application/pdf" ? (
-                <div className="flex flex-col items-center justify-center text-muted-foreground">
-                  <FileText className="mb-1 h-8 w-8" />
-                  <p className="text-xs">{info.passport.name}</p>
-                </div>
-              ) : (
-                <img
-                  src={info.passport.dataUrl || "/placeholder.svg"}
-                  alt="Passport"
-                  className="max-h-full max-w-full object-contain"
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Certificate</p>
-            <div className="flex h-32 items-center justify-center overflow-hidden rounded-md border p-2">
-              {info.certificate.type === "application/pdf" ? (
-                <div className="flex flex-col items-center justify-center text-muted-foreground">
-                  <FileText className="mb-1 h-8 w-8" />
-                  <p className="text-xs">{info.certificate.name}</p>
-                </div>
-              ) : (
-                <img
-                  src={info.certificate.dataUrl || "/placeholder.svg"}
-                  alt="Certificate"
-                  className="max-h-full max-w-full object-contain"
-                />
-              )}
-            </div>
-          </div>
+          ))}
         </div>
+        {documents.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No documents uploaded yet.
+          </p>
+        )}
       </div>
     );
   };

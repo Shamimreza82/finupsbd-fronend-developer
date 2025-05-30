@@ -1,16 +1,17 @@
 "use client";
 
-import type React from "react";
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Upload, X, FileText, ImageIcon } from "lucide-react";
 import type { FileWithPreview } from "@/app/(withApplicationLayout)/user/loan-application/schemas/document-info-schema";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, FileText, ImageIcon, Upload, X } from "lucide-react";
+import type React from "react";
+import { useRef, useState } from "react";
 
 interface FileUploadProps {
   value: FileWithPreview | null;
   onChange: (file: FileWithPreview | null) => void;
   accept: string;
   error?: string;
+  fieldName?: string;
 }
 
 export function FileUpload({
@@ -18,25 +19,60 @@ export function FileUpload({
   onChange,
   accept,
   error,
+  fieldName = "File",
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [validationError, setValidationError] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Parse accepted file types from accept string
+  const getAcceptedTypes = (acceptString: string) => {
+    return acceptString.split(",").map((type) => type.trim());
+  };
 
-    // Check file size immediately (5MB limit)
+  // Get user-friendly file type message
+  const getFileTypeMessage = (acceptString: string) => {
+    const types = getAcceptedTypes(acceptString);
+    const imageTypes = types.filter((type) => type.startsWith("image/"));
+    const hasPDF = types.includes("application/pdf");
+
+    if (imageTypes.length > 0 && hasPDF) {
+      return "JPEG, JPG, PNG, WEBP, or PDF";
+    } else if (imageTypes.length > 0) {
+      return "JPEG, JPG, PNG, or WEBP";
+    }
+    return "supported";
+  };
+
+  const validateFile = (file: File): string | null => {
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    const acceptedTypes = getAcceptedTypes(accept);
+
+    // Check file size
     if (file.size > MAX_FILE_SIZE) {
+      return `File size must be less than 5MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+    }
+
+    // Check file type
+    if (!acceptedTypes.includes(file.type)) {
+      return `Invalid file type. Please upload ${getFileTypeMessage(accept)} files only`;
+    }
+
+    return null;
+  };
+
+  const processFile = (file: File) => {
+    // Clear any previous validation errors
+    setValidationError("");
+
+    // Validate file
+    const validationResult = validateFile(file);
+    if (validationResult) {
+      setValidationError(validationResult);
       // Clear the input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-      // You could also show an alert or toast here
-      alert(
-        `File size must be less than 5MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB`,
-      );
       return;
     }
 
@@ -53,6 +89,12 @@ export function FileUpload({
       }
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    processFile(file);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -70,40 +112,19 @@ export function FileUpload({
 
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
-
-    // Check file size immediately (5MB limit)
-    const MAX_FILE_SIZE = 5 * 1024 * 1024;
-    if (file.size > MAX_FILE_SIZE) {
-      // You could also show an alert or toast here
-      alert(
-        `File size must be less than 5MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB`,
-      );
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        const fileWithPreview: FileWithPreview = {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          dataUrl: event.target.result as string,
-        };
-        onChange(fileWithPreview);
-      }
-    };
-    reader.readAsDataURL(file);
+    processFile(file);
   };
 
   const removeFile = () => {
     onChange(null);
+    setValidationError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
   const isPDF = value?.type === "application/pdf";
+  const displayError = validationError || error;
 
   return (
     <div className="space-y-2">
@@ -112,7 +133,9 @@ export function FileUpload({
           className={`cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
             isDragging
               ? "border-primary bg-primary/10"
-              : "border-muted-foreground/20 hover:border-primary/50"
+              : displayError
+                ? "border-destructive bg-destructive/5"
+                : "border-muted-foreground/20 hover:border-primary/50"
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -124,7 +147,7 @@ export function FileUpload({
             Drag and drop or <span className="text-primary">browse</span>
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Supported formats: {accept.replace(/\./g, "").toUpperCase()}
+            Supported formats: {getFileTypeMessage(accept).toUpperCase()}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">Max size: 5MB</p>
           <input
@@ -176,7 +199,12 @@ export function FileUpload({
           </div>
         </div>
       )}
-      {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+      {displayError && (
+        <div className="flex items-center gap-2 text-sm font-medium text-destructive">
+          <AlertCircle className="h-4 w-4" />
+          <span>{displayError}</span>
+        </div>
+      )}
     </div>
   );
 }

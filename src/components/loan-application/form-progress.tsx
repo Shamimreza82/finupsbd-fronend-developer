@@ -40,7 +40,7 @@ export function FormProgress() {
         ? ((completedSteps + 1) / totalSteps) * 100
         : (completedSteps / totalSteps) * 100;
 
-    return Math.max(progress, (currentStep / totalSteps) * 25);
+    return Math.max(progress, (currentStep / totalSteps) * 100);
   };
 
   const currentStep = getCurrentStep();

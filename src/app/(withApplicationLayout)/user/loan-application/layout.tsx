@@ -88,7 +88,7 @@ export default function LoanApplicationLayout({
           <Separator className="my-6 bg-[#D0D5DD]" />
 
           <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-            <aside className="rounded-xl border border-[#E9EFF6] bg-white px-2 py-4 pb-6 shadow-[0_1px_12px_rgba(0,0,0,0.1)] lg:sticky lg:top-24 lg:w-4/12 lg:self-start 2xl:w-3/12">
+            <aside className="rounded-xl border border-[#E9EFF6] bg-white px-2 py-4 shadow-[0_1px_12px_rgba(0,0,0,0.1)] lg:sticky lg:top-24 lg:w-4/12 lg:self-start lg:pb-6 2xl:w-3/12">
               <SidebarNav items={sidebarNavItems} />
             </aside>
             <div className="flex-1">

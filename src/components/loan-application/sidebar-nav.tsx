@@ -51,7 +51,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
               key={item.href}
               className={cn(
                 buttonVariants({ variant: "ghost" }),
-                "cursor-not-allowed justify-start gap-2 opacity-50",
+                "cursor-not-allowed justify-start gap-2",
                 className,
               )}
             >

@@ -28,14 +28,14 @@ export default function SuccessPage() {
   // Redirect if form is not submitted
   useEffect(() => {
     if (!isFormSubmitted) {
-      router.push("/loan-application");
+      router.push("/user/loan-application");
     }
   }, [isFormSubmitted, router]);
 
   // Handle starting a new application
   const handleNewApplication = () => {
     resetForm();
-    router.push("/loan-application");
+    router.push("/user/loan-application");
   };
 
   // Handle document update
