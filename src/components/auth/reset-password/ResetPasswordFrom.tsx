@@ -120,7 +120,7 @@ export default function ResetPasswordForm({token, email}: { token?: string; emai
             />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Saving....." : "Reset Password"}
+              {isSubmitting ? "Saveing....." : "Reset Password"}
             </Button>
           </form>
         </Form>

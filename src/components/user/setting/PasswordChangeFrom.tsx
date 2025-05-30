@@ -45,13 +45,21 @@ const PasswordChangeForm = () => {
     // In a real application, you would call an API to change the password
     console.log('Form submitted successfully', data);
 
+
+    console.log(data)
     // Validation before submission
     if (!hasEightChars || !hasNumber || !hasLowercase || !hasUppercase || !passwordsMatch) {
       // If any validation fails, prevent submission
       return;
     }
 
-    const result = await changePassword(data)
+
+    const payload = {
+      oldPassword: data.oldPassword,
+      newPassword: data.newPassword
+    }
+
+    const result = await changePassword(payload)
     if(result.success){
       toast.success("password change successfully")
     } else {

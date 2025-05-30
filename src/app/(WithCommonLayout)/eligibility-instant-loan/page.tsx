@@ -23,7 +23,6 @@ const InastantLoanPage = () => {
     setQueryData(data);
   };
 
-  console.log("Query Data:", queryData);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +45,7 @@ const InastantLoanPage = () => {
 
 
   if (isLoading) {
+    console.log("Loading//////")
     return <LoadingComponent />;
   }
 
@@ -55,23 +55,13 @@ const InastantLoanPage = () => {
   }
 
 
-  console.log(submissionData)
+  console.log({submissionData})
 
   return (
-    <div>
-      {submissionData ? (
-        <EligibilityInstantLoanDataShow
-          submissionData={submissionData}
-          onSendData={handleQueryData}
-        />
-      ) : (
+    <div> {submissionData ? (<EligibilityInstantLoanDataShow submissionData={submissionData}  onSendData={handleQueryData}/>) : (
         <div className="flex h-screen flex-col items-center justify-center py-8">
           <p className="mb-4 text-lg font-semibold text-gray-700">
-            Eligibility Check Pending
-          </p>
-          <p className="text-md mb-6 max-w-md text-center text-gray-500">
-            We have not received your eligibility data yet. Please complete the
-            eligibility check to view personalized results and offers.
+           You are not eligibility for instant loan
           </p>
           <Button
             variant="default"

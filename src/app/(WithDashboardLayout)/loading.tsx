@@ -5,7 +5,6 @@ const loading = () => {
   return (
     <div>
         <LoaderCommon/>
-        {/* <LoaderCommon/> */}
     </div>
   )
 }
