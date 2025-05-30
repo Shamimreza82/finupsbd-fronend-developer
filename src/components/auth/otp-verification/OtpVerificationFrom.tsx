@@ -106,7 +106,7 @@ export default function OTPVerificationForm({ email }: { email: string }) {
                         <div className="text-center space-y-4">
                             <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
                             <h2 className="text-2xl font-semibold text-gray-900">Verified!</h2>
-                            <p className="text-gray-600">Your phone number has been successfully verified.</p>
+                            <p className="text-gray-600">Your Email has been successfully verified.</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -118,9 +118,9 @@ export default function OTPVerificationForm({ email }: { email: string }) {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-semibold">Verify Your Phone</CardTitle>
+                    <CardTitle className="text-2xl font-semibold">Verify Your Email</CardTitle>
                     <CardDescription>
-                        We've sent a 6-digit verification code to your phone number. Enter it below to continue.
+                        We've sent a 6-digit verification code to your email. Enter it below to continue.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -173,11 +173,11 @@ export default function OTPVerificationForm({ email }: { email: string }) {
                         </Button>
                     </div>
 
-                    <div className="text-center">
+                    {/* <div className="text-center">
                         <Button variant="ghost" className="text-sm text-gray-500">
                             Change Phone Number
                         </Button>
-                    </div>
+                    </div> */}
                 </CardContent>
             </Card>
         </div>

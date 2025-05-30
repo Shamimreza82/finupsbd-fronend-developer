@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { loginUser } from "@/services/AuthService";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { loginValidationSchema } from "./loginValidation";
 import logo from "/public/logo.png";
+import BackHomeLink from "@/components/small-component/BackHomeLink";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +54,7 @@ export default function LoginForm() {
         router.push(redirectPath);
       } else {
         toast.error(result?.message);
-        
+
       }
     } catch (error: any) {
       toast.error("Login failed. Please try again later.");
@@ -67,8 +68,13 @@ export default function LoginForm() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
-      <div className="mb-8">
-        <Image src={logo} alt="Logo" className="mx-auto mb-4 w-full" />
+      <div className=" -ml-96">
+        <BackHomeLink />
+      </div>
+      <div className="flex">
+        <div className="mb-8">
+          <Image src={logo} alt="Logo" className="mx-auto mb-4 w-full" />
+        </div>
       </div>
       <Card className="w-full max-w-lg rounded-md border-[#D0D5DD] text-secondary shadow-xl">
         <CardHeader>

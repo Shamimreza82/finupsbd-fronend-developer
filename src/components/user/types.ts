@@ -17,6 +17,6 @@ export interface UserData {
     updatedAt: string
     lastLogin: string
     profile: any | null
-  }
+}
   
   

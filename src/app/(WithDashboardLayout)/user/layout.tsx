@@ -15,7 +15,7 @@ export default function UserLayout({
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset className="ml-10">
-            <Header hasSidebar={false} />
+            {/* <Header hasSidebar={false} /> */}
             <div className="p-12 pt-10">{children}</div>
           </SidebarInset>
         </SidebarProvider>

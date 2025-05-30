@@ -70,7 +70,7 @@ export default function ForgotPasswordFrom() {
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">Check your email</h3>
                 <p className="text-sm text-muted-foreground">
-                  We've sent you a password. Please check your inbox.
+                  We've sent you a reset password link. Please check your inbox.
                 </p>
               </div>
             </div>

@@ -100,14 +100,7 @@ function EligibilityCheckModal({
   // };
 
   const validateStep = async () => {
-    const schema =
-      step === 0
-        ? stepOneSchema
-        : step === 1
-          ? stepTwoSchema
-          : step === 2
-            ? stepThreeSchema
-            : fullFormSchema;
+    const schema = step === 0 ? stepOneSchema : step === 1? stepTwoSchema : step === 2 ? stepThreeSchema : fullFormSchema;
     const valid = await form.trigger(
       Object.keys(
         "shape" in schema ? schema.shape : schema._def.schema.shape,
@@ -199,9 +192,9 @@ function EligibilityCheckModal({
                     className={cn(
                       "relative flex h-5 w-5 transform items-center justify-center rounded-full border-2 transition-all duration-300",
                       isCompleted &&
-                        "border-primary bg-primary ring-4 ring-primary/30",
+                      "border-primary bg-primary ring-4 ring-primary/30",
                       isCurrent &&
-                        "border-primary bg-primary ring-4 ring-primary/30",
+                      "border-primary bg-primary ring-4 ring-primary/30",
                       !isCompleted && !isCurrent && "border-gray-300 bg-white",
                     )}
                   >

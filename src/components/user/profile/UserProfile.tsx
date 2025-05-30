@@ -55,9 +55,10 @@ export default function UserProfile() {
   const [error, setError] = useState<string | null>(null);
   const [hideSensitiveInfo, setHideSensitiveInfo] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
-
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -76,20 +77,20 @@ export default function UserProfile() {
     fetchUserData();
   }, []);
 
+
+
+
   const copyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
     setCopiedField(fieldName);
-    // toast({
-    //   title: "Copied to clipboard",
-    //   description: `${fieldName} has been copied to your clipboard.`,
-    //   duration: 2000,
-    // })
     toast.success("Copied to clipboard");
-
     setTimeout(() => {
       setCopiedField(null);
     }, 2000);
   };
+
+
+
 
   const toggleSensitiveInfo = () => {
     setHideSensitiveInfo(!hideSensitiveInfo);
@@ -146,7 +147,7 @@ export default function UserProfile() {
     },
     {
       label: "National ID Number (NID)",
-      value: user?.phone,
+      value: user?.nid,
       icon: CreditCard,
       sensitive: true,
       verified: true,
