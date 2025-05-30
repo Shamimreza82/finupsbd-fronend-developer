@@ -60,7 +60,9 @@ export default function PreviewPage() {
         setIsFormSubmitted(true);
         setSubmittedData(formData);
         // Pass the application ID to the success page
-        router.push(`/loan-application/success?id=${result.applicationId}`);
+        router.push(
+          `/user/loan-application/success?id=${result.applicationId}`,
+        );
       } else {
         console.error("Error submitting application:", result.error);
         setError(
@@ -78,7 +80,7 @@ export default function PreviewPage() {
 
   // Navigate to edit a specific step
   const navigateToStep = (step: string) => {
-    router.push(`/loan-application/${step}`);
+    router.push(`/user/loan-application/${step}`);
   };
 
   // Render personal info section
@@ -820,7 +822,7 @@ export default function PreviewPage() {
         <CardFooter className="flex justify-between">
           <Button
             variant="outline"
-            onClick={() => router.push("/loan-application/step-6")}
+            onClick={() => router.push("/user/loan-application/step-6")}
           >
             Back
           </Button>
