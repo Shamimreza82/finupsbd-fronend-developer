@@ -21,7 +21,8 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
       | "employmentInfo"
       | "loanInfo"
       | "loanRequest"
-      | "documentInfo";
+      | "documentInfo"
+      | "guarantorInfo";
   }[];
 }
 

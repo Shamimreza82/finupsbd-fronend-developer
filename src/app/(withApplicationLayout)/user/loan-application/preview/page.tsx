@@ -12,7 +12,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useFormContext } from "@/context/loan-application-form-context";
+import {
+  useFormContext,
+  type FormData as AppFormData,
+} from "@/context/loan-application-form-context";
 import {
   AlertCircle,
   FileText,
@@ -23,6 +26,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { GuarantorSectionValues } from "../schemas/guarantor-info-schema";
 
 export default function PreviewPage() {
   const router = useRouter();
@@ -35,34 +39,35 @@ export default function PreviewPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Update the isFormComplete check to include loanRequest
+  // isFormComplete checks if the guarantorInfo object itself exists in formData.
+  // Step 7 ensures this object is created even if no specific guarantor details are filled.
+  // The schema for guarantorInfo allows both personalGuarantor and businessGuarantor to be undefined.
   const isFormComplete =
     formData.personalInfo &&
     formData.residentialInfo &&
     formData.employmentInfo &&
     formData.loanInfo &&
     formData.loanRequest &&
-    formData.documentInfo;
+    formData.documentInfo &&
+    formData.guarantorInfo; // This means the step was visited and data (even if empty objects) was set.
 
-  // Handle form submission
   const handleSubmit = async () => {
-    if (!isFormComplete) return;
+    if (!isFormComplete) {
+      // This generic message is fine as isFormComplete covers all steps.
+      setError("Please complete all required steps before submitting.");
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // Set all steps to non-draft mode before submission
-      setAllStepsToNonDraft();
-
-      const result = await submitApplication(formData);
+      setAllStepsToNonDraft(); // Mark all steps as non-draft upon submission attempt
+      const result = await submitApplication(formData as AppFormData);
       if (result.success) {
         setIsFormSubmitted(true);
-        setSubmittedData(formData);
-        // Pass the application ID to the success page
-        router.push(
-          `/user/loan-application/success?id=${result.applicationId}`,
-        );
+        setSubmittedData(formData as AppFormData);
+        router.push(`/loan-application/success?id=${result.applicationId}`);
       } else {
         console.error("Error submitting application:", result.error);
         setError(
@@ -70,27 +75,32 @@ export default function PreviewPage() {
             "Failed to submit application. Please try again later.",
         );
       }
-    } catch (error) {
-      console.error("Error submitting application:", error);
+    } catch (err) {
+      console.error("Error submitting application:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Navigate to edit a specific step
   const navigateToStep = (step: string) => {
-    router.push(`/user/loan-application/${step}`);
+    router.push(`/loan-application/${step}`);
   };
 
-  // Render personal info section
+  // --- Functions to render each section (personalInfo, residentialInfo, etc.) ---
+  // These are assumed to be correct and are omitted for brevity,
+  // except for renderGuarantorInfo and its helper.
   const renderPersonalInfo = () => {
     const info = formData.personalInfo;
-    if (!info) return <p>Personal information not completed.</p>;
-
+    if (!info)
+      return (
+        <p className="text-sm text-muted-foreground">
+          Personal information not completed.
+        </p>
+      );
     return (
       <div className="space-y-2">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
           <div>
             <p className="text-sm font-medium">Full Name</p>
             <p className="text-sm">{info.fullName}</p>
@@ -123,12 +133,6 @@ export default function PreviewPage() {
             <p className="text-sm font-medium">Nationality</p>
             <p className="text-sm">{info.nationality}</p>
           </div>
-          {/* 
-          <div>
-            <p className="text-sm font-medium">Educational Level</p>
-            <p className="text-sm capitalize">{info.educationalLevel}</p>
-          </div>
-          */}
           <div>
             <p className="text-sm font-medium">Identification Type</p>
             <p className="text-sm capitalize">{info.identificationType}</p>
@@ -185,18 +189,20 @@ export default function PreviewPage() {
       </div>
     );
   };
-
-  // Render residential info section
   const renderResidentialInfo = () => {
     const info = formData.residentialInfo;
-    if (!info) return <p>Residential information not completed.</p>;
-
+    if (!info)
+      return (
+        <p className="text-sm text-muted-foreground">
+          Residential information not completed.
+        </p>
+      );
     return (
       <div className="space-y-4">
         <div>
-          <h4 className="text-md mb-2 font-medium">Present Address</h4>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="col-span-2">
+          <h4 className="text-md mb-1 font-medium">Present Address</h4>
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <div className="md:col-span-2">
               <p className="text-sm font-medium">Address</p>
               <p className="text-sm">{info.presentAddress}</p>
             </div>
@@ -228,19 +234,14 @@ export default function PreviewPage() {
             </div>
           </div>
         </div>
-
         <Separator />
-
-        {info.isPermanentSameAsPresent ? (
-          <div>
-            <h4 className="text-md mb-2 font-medium">Permanent Address</h4>
+        <div>
+          <h4 className="text-md mb-1 font-medium">Permanent Address</h4>
+          {info.isPermanentSameAsPresent ? (
             <p className="text-sm">Same as present address</p>
-          </div>
-        ) : (
-          <div>
-            <h4 className="text-md mb-2 font-medium">Permanent Address</h4>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="col-span-2">
+          ) : (
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+              <div className="md:col-span-2">
                 <p className="text-sm font-medium">Address</p>
                 <p className="text-sm">{info.permanentAddress}</p>
               </div>
@@ -271,21 +272,24 @@ export default function PreviewPage() {
                 </p>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     );
   };
-
-  // Render employment info section
   const renderEmploymentInfo = () => {
     const info = formData.employmentInfo;
-    if (!info) return <p>Employment information not completed.</p>;
-
+    if (!info)
+      return (
+        <p className="text-sm text-muted-foreground">
+          Employment & Financial information not completed.
+        </p>
+      );
     return (
       <div className="space-y-4">
         <div>
-          <h4 className="text-md mb-2 font-medium">Employment Details</h4>
+          <h4 className="text-md mb-1 font-medium">Employment Details</h4>
+          {/* ... content based on previous implementation ... */}
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="text-sm font-medium">Employment Status</p>
@@ -293,7 +297,6 @@ export default function PreviewPage() {
                 {info.employmentStatus.replace("_", " ").toLowerCase()}
               </p>
             </div>
-
             {info.employmentStatus === "SALARIED" && (
               <>
                 <div>
@@ -350,7 +353,6 @@ export default function PreviewPage() {
                     <p className="text-sm">{info.officialContact}</p>
                   </div>
                 )}
-
                 {info.hasPreviousOrganization && (
                   <>
                     <div className="col-span-2 mt-2">
@@ -375,7 +377,6 @@ export default function PreviewPage() {
                     </div>
                   </>
                 )}
-
                 <div className="col-span-2 mt-2">
                   <h5 className="text-sm font-medium">Total Experience</h5>
                   <p className="text-sm">
@@ -385,7 +386,6 @@ export default function PreviewPage() {
                 </div>
               </>
             )}
-
             {info.employmentStatus === "BUSINESS_OWNER" && (
               <>
                 <div>
@@ -431,11 +431,10 @@ export default function PreviewPage() {
             )}
           </div>
         </div>
-
         <Separator />
-
         <div>
-          <h4 className="text-md mb-2 font-medium">Property Details</h4>
+          <h4 className="text-md mb-1 font-medium">Property Details</h4>
+          {/* ... content based on previous implementation ... */}
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="text-sm font-medium">Property Type</p>
@@ -447,11 +446,10 @@ export default function PreviewPage() {
             </div>
           </div>
         </div>
-
         <Separator />
-
         <div>
-          <h4 className="text-md mb-2 font-medium">Income Details</h4>
+          <h4 className="text-md mb-1 font-medium">Income Details</h4>
+          {/* ... content based on previous implementation ... */}
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="text-sm font-medium">Gross Monthly Income</p>
@@ -478,17 +476,19 @@ export default function PreviewPage() {
       </div>
     );
   };
-
-  // Render loan info section
   const renderLoanInfo = () => {
     const info = formData.loanInfo;
-    if (!info) return <p>Loan information not completed.</p>;
-
+    if (!info)
+      return (
+        <p className="text-sm text-muted-foreground">
+          Existing Financial Obligations not completed.
+        </p>
+      );
     return (
       <div className="space-y-4">
-        {/* Existing Loans */}
         <div>
-          <h4 className="text-md mb-2 font-medium">Existing Loans</h4>
+          <h4 className="text-md mb-1 font-medium">Existing Loans</h4>
+          {/* ... content based on previous implementation ... */}
           {info.hasExistingLoan ? (
             <div className="space-y-4">
               {info.existingLoans?.map((loan, index) => (
@@ -533,12 +533,10 @@ export default function PreviewPage() {
             <p className="text-sm">No existing loans</p>
           )}
         </div>
-
         <Separator />
-
-        {/* Credit Cards */}
         <div>
-          <h4 className="text-md mb-2 font-medium">Credit Cards</h4>
+          <h4 className="text-md mb-1 font-medium">Credit Cards</h4>
+          {/* ... content based on previous implementation ... */}
           {info.hasCreditCard ? (
             <div className="space-y-4">
               {info.creditCards?.map((card, index) => (
@@ -569,12 +567,10 @@ export default function PreviewPage() {
             <p className="text-sm">No credit cards</p>
           )}
         </div>
-
         <Separator />
-
-        {/* Bank Account Details */}
         <div>
-          <h4 className="text-md mb-2 font-medium">Bank Account Details</h4>
+          <h4 className="text-md mb-1 font-medium">Bank Account Details</h4>
+          {/* ... content based on previous implementation ... */}
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="text-sm font-medium">Bank Name</p>
@@ -589,31 +585,32 @@ export default function PreviewPage() {
       </div>
     );
   };
-
-  // Add a function to render loan request information
   const renderLoanRequest = () => {
     const info = formData.loanRequest;
-    if (!info) return <p>Loan request information not completed.</p>;
-
+    if (!info)
+      return (
+        <p className="text-sm text-muted-foreground">
+          Loan Request & Specifications not completed.
+        </p>
+      );
     return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <p className="text-sm font-medium">Loan Amount Requested (BDT)</p>
-            <p className="text-sm">{info.loanAmount}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Preferred Loan Tenure</p>
-            <p className="text-sm">{info.loanTenure} Months</p>
-          </div>
-          <div className="col-span-2">
-            <p className="text-sm font-medium">Purpose of Loan</p>
-            <p className="text-sm">{info.loanPurpose}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Proposed EMI Start Date</p>
-            <p className="text-sm">{info.emiStartDate}th of the month</p>
-          </div>
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+        {/* ... content based on previous implementation ... */}
+        <div>
+          <p className="text-sm font-medium">Loan Amount Requested (BDT)</p>
+          <p className="text-sm">{info.loanAmount}</p>
+        </div>
+        <div>
+          <p className="text-sm font-medium">Preferred Loan Tenure</p>
+          <p className="text-sm">{info.loanTenure} Months</p>
+        </div>
+        <div className="col-span-2">
+          <p className="text-sm font-medium">Purpose of Loan</p>
+          <p className="text-sm">{info.loanPurpose}</p>
+        </div>
+        <div>
+          <p className="text-sm font-medium">Proposed EMI Start Date</p>
+          <p className="text-sm">{info.emiStartDate}th of the month</p>
         </div>
       </div>
     );
@@ -710,6 +707,127 @@ export default function PreviewPage() {
     );
   };
 
+  // Helper to render a single guarantor's details
+  const renderGuarantorDetails = (
+    guarantor: GuarantorSectionValues | undefined,
+    title: string,
+  ) => {
+    // Check if guarantor object exists and has at least one non-empty/non-undefined value
+    const isDataProvided =
+      guarantor &&
+      Object.values(guarantor).some(
+        (val) => val !== "" && val !== undefined && val !== null,
+      );
+
+    if (!isDataProvided) {
+      return (
+        <p className="text-sm text-muted-foreground">
+          {title} details not provided.
+        </p>
+      );
+    }
+
+    return (
+      <div className="space-y-3">
+        <h4 className="text-md mb-2 font-semibold">{title}</h4>
+        <div className="grid grid-cols-1 gap-x-4 gap-y-2 md:grid-cols-2">
+          <div>
+            <p className="text-sm font-medium">Full Name</p>
+            <p className="text-sm">{guarantor.fullName}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Father's/Husband's Name</p>
+            <p className="text-sm">{guarantor.fatherOrHusbandName}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Mother's Name</p>
+            <p className="text-sm">{guarantor.motherName}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Date of Birth</p>
+            <p className="text-sm">
+              {guarantor.dateOfBirth instanceof Date
+                ? guarantor.dateOfBirth.toLocaleDateString()
+                : guarantor.dateOfBirth}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Nationality</p>
+            <p className="text-sm">{guarantor.nationality}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium">National ID Number (NID)</p>
+            <p className="text-sm">{guarantor.nationalIdNumber}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Mobile Number</p>
+            <p className="text-sm">{guarantor.mobileNumber}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Email Address</p>
+            <p className="text-sm">{guarantor.emailAddress || "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Relation with Applicant</p>
+            <p className="text-sm">{guarantor.relationWithApplicant}</p>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-medium">Present Address</p>
+          <p className="text-sm">{guarantor.presentAddress}</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-medium">Permanent & Mailing Address</p>
+          <p className="text-sm">{guarantor.permanentAddress}</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-medium">Work Address</p>
+          <p className="text-sm">{guarantor.workAddress}</p>
+        </div>
+        {/* Digital Signature and Date fields are removed */}
+      </div>
+    );
+  };
+
+  // Main function to render the entire Guarantor Information section
+  const renderGuarantorInfo = () => {
+    const guarantorInfo = formData.guarantorInfo;
+
+    const personalGuarantorData = guarantorInfo?.personalGuarantor;
+    const businessGuarantorData = guarantorInfo?.businessGuarantor;
+
+    const isPersonalProvided =
+      personalGuarantorData &&
+      Object.values(personalGuarantorData).some(
+        (val) => val !== "" && val !== undefined && val !== null,
+      );
+    const isBusinessProvided =
+      businessGuarantorData &&
+      Object.values(businessGuarantorData).some(
+        (val) => val !== "" && val !== undefined && val !== null,
+      );
+
+    if (!isPersonalProvided && !isBusinessProvided) {
+      return (
+        <p className="text-sm text-muted-foreground">
+          Guarantor information not provided.
+        </p>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {isPersonalProvided &&
+          renderGuarantorDetails(personalGuarantorData, "Personal Guarantor")}
+        {isPersonalProvided && isBusinessProvided && (
+          <Separator className="my-4" />
+        )}
+        {isBusinessProvided &&
+          renderGuarantorDetails(businessGuarantorData, "Business Guarantor")}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {error && (
@@ -727,102 +845,128 @@ export default function PreviewPage() {
             Review your application details before submission.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Personal Information</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigateToStep("step-1")}
-                >
-                  <PenSquare className="mr-2 h-4 w-4" /> Edit
-                </Button>
-              </div>
-              {renderPersonalInfo()}
+        <CardContent className="space-y-6">
+          {/* Personal Info */}
+          <section>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Personal Information</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToStep("step-1")}
+              >
+                <PenSquare className="mr-2 h-4 w-4" /> Edit
+              </Button>
             </div>
+            {renderPersonalInfo()}
+          </section>
+          <Separator />
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Residential Information</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigateToStep("step-2")}
-                >
-                  <PenSquare className="mr-2 h-4 w-4" /> Edit
-                </Button>
-              </div>
-              {renderResidentialInfo()}
+          {/* Residential Info */}
+          <section>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Residential Information</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToStep("step-2")}
+              >
+                <PenSquare className="mr-2 h-4 w-4" /> Edit
+              </Button>
             </div>
+            {renderResidentialInfo()}
+          </section>
+          <Separator />
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">
-                  Employment & Financial Information
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigateToStep("step-3")}
-                >
-                  <PenSquare className="mr-2 h-4 w-4" /> Edit
-                </Button>
-              </div>
-              {renderEmploymentInfo()}
+          {/* Employment & Financial Info */}
+          <section>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">
+                Employment & Financial Information
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToStep("step-3")}
+              >
+                <PenSquare className="mr-2 h-4 w-4" /> Edit
+              </Button>
             </div>
+            {renderEmploymentInfo()}
+          </section>
+          <Separator />
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Loan Information</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigateToStep("step-4")}
-                >
-                  <PenSquare className="mr-2 h-4 w-4" /> Edit
-                </Button>
-              </div>
-              {renderLoanInfo()}
+          {/* Existing Financial Obligations */}
+          <section>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">
+                Existing Financial Obligations
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToStep("step-4")}
+              >
+                <PenSquare className="mr-2 h-4 w-4" /> Edit
+              </Button>
             </div>
+            {renderLoanInfo()}
+          </section>
+          <Separator />
 
-            {/* Add the loan request section to the render */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">
-                  Loan Request & Specifications
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigateToStep("step-5")}
-                >
-                  <PenSquare className="mr-2 h-4 w-4" /> Edit
-                </Button>
-              </div>
-              {renderLoanRequest()}
+          {/* Loan Request & Specifications */}
+          <section>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">
+                Loan Request & Specifications
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToStep("step-5")}
+              >
+                <PenSquare className="mr-2 h-4 w-4" /> Edit
+              </Button>
             </div>
+            {renderLoanRequest()}
+          </section>
+          <Separator />
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Documents</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigateToStep("step-6")}
-                >
-                  <PenSquare className="mr-2 h-4 w-4" /> Edit
-                </Button>
-              </div>
-              {renderDocumentInfo()}
+          {/* Documents */}
+          <section>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Documents</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToStep("step-6")}
+              >
+                <PenSquare className="mr-2 h-4 w-4" /> Edit
+              </Button>
             </div>
-          </div>
+            {renderDocumentInfo()}
+          </section>
+          <Separator />
+
+          {/* Guarantor Information */}
+          <section>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Guarantor Information</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToStep("step-7")}
+              >
+                <PenSquare className="mr-2 h-4 w-4" /> Edit
+              </Button>
+            </div>
+            {renderGuarantorInfo()}
+          </section>
         </CardContent>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="flex justify-end space-x-2">
           <Button
             variant="outline"
-            onClick={() => router.push("/user/loan-application/step-6")}
+            onClick={() => router.push("/loan-application/step-7")}
           >
             Back
           </Button>
@@ -832,8 +976,7 @@ export default function PreviewPage() {
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Submitting...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
               </>
             ) : (
               "Submit Application"

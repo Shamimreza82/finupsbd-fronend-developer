@@ -2,16 +2,16 @@
 
 import type { documentInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/document-info-schema";
 import type { employmentInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/employment-info-schema";
+import type { guarantorInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/guarantor-info-schema"; // Import new schema
 import type { loanInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/loan-info-schema";
 import type { loanRequestSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/loan-request-schema";
-import { personalInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/personal-info-schema";
+import type { personalInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/personal-info-schema";
 import type { residentialInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/residential-info-schema";
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { z } from "zod";
 
 // Define the form data structure
-// Update the FormData type to include loanRequest
 export type FormData = {
   personalInfo: z.infer<typeof personalInfoSchema> | null;
   residentialInfo: z.infer<typeof residentialInfoSchema> | null;
@@ -19,6 +19,7 @@ export type FormData = {
   loanInfo: z.infer<typeof loanInfoSchema> | null;
   loanRequest: z.infer<typeof loanRequestSchema> | null;
   documentInfo: z.infer<typeof documentInfoSchema> | null;
+  guarantorInfo: z.infer<typeof guarantorInfoSchema> | null; // Add guarantorInfo
   draftMode: {
     personalInfo: boolean;
     residentialInfo: boolean;
@@ -26,6 +27,7 @@ export type FormData = {
     loanInfo: boolean;
     loanRequest: boolean;
     documentInfo: boolean;
+    guarantorInfo: boolean; // Add guarantorInfo
   };
 };
 
@@ -48,7 +50,6 @@ interface FormContextType {
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 // Initial form data
-// Update the initial form data to include loanRequest
 const initialFormData: FormData = {
   personalInfo: null,
   residentialInfo: null,
@@ -56,6 +57,7 @@ const initialFormData: FormData = {
   loanInfo: null,
   loanRequest: null,
   documentInfo: null,
+  guarantorInfo: null, // Add guarantorInfo
   draftMode: {
     personalInfo: true,
     residentialInfo: true,
@@ -63,6 +65,7 @@ const initialFormData: FormData = {
     loanInfo: true,
     loanRequest: true,
     documentInfo: true,
+    guarantorInfo: true, // Add guarantorInfo
   },
 };
 
@@ -74,7 +77,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
 
   // Load form data from localStorage on initial render
   useEffect(() => {
-    const savedData = localStorage.getItem("customer-loan-application-data");
+    const savedData = localStorage.getItem("loanApplicationForm"); // Updated key
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData);
@@ -98,15 +101,15 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
 
     // Save to localStorage
     localStorage.setItem(
-      "customer-loan-application-data",
+      "loanApplicationForm",
       JSON.stringify(updatedFormData),
-    );
+    ); // Updated key
   };
 
   // Reset the form data
   const resetForm = () => {
     setFormData(initialFormData);
-    localStorage.removeItem("customer-loan-application-data");
+    localStorage.removeItem("loanApplicationForm"); // Updated key
   };
 
   // Check if a step is completed
@@ -125,13 +128,14 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
         loanInfo: false,
         loanRequest: false,
         documentInfo: false,
+        guarantorInfo: false, // Add guarantorInfo
       },
     };
     setFormData(updatedFormData);
     localStorage.setItem(
-      "customer-loan-application-data",
+      "loanApplicationForm",
       JSON.stringify(updatedFormData),
-    );
+    ); // Updated key
   };
 
   // Enable document editing only
@@ -141,21 +145,20 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
       draftMode: {
         ...formData.draftMode,
         documentInfo: true,
+        // If guarantor info also needs to be editable post-submission, add it here
+        // guarantorInfo: true,
       },
     };
     setFormData(updatedFormData);
     localStorage.setItem(
-      "customer-loan-application-data",
+      "loanApplicationForm",
       JSON.stringify(updatedFormData),
-    );
+    ); // Updated key
   };
 
   // Check if a step is editable
   const isStepEditable = (step: keyof Omit<FormData, "draftMode">) => {
-    // If form is not submitted, all steps are editable
     if (!isFormSubmitted) return true;
-
-    // After submission, only check the draftMode for the specific step
     return formData.draftMode[step];
   };
 

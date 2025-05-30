@@ -1,9 +1,5 @@
 "use client";
 
-import {
-  personalInfoSchema,
-  type PersonalInfoValues,
-} from "@/app/(withApplicationLayout)/user/loan-application/schemas/personal-info-schema";
 import { DatePickerInput } from "@/components/form/FormInputs";
 import {
   SelectInput,
@@ -26,6 +22,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
+import {
+  personalInfoSchema,
+  type PersonalInfoValues,
+} from "../schemas/personal-info-schema";
 
 export default function PersonalInfoPage() {
   const router = useRouter();

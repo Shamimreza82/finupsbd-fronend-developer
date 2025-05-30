@@ -16,12 +16,13 @@ export function FormProgress() {
     if (pathname.includes("step-4")) return 4;
     if (pathname.includes("step-5")) return 5;
     if (pathname.includes("step-6")) return 6;
-    if (pathname.includes("preview")) return 7;
+    if (pathname.includes("step-7")) return 7;
+    if (pathname.includes("preview")) return 8;
     return 0;
   };
 
   // Update the totalSteps
-  const totalSteps = 7; // Updated to include the new step
+  const totalSteps = 8; // Updated to include the new step
 
   // Update the calculateProgress function
   const calculateProgress = (): number => {
@@ -32,11 +33,12 @@ export function FormProgress() {
       isStepCompleted("loanInfo"),
       isStepCompleted("loanRequest"),
       isStepCompleted("documentInfo"),
+      isStepCompleted("guarantorInfo"),
     ].filter(Boolean).length;
 
     // If on preview page, count it as a step
     const progress =
-      currentStep === 7
+      currentStep === 8
         ? ((completedSteps + 1) / totalSteps) * 100
         : (completedSteps / totalSteps) * 100;
 

@@ -1,8 +1,6 @@
-import { Separator } from "@/components/ui/separator";
-import type React from "react";
-
 import { FormProgress } from "@/components/loan-application/form-progress";
 import { SidebarNav } from "@/components/loan-application/sidebar-nav";
+import { Separator } from "@/components/ui/separator";
 import { FormProvider } from "@/context/loan-application-form-context";
 import {
   Briefcase,
@@ -10,9 +8,11 @@ import {
   Eye,
   FileText,
   Home,
+  ShieldCheck,
   Upload,
   User,
-} from "lucide-react";
+} from "lucide-react"; // Added ShieldCheck
+import type React from "react";
 
 const sidebarNavItems = [
   {
@@ -50,6 +50,13 @@ const sidebarNavItems = [
     href: "/user/loan-application/step-6",
     icon: <Upload className="h-4 w-4" />,
     step: "documentInfo" as const,
+  },
+  {
+    // New Step 7
+    title: "Guarantor Information",
+    href: "/user/loan-application/step-7",
+    icon: <ShieldCheck className="h-4 w-4" />,
+    step: "guarantorInfo" as const,
   },
   {
     title: "Preview & Submit",
