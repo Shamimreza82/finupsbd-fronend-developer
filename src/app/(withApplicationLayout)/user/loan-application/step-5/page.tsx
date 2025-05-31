@@ -21,12 +21,34 @@ import { Form } from "@/components/ui/form";
 import { useFormContext } from "@/context/loan-application-form-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { LoanRequest } from "../layout";
+
 
 export default function LoanRequestPage() {
   const router = useRouter();
   const { formData, updateFormData, isStepEditable } = useFormContext();
+  const [loanRequest, setLoanRequest] = useState<LoanRequest>()
+  const [loading, setLoading] = useState(true)
+
+
+
+  console.log(loanRequest)
+
+  useEffect(() => {
+    const LoanRequet = () => {
+      const result = localStorage.getItem("loanRequest")
+      if (result) {
+        setLoanRequest(JSON.parse(result))
+        setLoading(false)
+      }
+    }
+    LoanRequet()
+  }, [])
+
+  console.log(parseFloat(loanRequest?.amount ?? "0").toString())
+
 
   // Initialize form with react-hook-form
   const form = useForm<LoanRequestValues>({
@@ -58,6 +80,13 @@ export default function LoanRequestPage() {
     updateFormData("loanRequest", data);
     router.push("/user/loan-application/step-6");
   }
+
+
+
+
+
+
+
 
   // Loan tenure options
   const tenureOptions = [

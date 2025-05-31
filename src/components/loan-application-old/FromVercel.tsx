@@ -164,6 +164,7 @@ const ApplicationFormVercel = () => {
 
     const autosaveTimer = setInterval(() => {
       const formData = getValues()
+      
       localStorage.setItem("loanApplicationDraft", JSON.stringify(formData))
     }, AUTOSAVE_INTERVAL)
 

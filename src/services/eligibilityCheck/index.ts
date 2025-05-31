@@ -10,6 +10,7 @@ export const eligibilityCheckData = async (payload: any, queryData: any) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       },
+
     );
 
     const jsonData = await res.json();
@@ -21,8 +22,8 @@ export const eligibilityCheckData = async (payload: any, queryData: any) => {
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "An unknown error occurred",
-        error: error,
+      error instanceof Error ? error.message : "An unknown error occurred",
+      error: error,
     };
   }
 };
