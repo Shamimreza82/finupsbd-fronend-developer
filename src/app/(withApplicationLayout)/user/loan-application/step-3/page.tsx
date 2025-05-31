@@ -1,16 +1,13 @@
 "use client";
 
-import {
-  employmentInfoSchema,
-  type EmploymentInfoValues,
-} from "@/app/(withApplicationLayout)/user/loan-application/schemas/employment-info-schema";
-import { DatePickerInput } from "@/components/form/FormInputs";
-
 import { CheckboxInput } from "@/components/loan-application/checkbox-input";
+
+import { DatePickerInput } from "@/components/form/FormInputs";
 import {
   SelectInput,
   TextInput,
 } from "@/components/loan-application/form-inputs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,30 +19,38 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { useFormContext } from "@/context/loan-application-form-context";
+import { useFormContext as useAppFormContext } from "@/context/loan-application-form-context";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PlusCircle, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
+import {
+  employmentInfoSchema,
+  type EmploymentInfoValues,
+} from "../schemas/employment-info-schema";
 
 export default function EmploymentInfoPage() {
   const router = useRouter();
-  const { formData, updateFormData, isStepEditable } = useFormContext();
-  const [employmentStatus, setEmploymentStatus] = useState<string>("");
+  const { formData, updateFormData, isStepEditable } = useAppFormContext();
+  const [employmentStatus, setEmploymentStatus] = useState<string | undefined>(
+    undefined,
+  );
   const [hasPreviousOrganization, setHasPreviousOrganization] = useState(false);
+  const [propertyError, setPropertyError] = useState<string | null>(null);
+  const [isFormInitialized, setIsFormInitialized] = useState(false);
 
-  // Initialize form with react-hook-form
   const form = useForm<EmploymentInfoValues>({
-    resolver: zodResolver(employmentInfoSchema) as any,
+    resolver: zodResolver(employmentInfoSchema),
+    mode: "onTouched",
     defaultValues: {
       employmentStatus: undefined,
-      // Salaried fields
       jobTitle: "",
       designation: "",
       department: "",
       employeeId: "",
       employmentType: undefined,
-      dateOfJoining: undefined,
+      dateOfJoining: "",
       organizationName: "",
       organizationAddress: "",
       serviceYears: "",
@@ -59,7 +64,6 @@ export default function EmploymentInfoPage() {
       previousServiceMonths: "",
       totalExperienceYears: "",
       totalExperienceMonths: "",
-      // Business owner fields
       businessName: "",
       businessAddress: "",
       businessOwnerType: undefined,
@@ -67,10 +71,7 @@ export default function EmploymentInfoPage() {
       sharePortion: "",
       businessRegistrationNumber: "",
       tradeLicenseAge: "",
-      // Property details
-      propertyType: "",
-      propertyValue: "",
-      // Income details
+      properties: [], // Start with empty array, will be populated by useEffect if needed
       grossMonthlyIncome: "",
       rentIncome: "",
       otherIncome: "",
@@ -78,20 +79,28 @@ export default function EmploymentInfoPage() {
     },
   });
 
-  // Watch employment status and previous organization checkbox
+  const {
+    fields: propertyFields,
+    append: appendProperty,
+    remove: removeProperty,
+    replace: replaceProperties, // Import replace from useFieldArray
+  } = useFieldArray({
+    control: form.control,
+    name: "properties",
+  });
+
   const watchEmploymentStatus = form.watch("employmentStatus");
   const watchHasPreviousOrganization = form.watch("hasPreviousOrganization");
 
-  // Update state when watched values change
   useEffect(() => {
-    setEmploymentStatus(watchEmploymentStatus || "");
+    setEmploymentStatus(watchEmploymentStatus);
   }, [watchEmploymentStatus]);
 
   useEffect(() => {
     setHasPreviousOrganization(watchHasPreviousOrganization || false);
   }, [watchHasPreviousOrganization]);
 
-  // Calculate total experience when service period changes
+  // Calculate total experience
   useEffect(() => {
     if (employmentStatus === "SALARIED") {
       const currentYears = Number.parseInt(
@@ -102,7 +111,6 @@ export default function EmploymentInfoPage() {
         form.getValues("serviceMonths") || "0",
         10,
       );
-
       let totalYears = currentYears;
       let totalMonths = currentMonths;
 
@@ -115,19 +123,20 @@ export default function EmploymentInfoPage() {
           form.getValues("previousServiceMonths") || "0",
           10,
         );
-
         totalYears += prevYears;
         totalMonths += prevMonths;
       }
 
-      // Adjust months if they exceed 12
       if (totalMonths >= 12) {
         totalYears += Math.floor(totalMonths / 12);
-        totalMonths = totalMonths % 12;
+        totalMonths %= 12;
       }
-
-      form.setValue("totalExperienceYears", totalYears.toString());
-      form.setValue("totalExperienceMonths", totalMonths.toString());
+      form.setValue("totalExperienceYears", totalYears.toString(), {
+        shouldValidate: true,
+      });
+      form.setValue("totalExperienceMonths", totalMonths.toString(), {
+        shouldValidate: true,
+      });
     }
   }, [
     form.watch("serviceYears"),
@@ -139,38 +148,78 @@ export default function EmploymentInfoPage() {
     form,
   ]);
 
-  // Load saved data if available
+  // Load saved data or initialize form
   useEffect(() => {
     if (formData.employmentInfo) {
-      form.reset(formData.employmentInfo);
+      // If there's saved data, reset the form with it.
+      // Ensure properties array in saved data is used, or default to empty if not present.
+      const savedProperties = formData.employmentInfo.properties || [];
+      form.reset({ ...formData.employmentInfo, properties: savedProperties });
       setEmploymentStatus(formData.employmentInfo.employmentStatus);
       setHasPreviousOrganization(
-        (formData.employmentInfo as any).hasPreviousOrganization || false,
+        formData.employmentInfo.employmentStatus === "SALARIED"
+          ? formData.employmentInfo.hasPreviousOrganization || false
+          : false,
       );
+    } else {
+      // No saved data, reset to initial default values (which has properties: [])
+      form.reset();
     }
-  }, [formData.employmentInfo, form]);
+    setIsFormInitialized(true); // Mark form as initialized
+  }, [formData.employmentInfo, form.reset]); // form.reset is stable
 
-  // Redirect if step is not editable
+  // Effect to ensure at least one property card is shown by default
+  useEffect(() => {
+    if (isFormInitialized) {
+      const currentProperties = form.getValues("properties");
+      // Check both RHF's value and useFieldArray's state (propertyFields)
+      if (
+        (!currentProperties || currentProperties.length === 0) &&
+        propertyFields.length === 0
+      ) {
+        appendProperty({ propertyType: "", propertyValue: "0" });
+      }
+    }
+  }, [
+    isFormInitialized,
+    form.getValues,
+    appendProperty,
+    propertyFields.length,
+  ]);
+
   useEffect(() => {
     if (!isStepEditable("employmentInfo")) {
       router.push("/user/loan-application/preview");
     }
   }, [isStepEditable, router]);
 
-  // Handle form submission
   function onSubmit(data: EmploymentInfoValues) {
-    updateFormData("employmentInfo", data);
+    const dataToSave = {
+      ...data,
+      properties: data.properties || [],
+    };
+    updateFormData("employmentInfo", dataToSave);
     router.push("/user/loan-application/step-4");
   }
 
-  // Employment status options
+  const handleAddProperty = () => {
+    if (propertyFields.length < 3) {
+      appendProperty({ propertyType: "", propertyValue: "" });
+      setPropertyError(null);
+    } else {
+      setPropertyError("You can add a maximum of 3 properties.");
+    }
+  };
+
   const employmentStatusOptions = [
     { label: "Salaried", value: "SALARIED" },
     { label: "Business Owner", value: "BUSINESS_OWNER" },
     { label: "Self Employed", value: "SELF_EMPLOYED" },
+    { label: "Retired", value: "RETIRED" },
+    { label: "Housewife", value: "HOUSEWIFE" },
+    { label: "Unemployed", value: "UNEMPLOYED" },
   ];
 
-  // Employment type options
   const employmentTypeOptions = [
     { label: "Permanent", value: "PERMANENT" },
     { label: "Contractual", value: "CONTRACTUAL" },
@@ -178,21 +227,18 @@ export default function EmploymentInfoPage() {
     { label: "Probation", value: "PROBATION" },
   ];
 
-  // Business owner type options
   const businessOwnerOptions = [
     { label: "Proprietorship", value: "PROPRIETORSHIP" },
     { label: "Partnership", value: "PARTNERSHIP" },
     { label: "Public Limited Company", value: "PUBLIC_LIMITED_COMPANY" },
   ];
 
-  // Business type options
   const businessTypeOptions = [
     { label: "Retail", value: "RETAIL" },
     { label: "Wholesale", value: "WHOLESALE" },
     { label: "Manufacturing", value: "MANUFACTURING" },
   ];
 
-  // Trade license age options
   const tradeLicenseExperienceOptions = [
     { label: "1 Year", value: "1" },
     { label: "2 Years", value: "2" },
@@ -206,31 +252,29 @@ export default function EmploymentInfoPage() {
     { label: "10 Years", value: "10" },
   ];
 
-  // Property type options
   const propertyTypeOptions = [
-    { label: "Residential", value: "residential" },
-    { label: "Commercial", value: "commercial" },
-    { label: "Land", value: "land" },
-    { label: "Apartment", value: "apartment" },
-    { label: "House", value: "house" },
+    { label: "Residential", value: "RESIDENTIAL" },
+    { label: "Commercial", value: "COMMERCIAL" },
+    { label: "Land", value: "LAND" },
+    { label: "Apartment", value: "APARTMENT" },
+    { label: "House", value: "HOUSE" },
+    { label: "Other", value: "OTHER" },
   ];
 
   return (
-    <Card className="border-[#E9EFF6] text-tertiary-primary">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-xl">
-          Employment & Financial Information
-        </CardTitle>
+        <CardTitle>Employment & Financial Information</CardTitle>
         <CardDescription>
           Provide details about your employment and financial status.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Employment Details</h3>
-
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {/* Employment Details Section */}
+            <section>
+              <h3 className="mb-4 text-xl font-semibold">Employment Details</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <SelectInput
@@ -242,7 +286,6 @@ export default function EmploymentInfoPage() {
                     required
                   />
                 </div>
-
                 {employmentStatus === "SALARIED" && (
                   <>
                     <TextInput
@@ -281,30 +324,20 @@ export default function EmploymentInfoPage() {
                       placeholder="Select employment type"
                       required
                     />
-                    {/* <DatePicker
+                    <DatePickerInput
                       form={form}
                       name="dateOfJoining"
                       label="Date of Joining"
                       placeholder="Select date"
                       required
-                    /> */}
-                    <DatePickerInput
+                    />
+                    <TextInput
                       form={form}
-                      label="Date of Joining"
-                      name="dateOfJoining"
-                      placeholder="Select date of joining"
+                      name="organizationName"
+                      label="Organization Name"
+                      placeholder="Enter organization name"
                       required
                     />
-
-                    <div className="md:col-span-2">
-                      <TextInput
-                        form={form}
-                        name="organizationName"
-                        label="Organization Name"
-                        placeholder="Enter organization name"
-                        required
-                      />
-                    </div>
                     <div className="md:col-span-2">
                       <TextInput
                         form={form}
@@ -314,7 +347,24 @@ export default function EmploymentInfoPage() {
                         required
                       />
                     </div>
-
+                    <div className="grid grid-cols-2 items-end gap-4">
+                      <TextInput
+                        form={form}
+                        name="serviceYears"
+                        label="Length of Service (Years)"
+                        placeholder="Years"
+                        type="number"
+                        required
+                      />
+                      <TextInput
+                        form={form}
+                        name="serviceMonths"
+                        label="Months"
+                        placeholder="Months"
+                        type="number"
+                        required
+                      />
+                    </div>
                     <TextInput
                       form={form}
                       name="eTin"
@@ -328,134 +378,85 @@ export default function EmploymentInfoPage() {
                       label="Official Contact (if any)"
                       placeholder="Enter official contact"
                     />
-
-                    <div>
-                      <h4 className="text-md mb-2 font-medium">
-                        Length of Service Period
-                      </h4>
-                      <div className="flex items-end gap-4">
-                        <div className="flex-1">
-                          <TextInput
-                            form={form}
-                            name="serviceYears"
-                            label="Years"
-                            placeholder="Years"
-                            type="number"
-                            required
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <TextInput
-                            form={form}
-                            name="serviceMonths"
-                            label="Months"
-                            placeholder="Months"
-                            type="number"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="md:col-span-2">
                       <CheckboxInput
                         form={form}
                         name="hasPreviousOrganization"
-                        label="Previous Organization"
+                        label="I have worked in a previous organization"
                       />
                     </div>
-
                     {hasPreviousOrganization && (
                       <>
                         <TextInput
                           form={form}
                           name="previousOrganizationName"
-                          label="Name of Organization"
-                          placeholder="Enter previous organization name"
+                          label="Name of Previous Organization"
+                          placeholder="Enter organization name"
                           required
                         />
                         <TextInput
                           form={form}
                           name="previousDesignation"
-                          label="Designation"
-                          placeholder="Enter previous designation"
+                          label="Previous Designation"
+                          placeholder="Enter designation"
                           required
                         />
-                        <div>
-                          <h4 className="text-md mb-2 font-medium">
-                            Length of Previous Service Period
-                          </h4>
-                          <div className="flex items-end gap-4">
-                            <div className="flex-1">
-                              <TextInput
-                                form={form}
-                                name="previousServiceYears"
-                                label="Years"
-                                placeholder="Years"
-                                type="number"
-                                required
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <TextInput
-                                form={form}
-                                name="previousServiceMonths"
-                                label="Months"
-                                placeholder="Months"
-                                type="number"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    <div className="md:col-span-2">
-                      <h4 className="text-md mb-2 font-medium">
-                        Total Experience
-                      </h4>
-                      <div className="flex items-end gap-4">
-                        <div className="flex-1">
+                        <div className="grid grid-cols-2 items-end gap-4">
                           <TextInput
                             form={form}
-                            name="totalExperienceYears"
-                            label="Years"
+                            name="previousServiceYears"
+                            label="Length of Service (Years)"
                             placeholder="Years"
                             type="number"
                             required
-                            disabled
                           />
-                        </div>
-                        <div className="flex-1">
                           <TextInput
                             form={form}
-                            name="totalExperienceMonths"
+                            name="previousServiceMonths"
                             label="Months"
                             placeholder="Months"
                             type="number"
                             required
-                            disabled
                           />
                         </div>
+                      </>
+                    )}
+                    <div className="md:col-span-2">
+                      <h4 className="text-md mb-2 font-medium">
+                        Total Experience
+                      </h4>
+                      <div className="grid grid-cols-2 items-end gap-4">
+                        <TextInput
+                          form={form}
+                          name="totalExperienceYears"
+                          label="Years"
+                          placeholder="Years"
+                          type="number"
+                          required
+                          disabled
+                        />
+                        <TextInput
+                          form={form}
+                          name="totalExperienceMonths"
+                          label="Months"
+                          placeholder="Months"
+                          type="number"
+                          required
+                          disabled
+                        />
                       </div>
                     </div>
                   </>
                 )}
-
-                {["BUSINESS_OWNER", "SELF_EMPLOYED"].includes(
-                  employmentStatus,
-                ) && (
+                {employmentStatus === "BUSINESS_OWNER" && (
                   <>
-                    <div className="md:col-span-2">
-                      <TextInput
-                        form={form}
-                        name="businessName"
-                        label="Business Name"
-                        placeholder="Enter business name"
-                        required
-                      />
-                    </div>
+                    <TextInput
+                      form={form}
+                      name="businessName"
+                      label="Business Name"
+                      placeholder="Enter business name"
+                      required
+                    />
                     <div className="md:col-span-2">
                       <TextInput
                         form={form}
@@ -470,7 +471,7 @@ export default function EmploymentInfoPage() {
                       name="businessOwnerType"
                       label="Business Owner Type"
                       options={businessOwnerOptions}
-                      placeholder="Select business owner type"
+                      placeholder="Select owner type"
                       required
                     />
                     <SelectInput
@@ -501,74 +502,119 @@ export default function EmploymentInfoPage() {
                       name="tradeLicenseAge"
                       label="Trade License Age"
                       options={tradeLicenseExperienceOptions}
-                      placeholder="Select trade license age"
+                      placeholder="Select license age"
                       required
                     />
                   </>
                 )}
               </div>
-            </div>
+            </section>
 
-            <Separator className="my-6" />
+            <Separator />
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Property Details</h3>
-
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <SelectInput
-                  form={form}
-                  name="propertyType"
-                  label="Type of Property"
-                  options={propertyTypeOptions}
-                  placeholder="Select property type"
-                  required
-                />
-                <TextInput
-                  form={form}
-                  name="propertyValue"
-                  label="Approximate Value (in BDT)"
-                  placeholder="Enter property value"
-                  required
-                />
+            {/* Property Details Section */}
+            <section>
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-xl font-semibold">Property Details</h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddProperty}
+                  disabled={propertyFields.length >= 3}
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" /> Add Property
+                </Button>
               </div>
-            </div>
+              {propertyError && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{propertyError}</AlertDescription>
+                </Alert>
+              )}
+              {propertyFields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="relative mb-4 space-y-4 rounded-md border p-4"
+                >
+                  <Button // Always show remove button if there's at least one item
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeProperty(index)}
+                    className="absolute right-2 top-2"
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                  <h4 className="text-lg font-medium">Property {index + 1}</h4>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <SelectInput
+                      form={form}
+                      name={`properties.${index}.propertyType`}
+                      label="Type of Property"
+                      options={propertyTypeOptions}
+                      placeholder="Select property type"
+                      required
+                    />
+                    <TextInput
+                      form={form}
+                      name={`properties.${index}.propertyValue`}
+                      label="Approximate Value (in BDT)"
+                      placeholder="Enter property value"
+                      type="number"
+                      required
+                    />
+                  </div>
+                </div>
+              ))}
+              {propertyFields.length === 0 &&
+                isFormInitialized && ( // Only show "No properties" if form is initialized and array is empty
+                  <p className="text-sm text-muted-foreground">
+                    No properties added. Click "Add Property" to include
+                    details.
+                  </p>
+                )}
+            </section>
 
-            <Separator className="my-6" />
+            <Separator />
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Income Details</h3>
-
+            {/* Income Details Section */}
+            <section>
+              <h3 className="mb-4 text-xl font-semibold">Income Details</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <TextInput
                   form={form}
                   name="grossMonthlyIncome"
                   label="Gross Monthly Salary/Income"
                   placeholder="Enter gross monthly income"
+                  type="number"
                   required
                 />
                 <TextInput
                   form={form}
                   name="rentIncome"
-                  label="Rent Income"
-                  placeholder="Enter rent income (if any)"
+                  label="Rent Income (if any)"
+                  placeholder="Enter rent income"
+                  type="number"
                 />
                 <TextInput
                   form={form}
                   name="otherIncome"
-                  label="Other Income"
-                  placeholder="Enter other income (if any)"
+                  label="Other Income (if any)"
+                  placeholder="Enter other income"
+                  type="number"
                 />
                 <TextInput
                   form={form}
                   name="totalIncome"
                   label="Total Income"
                   placeholder="Enter total income"
+                  type="number"
                   required
                 />
               </div>
-            </div>
+            </section>
 
-            <CardFooter className="flex justify-between px-0">
+            <CardFooter className="mt-8 flex justify-between px-0">
               <Button
                 type="button"
                 variant="outline"

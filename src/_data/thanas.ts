@@ -1,4 +1,4 @@
-export const thana = [
+export const thanas = [
   {
     id: "1",
     district_id: "1",

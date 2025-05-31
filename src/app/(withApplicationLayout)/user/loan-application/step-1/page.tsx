@@ -1,7 +1,9 @@
 "use client";
 
+import { districts } from "@/_data/districts";
 import { DatePickerInput } from "@/components/form/FormInputs";
 import {
+  ComboBoxInput,
   SelectInput,
   TextInput,
 } from "@/components/loan-application/form-inputs";
@@ -36,21 +38,21 @@ export default function PersonalInfoPage() {
     resolver: zodResolver(personalInfoSchema) as any,
     defaultValues: {
       fullName: "",
-      fatherOrHusbandName: "",
+      fatherName: "",
       motherName: "",
       gender: "",
       dateOfBirth: undefined,
       placeOfBirth: "",
       nationality: "Bangladeshi",
-      educationalLevel: undefined,
-      identificationType: "",
-      identificationNumber: "",
+      educationalLevel: "",
+      NIDNumber: "",
+      passportNumber: "",
       maritalStatus: "",
       spouseName: "",
       residentialStatus: "",
       religion: "",
-      mobileNumber: "+880",
-      alternateMobileNumber: "+880",
+      mobileNumber: "",
+      alternateMobileNumber: "",
       emailAddress: "",
       socialMediaProfiles: [""],
     },
@@ -134,17 +136,11 @@ export default function PersonalInfoPage() {
 
   // Educational level options
   const educationOptions = [
-    { label: "High School", value: "HIGHSCHOOL" },
-    { label: "Bachelor's Degree", value: "BACHELOR" },
-    { label: "Master's Degree", value: "MASTER" },
-    { label: "PhD", value: "PHD" },
-    { label: "Other", value: "OTHER" },
-  ];
-
-  // Identification type options
-  const idTypeOptions = [
-    { label: "National ID", value: "NID" },
-    { label: "Passport", value: "PASSPORT" },
+    { label: "No Formal Education", value: "No_Formal_Education" },
+    { label: "Primary", value: "PRIMARY" },
+    { label: "Secondary", value: "SECONDARY" },
+    { label: "Graduation", value: "GRADUATION" },
+    { label: "Post-graduation", value: "POST_GRADUATION" },
   ];
 
   // Marital status options
@@ -202,7 +198,7 @@ export default function PersonalInfoPage() {
 
               <TextInput
                 form={form}
-                name="fatherOrHusbandName"
+                name="fatherName"
                 label="Father's/Husband's Name"
                 placeholder="Enter your father's name"
                 required
@@ -231,14 +227,24 @@ export default function PersonalInfoPage() {
                 required
               />
 
-              <TextInput
+              {/* <TextInput
                 form={form}
                 name="placeOfBirth"
                 label="Place of Birth"
                 placeholder="Enter your Place of Birth"
                 required
-              />
+              /> */}
 
+              <ComboBoxInput
+                form={form}
+                name="placeOfBirth"
+                label="Place of Birth"
+                options={districts.map((d) => ({ label: d.name, value: d.id }))}
+                placeholder="Select District"
+                searchPlaceholder="Search districts..."
+                notFoundText="No district found."
+                required
+              />
               <TextInput
                 form={form}
                 name="nationality"
@@ -255,20 +261,18 @@ export default function PersonalInfoPage() {
                 required
               />
 
-              <SelectInput
-                form={form}
-                name="identificationType"
-                label="Identification Type"
-                options={idTypeOptions}
-                required
-              />
-
               <TextInput
                 form={form}
-                name="identificationNumber"
-                label="Identification Number"
+                name="NIDNumber"
+                label="National Identification Number"
                 placeholder="Enter your Identification Number"
                 required
+              />
+              <TextInput
+                form={form}
+                name="passportINumber"
+                label="Passport Number"
+                placeholder="Enter your passport Number"
               />
 
               <SelectInput
@@ -309,6 +313,7 @@ export default function PersonalInfoPage() {
                 name="mobileNumber"
                 label="Mobile Number"
                 type="tel"
+                placeholder="Enter your mobile number"
                 required
               />
 
@@ -316,6 +321,7 @@ export default function PersonalInfoPage() {
                 form={form}
                 name="alternateMobileNumber"
                 label="Alternate Mobile Number"
+                placeholder="Enter your alternate mobile number"
                 type="tel"
               />
 

@@ -5,14 +5,14 @@ export const personalInfoSchema = z.object({
   fullName: z.string().min(2, {
     message: "Full name must be at least 2 characters.",
   }),
-  fatherOrHusbandName: z.string().min(2, {
-    message: "Father's/Husband's name must be at least 2 characters.",
+  fatherName: z.string().min(2, {
+    message: "Father's name must be at least 2 characters.",
   }),
   motherName: z.string().min(2, {
     message: "Mother's name must be at least 2 characters.",
   }),
-  gender: z.string({
-    required_error: "Please select your gender.",
+  gender: z.string().min(1, {
+    message: "Please select gender.",
   }),
 
   dateOfBirth: z.preprocess(
@@ -32,26 +32,30 @@ export const personalInfoSchema = z.object({
   nationality: z.string().min(2, {
     message: "Nationality must be at least 2 characters.",
   }),
-  educationalLevel: z.string().optional(),
-  identificationType: z.string({
-    required_error: "Please select your identification type.",
+  educationalLevel: z.string().min(1, {
+    message: "Please select your educational level.",
   }),
-  identificationNumber: z.string().min(2, {
-    message: "Identification number must be at least 2 characters.",
+
+  NIDNumber: z.string().min(10, {
+    message: "Enter your NID 10 digits or 13 digit identification number.",
   }),
-  maritalStatus: z.string({
-    required_error: "Please select your marital status.",
+  passportNumber: z.string().optional(),
+  maritalStatus: z.string().min(1, {
+    message: "Please select your marital status.",
   }),
   spouseName: z.string().default(""),
-  residentialStatus: z.string({
-    required_error: "Please select your residential status.",
+  residentialStatus: z.string().min(1, {
+    message: "Please select your residential status.",
   }),
-  religion: z.string({
-    required_error: "Please select your religion.",
+  religion: z.string().min(1, {
+    message: "Please select your religion.",
   }),
-  mobileNumber: z.string().min(5, {
-    message: "Mobile number must be at least 5 characters.",
-  }),
+  mobileNumber: z
+    .string()
+    .max(11, {
+      message: "Phone number not more than 11 digit.",
+    })
+    .regex(/^(\+880\s?|0)1[3-9]\d{2}-?\d{6}$/, "Invalid phone number."),
   alternateMobileNumber: z.string().optional(),
   emailAddress: z.string().email({
     message: "Please enter a valid email address.",
