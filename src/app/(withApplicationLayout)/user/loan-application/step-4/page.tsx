@@ -142,14 +142,14 @@ export default function LoanInfoPage() {
 
   useEffect(() => {
     if (!isStepEditable("loanInfo")) {
-      router.push("/loan-application/preview");
+      router.push("/user/loan-application/preview");
     }
   }, [isStepEditable, router]);
 
   function onSubmit(data: LoanInfoValues) {
     try {
       updateFormData("loanInfo", data);
-      router.push("/loan-application/step-5");
+      router.push("/user/loan-application/step-5");
     } catch (err) {
       console.error("Error submitting form:", err);
       setError("An error occurred while saving your data. Please try again.");
@@ -510,7 +510,7 @@ export default function LoanInfoPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push("/loan-application/step-3")}
+                onClick={() => router.push("/user/loan-application/step-3")}
               >
                 Back
               </Button>

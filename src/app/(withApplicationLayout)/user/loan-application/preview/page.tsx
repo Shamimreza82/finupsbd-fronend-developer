@@ -67,7 +67,9 @@ export default function PreviewPage() {
       if (result.success) {
         setIsFormSubmitted(true);
         setSubmittedData(formData as AppFormData);
-        router.push(`/loan-application/success?id=${result.applicationId}`);
+        router.push(
+          `/user/loan-application/success?id=${result.applicationId}`,
+        );
       } else {
         console.error("Error submitting application:", result.error);
         setError(
@@ -84,7 +86,7 @@ export default function PreviewPage() {
   };
 
   const navigateToStep = (step: string) => {
-    router.push(`/loan-application/${step}`);
+    router.push(`/user/loan-application/${step}`);
   };
 
   // --- Functions to render each section (personalInfo, residentialInfo, etc.) ---
@@ -978,7 +980,7 @@ export default function PreviewPage() {
         <CardFooter className="flex justify-end space-x-2">
           <Button
             variant="outline"
-            onClick={() => router.push("/loan-application/step-7")}
+            onClick={() => router.push("/user/loan-application/step-7")}
           >
             Back
           </Button>

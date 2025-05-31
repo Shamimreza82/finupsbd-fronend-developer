@@ -89,7 +89,7 @@ export default function Step7Page() {
   // Handle editability
   useEffect(() => {
     if (!isStepEditable("guarantorInfo")) {
-      router.push("/loan-application/preview");
+      router.push("/user/loan-application/preview");
     }
   }, [isStepEditable, router]);
 
@@ -122,7 +122,7 @@ export default function Step7Page() {
         : undefined,
     };
     updateFormData("guarantorInfo", cleanedData);
-    router.push("/loan-application/preview");
+    router.push("/user/loan-application/preview");
   }
 
   return (
@@ -330,7 +330,7 @@ export default function Step7Page() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push("/loan-application/step-6")}
+            onClick={() => router.push("/user/loan-application/step-6")}
           >
             Back
           </Button>

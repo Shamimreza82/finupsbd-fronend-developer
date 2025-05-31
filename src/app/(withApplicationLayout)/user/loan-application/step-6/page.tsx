@@ -66,9 +66,9 @@ export default function DocumentsPage() {
 
     // If form is already submitted, go back to success page
     if (isFormSubmitted) {
-      router.push("/loan-application/success");
+      router.push("/user/loan-application/success");
     } else {
-      router.push("/loan-application/preview");
+      router.push("/user/loan-application/preview");
     }
   }
 
@@ -335,7 +335,7 @@ export default function DocumentsPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.push("/loan-application/success")}
+                  onClick={() => router.push("/user/loan-application/success")}
                 >
                   Cancel
                 </Button>
@@ -343,7 +343,7 @@ export default function DocumentsPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.push("/loan-application/step-5")}
+                  onClick={() => router.push("/user/loan-application/step-5")}
                 >
                   Back
                 </Button>

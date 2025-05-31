@@ -246,13 +246,13 @@ export default function ResidentialInfoPage() {
 
   useEffect(() => {
     if (!isStepEditable("residentialInfo")) {
-      router.push("/loan-application/preview");
+      router.push("/user/loan-application/preview");
     }
   }, [isStepEditable, router]);
 
   function onSubmit(data: ResidentialInfoValues) {
     updateFormData("residentialInfo", data);
-    router.push("/loan-application/step-3");
+    router.push("/user/loan-application/step-3");
   }
 
   return (
@@ -428,7 +428,7 @@ export default function ResidentialInfoPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push("/loan-application/step-1")}
+                onClick={() => router.push("/user/loan-application/step-1")}
               >
                 Back
               </Button>
