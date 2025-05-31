@@ -49,18 +49,8 @@ const EligibilityPage = () => {
         const data = sessionStorage.getItem("eligibilityData");
         if (data) {
           const parsedData = JSON.parse(data);
-          // Await the fetch response and parse it
           const result = await eligibilityCheckData(parsedData, queryData)
-           setSubmissionData(result?.data);
-          // if (result?.status === 200) {
-          //   setSubmissionData(result?.data);
-          //   toast.success("Eligibility check completed successfully.");
-          // } else {
-          //   toast.error("Eligibility check failed. Please try again.");
-          // }
-
-
-          // sessionStorage.removeItem("eligibilityData");
+          setSubmissionData(result?.data);
         }
       } catch (error) {
         console.error("Error parsing eligibility data:", error);

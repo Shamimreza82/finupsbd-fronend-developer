@@ -31,6 +31,11 @@ export type FormData = {
   };
 };
 
+
+
+
+
+
 // Define the form context type
 interface FormContextType {
   formData: FormData;
@@ -71,6 +76,8 @@ const initialFormData: FormData = {
 
 // Form provider component
 export function FormProvider({ children }: { children: React.ReactNode }) {
+
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<FormData | null>(null);
@@ -78,7 +85,8 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
   // Load form data from localStorage on initial render
   useEffect(() => {
     const savedData = localStorage.getItem("loanApplicationForm"); // Updated key
-    if (savedData) {
+    const LoanRequest = localStorage.getItem("loanRequest")
+    if (savedData && LoanRequest) {
       try {
         const parsedData = JSON.parse(savedData);
         setFormData(parsedData);

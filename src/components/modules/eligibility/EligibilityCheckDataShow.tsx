@@ -116,7 +116,19 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
 
   const handelApplication = (data: EligibilityData) => {
     console.log(data);
-    router.push(`/user/loan-application?applicationId=${data}`);
+    const loanRequest = {
+      id: data?.id,
+      bankName: data?.bankName,
+      bankImage: data?.coverImage,
+      loanType: data?.loanType,
+      eligibleLoan: data?.eligibleLoan,
+      periodMonths: data?.periodMonths,
+      amount: data?.amount,
+      interestRate: data?.interestRate,
+      processingFee: data?.processingFee
+    }
+    localStorage.setItem("loanRequest", JSON.stringify(loanRequest))
+    router.push(`/user/loan-application`);
   };
 
 
@@ -154,7 +166,7 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
                   Loan Amount
                 </h3>
                 <div className="text-tertiary-primay flex justify-between text-sm font-semibold">
-                  <p>BDT 5,00,000</p> 
+                  <p>BDT 5,00,000</p>
                 </div>
                 <Slider
                   value={[amount]}

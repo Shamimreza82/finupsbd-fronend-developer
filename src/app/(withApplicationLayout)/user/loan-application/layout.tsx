@@ -1,3 +1,5 @@
+'use client'
+
 import { FormProgress } from "@/components/loan-application/form-progress";
 import { SidebarNav } from "@/components/loan-application/sidebar-nav";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +15,7 @@ import {
   User,
 } from "lucide-react"; // Added ShieldCheck
 import type React from "react";
+import { useEffect, useState } from "react";
 
 const sidebarNavItems = [
   {
@@ -65,6 +68,19 @@ const sidebarNavItems = [
   },
 ];
 
+export interface LoanRequest {
+  id: string
+  bankName: string
+  bankImage: string
+  loanType: string
+  amount: string
+  eligibleLoan: string
+  interestRate: string
+  periodMonths: number
+  processingFee: string
+}
+
+
 interface LoanApplicationLayoutProps {
   children: React.ReactNode;
 }
@@ -72,13 +88,27 @@ interface LoanApplicationLayoutProps {
 export default function LoanApplicationLayout({
   children,
 }: LoanApplicationLayoutProps) {
+  const [loanRequest, setLoanRequest] = useState<LoanRequest>()
+
+  console.log(loanRequest)
+
+  useEffect(() => {
+    const LoanRequet = () => {
+      const result = localStorage.getItem("loanRequest")
+      if (result) {
+        setLoanRequest(JSON.parse(result))
+      } 
+    }
+    LoanRequet()
+  }, [])
+
   return (
     <FormProvider>
       <div className="container text-tertiary-primary">
         <div className="space-y-6 py-10 pb-16">
           <div className="space-y-4">
             <h2 className="text-2xl font-bold tracking-tight">
-              Personal Loan Application
+              {loanRequest?.bankName}
             </h2>
             <p className="text-tertiary-primary">
               Please fill out the following details carefully. Required
