@@ -1,17 +1,11 @@
 "use client";
 
-import type {
-  CreditCardValues,
-  ExistingLoanValues,
-} from "@/app/(withApplicationLayout)/user/loan-application/schemas/loan-info-schema";
-import {
-  loanInfoSchema,
-  type LoanInfoValues,
-} from "@/app/(withApplicationLayout)/user/loan-application/schemas/loan-info-schema";
 import { CheckboxInput } from "@/components/loan-application/checkbox-input";
 import {
+  ComboBoxInput,
   SelectInput,
   TextInput,
+  type SelectOption,
 } from "@/components/loan-application/form-inputs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -23,145 +17,148 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { useFormContext } from "@/context/loan-application-form-context";
-import { cn } from "@/lib/utils";
+import { useFormContext as useAppFormContext } from "@/context/loan-application-form-context"; // Renamed to avoid conflict
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Check, ChevronsUpDown, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
+import {
+  loanInfoSchema,
+  type LoanInfoValues,
+} from "../schemas/loan-info-schema";
 
-export default function DocumentsPage() {
+export default function LoanInfoPage() {
   const router = useRouter();
-  const { formData, updateFormData, isFormSubmitted, isStepEditable } =
-    useFormContext();
-  const [hasExistingLoan, setHasExistingLoan] = useState(false);
-  const [hasCreditCard, setHasCreditCard] = useState(false);
-  const [existingLoans, setExistingLoans] = useState<ExistingLoanValues[]>([
-    {
-      loanType: "",
-      otherLoanType: "",
-      lenderName: "",
-      disbursedAmount: "",
-      outstanding: "",
-      emi: "",
-      adjustmentPlan: "",
-    },
-  ]);
-  const [creditCards, setCreditCards] = useState<CreditCardValues[]>([
-    {
-      issuerName: "",
-      cardLimit: "",
-      toBeClosedBeforeDisbursement: false,
-    },
-  ]);
+  const { formData, updateFormData, isStepEditable } = useAppFormContext();
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize form with react-hook-form
   const form = useForm<LoanInfoValues>({
-    resolver: zodResolver(loanInfoSchema) as any,
+    resolver: zodResolver(loanInfoSchema),
     defaultValues: {
       hasExistingLoan: false,
-      existingLoans: [],
+      existingLoans: [
+        {
+          loanType: "",
+          otherLoanType: "",
+          lenderName: "",
+          disbursedAmount: "",
+          outstanding: "",
+          emi: "",
+          adjustmentPlan: "",
+        },
+      ],
       hasCreditCard: false,
-      creditCards: [],
-      bankName: "",
-      accountNumber: "",
+      creditCards: [
+        { issuerName: "", cardLimit: "", toBeClosedBeforeDisbursement: false },
+      ],
+      bankAccounts: [{ bankName: "", accountNumber: "" }],
     },
   });
 
-  // Watch for toggle changes
+  const {
+    fields: existingLoanFields,
+    append: appendExistingLoan,
+    remove: removeExistingLoan,
+  } = useFieldArray({
+    control: form.control,
+    name: "existingLoans",
+  });
+
+  const {
+    fields: creditCardFields,
+    append: appendCreditCard,
+    remove: removeCreditCard,
+  } = useFieldArray({
+    control: form.control,
+    name: "creditCards",
+  });
+
+  const {
+    fields: bankAccountFields,
+    append: appendBankAccount,
+    remove: removeBankAccount,
+  } = useFieldArray({
+    control: form.control,
+    name: "bankAccounts",
+  });
+
   const watchHasExistingLoan = form.watch("hasExistingLoan");
   const watchHasCreditCard = form.watch("hasCreditCard");
 
-  // Update state when watched values change
   useEffect(() => {
-    setHasExistingLoan(watchHasExistingLoan);
     if (!watchHasExistingLoan) {
       form.setValue("existingLoans", []);
-    } else if (form.getValues("existingLoans")?.length === 0) {
-      form.setValue("existingLoans", [...existingLoans]);
+    } else if (
+      watchHasExistingLoan &&
+      form.getValues("existingLoans")?.length === 0
+    ) {
+      appendExistingLoan(
+        {
+          loanType: "",
+          otherLoanType: "",
+          lenderName: "",
+          disbursedAmount: "",
+          outstanding: "",
+          emi: "",
+          adjustmentPlan: "",
+        },
+        { shouldFocus: false },
+      );
     }
-  }, [watchHasExistingLoan, form, existingLoans]);
+  }, [watchHasExistingLoan, form, appendExistingLoan]);
 
   useEffect(() => {
-    setHasCreditCard(watchHasCreditCard);
     if (!watchHasCreditCard) {
       form.setValue("creditCards", []);
-    } else if (form.getValues("creditCards")?.length === 0) {
-      form.setValue("creditCards", [...creditCards]);
+    } else if (
+      watchHasCreditCard &&
+      form.getValues("creditCards")?.length === 0
+    ) {
+      appendCreditCard(
+        { issuerName: "", cardLimit: "", toBeClosedBeforeDisbursement: false },
+        { shouldFocus: false },
+      );
     }
-  }, [watchHasCreditCard, form, creditCards]);
+  }, [watchHasCreditCard, form, appendCreditCard]);
 
-  // Load saved data if available
   useEffect(() => {
     if (formData.loanInfo) {
       form.reset(formData.loanInfo);
-      setHasExistingLoan(formData.loanInfo.hasExistingLoan);
-      setHasCreditCard(formData.loanInfo.hasCreditCard);
-
-      if (
-        formData.loanInfo.existingLoans &&
-        formData.loanInfo.existingLoans.length > 0
-      ) {
-        setExistingLoans(formData.loanInfo.existingLoans);
-      }
-
-      if (
-        formData.loanInfo.creditCards &&
-        formData.loanInfo.creditCards.length > 0
-      ) {
-        setCreditCards(formData.loanInfo.creditCards);
+    } else {
+      // Ensure at least one bank account field is present on initial load if no saved data
+      if (bankAccountFields.length === 0) {
+        appendBankAccount(
+          { bankName: "", accountNumber: "" },
+          { shouldFocus: false },
+        );
       }
     }
-  }, [formData.loanInfo, form]);
+  }, [formData.loanInfo, form, appendBankAccount, bankAccountFields.length]);
 
-  // Redirect if step is not editable
   useEffect(() => {
     if (!isStepEditable("loanInfo")) {
-      router.push("/user/loan-application/preview");
+      router.push("/loan-application/preview");
     }
   }, [isStepEditable, router]);
 
-  // Handle form submission
   function onSubmit(data: LoanInfoValues) {
     try {
       updateFormData("loanInfo", data);
-      router.push("/user/loan-application/step-5");
-    } catch (error) {
-      console.error("Error submitting form:", error);
+      router.push("/loan-application/step-5");
+    } catch (err) {
+      console.error("Error submitting form:", err);
       setError("An error occurred while saving your data. Please try again.");
     }
   }
 
-  // Add a new existing loan
-  const addExistingLoan = () => {
-    if (existingLoans.length < 3) {
-      const newLoan: ExistingLoanValues = {
+  const handleAddExistingLoan = () => {
+    if (existingLoanFields.length < 3) {
+      appendExistingLoan({
         loanType: "",
         otherLoanType: "",
         lenderName: "",
@@ -169,53 +166,36 @@ export default function DocumentsPage() {
         outstanding: "",
         emi: "",
         adjustmentPlan: "",
-      };
-      const updatedLoans = [...existingLoans, newLoan];
-      setExistingLoans(updatedLoans);
-      form.setValue("existingLoans", updatedLoans);
+      });
+      setError(null);
     } else {
       setError("You can add a maximum of 3 existing loans.");
     }
   };
 
-  // Remove an existing loan
-  const removeExistingLoan = (index: number) => {
-    if (existingLoans.length > 1) {
-      const updatedLoans = [...existingLoans];
-      updatedLoans.splice(index, 1);
-      setExistingLoans(updatedLoans);
-      form.setValue("existingLoans", updatedLoans);
-    }
-  };
-
-  // Add a new credit card
-  const addCreditCard = () => {
-    if (creditCards.length < 5) {
-      const newCard: CreditCardValues = {
+  const handleAddCreditCard = () => {
+    if (creditCardFields.length < 5) {
+      appendCreditCard({
         issuerName: "",
         cardLimit: "",
         toBeClosedBeforeDisbursement: false,
-      };
-      const updatedCards = [...creditCards, newCard];
-      setCreditCards(updatedCards);
-      form.setValue("creditCards", updatedCards);
+      });
+      setError(null);
     } else {
       setError("You can add a maximum of 5 credit cards.");
     }
   };
 
-  // Remove a credit card
-  const removeCreditCard = (index: number) => {
-    if (creditCards.length > 1) {
-      const updatedCards = [...creditCards];
-      updatedCards.splice(index, 1);
-      setCreditCards(updatedCards);
-      form.setValue("creditCards", updatedCards);
+  const handleAddBankAccount = () => {
+    if (bankAccountFields.length < 3) {
+      appendBankAccount({ bankName: "", accountNumber: "" });
+      setError(null);
+    } else {
+      setError("You can add a maximum of 3 bank accounts.");
     }
   };
 
-  // Loan type options
-  const loanTypes = [
+  const loanTypes: SelectOption[] = [
     { label: "Personal Loan", value: "PERSONAL_LOAN" },
     { label: "Home Loan", value: "HOME_LOAN" },
     { label: "Car Loan", value: "CAR_LOAN" },
@@ -223,8 +203,7 @@ export default function DocumentsPage() {
     { label: "Other Loan", value: "OTHER_LOAN" },
   ];
 
-  // Bank list options
-  const bankLists = [
+  const bankLists: SelectOption[] = [
     { label: "Bank One", value: "bank_one" },
     { label: "Bank Two", value: "bank_two" },
     { label: "Bank Three", value: "bank_three" },
@@ -237,17 +216,18 @@ export default function DocumentsPage() {
     { label: "Bank Ten", value: "bank_ten" },
   ];
 
-  // Adjustment plan options
-  const adjustmentPlans = [
+  const adjustmentPlans: SelectOption[] = [
     { label: "Take Over", value: "take_over" },
     { label: "Own Source", value: "own_source" },
     { label: "Costing", value: "costing" },
   ];
 
   return (
-    <Card>
+    <Card className="border-[#E9EFF6] text-tertiary-primary">
       <CardHeader>
-        <CardTitle>Existing Financial Obligations</CardTitle>
+        <CardTitle className="text-xl">
+          Existing Financial Obligations
+        </CardTitle>
         <CardDescription>
           Provide details about your loan requirements and existing financial
           obligations.
@@ -273,26 +253,27 @@ export default function DocumentsPage() {
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="hasExistingLoan"
-                    checked={hasExistingLoan}
+                    checked={watchHasExistingLoan}
                     onCheckedChange={(checked) => {
                       form.setValue("hasExistingLoan", checked);
                       setError(null);
                     }}
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-tertiary-primary/70"
                   />
                   <Label htmlFor="hasExistingLoan">I have existing loans</Label>
                 </div>
               </div>
 
-              {hasExistingLoan && (
+              {watchHasExistingLoan && (
                 <div className="space-y-6">
-                  {existingLoans.map((loan, index) => (
+                  {existingLoanFields.map((loan, index) => (
                     <div
-                      key={index}
+                      key={loan.id}
                       className="space-y-4 rounded-md border p-4"
                     >
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">Loan {index + 1}</h4>
-                        {existingLoans.length > 1 && (
+                        {existingLoanFields.length > 1 && (
                           <Button
                             type="button"
                             variant="ghost"
@@ -303,7 +284,6 @@ export default function DocumentsPage() {
                           </Button>
                         )}
                       </div>
-
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <SelectInput
                           form={form}
@@ -312,7 +292,6 @@ export default function DocumentsPage() {
                           options={loanTypes}
                           required
                         />
-
                         {form.watch(`existingLoans.${index}.loanType`) ===
                           "OTHER_LOAN" && (
                           <TextInput
@@ -323,7 +302,6 @@ export default function DocumentsPage() {
                             required
                           />
                         )}
-
                         <SelectInput
                           form={form}
                           name={`existingLoans.${index}.lenderName`}
@@ -331,31 +309,30 @@ export default function DocumentsPage() {
                           options={bankLists}
                           required
                         />
-
                         <TextInput
                           form={form}
                           name={`existingLoans.${index}.disbursedAmount`}
                           label="Disbursed Amount"
                           placeholder="Enter amount"
+                          type="number"
                           required
                         />
-
                         <TextInput
                           form={form}
                           name={`existingLoans.${index}.outstanding`}
                           label="Outstanding"
                           placeholder="Enter outstanding amount"
+                          type="number"
                           required
                         />
-
                         <TextInput
                           form={form}
                           name={`existingLoans.${index}.emi`}
                           label="EMI"
                           placeholder="Enter EMI amount"
+                          type="number"
                           required
                         />
-
                         <SelectInput
                           form={form}
                           name={`existingLoans.${index}.adjustmentPlan`}
@@ -366,13 +343,12 @@ export default function DocumentsPage() {
                       </div>
                     </div>
                   ))}
-
-                  {existingLoans.length < 3 && (
+                  {existingLoanFields.length < 3 && (
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={addExistingLoan}
+                      onClick={handleAddExistingLoan}
                       className="mt-2"
                     >
                       <Plus className="mr-2 h-4 w-4" /> Add Another Loan
@@ -382,7 +358,7 @@ export default function DocumentsPage() {
               )}
             </div>
 
-            <Separator className="my-6" />
+            <Separator className="my-6 bg-[#D0D5DD]" />
 
             {/* Credit Card Section */}
             <div className="space-y-4">
@@ -391,26 +367,27 @@ export default function DocumentsPage() {
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="hasCreditCard"
-                    checked={hasCreditCard}
+                    checked={watchHasCreditCard}
                     onCheckedChange={(checked) => {
                       form.setValue("hasCreditCard", checked);
                       setError(null);
                     }}
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-tertiary-primary/70"
                   />
                   <Label htmlFor="hasCreditCard">I have credit cards</Label>
                 </div>
               </div>
 
-              {hasCreditCard && (
+              {watchHasCreditCard && (
                 <div className="space-y-6">
-                  {creditCards.map((card, index) => (
+                  {creditCardFields.map((card, index) => (
                     <div
-                      key={index}
+                      key={card.id}
                       className="space-y-4 rounded-md border p-4"
                     >
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">Card {index + 1}</h4>
-                        {creditCards.length > 1 && (
+                        {creditCardFields.length > 1 && (
                           <Button
                             type="button"
                             variant="ghost"
@@ -421,7 +398,6 @@ export default function DocumentsPage() {
                           </Button>
                         )}
                       </div>
-
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <SelectInput
                           form={form}
@@ -430,15 +406,14 @@ export default function DocumentsPage() {
                           options={bankLists}
                           required
                         />
-
                         <TextInput
                           form={form}
                           name={`creditCards.${index}.cardLimit`}
                           label="Card Limit"
                           placeholder="Enter card limit"
+                          type="number"
                           required
                         />
-
                         <div className="md:col-span-2">
                           <CheckboxInput
                             form={form}
@@ -449,13 +424,12 @@ export default function DocumentsPage() {
                       </div>
                     </div>
                   ))}
-
-                  {creditCards.length < 5 && (
+                  {creditCardFields.length < 5 && (
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={addCreditCard}
+                      onClick={handleAddCreditCard}
                       className="mt-2"
                     >
                       <Plus className="mr-2 h-4 w-4" /> Add Another Card
@@ -465,100 +439,78 @@ export default function DocumentsPage() {
               )}
             </div>
 
-            <Separator className="my-6" />
+            <Separator className="my-6 bg-[#D0D5DD]" />
 
             {/* Bank Account Details Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Bank Account Details</h3>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="bankName"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>
-                        Bank Name <span className="text-destructive">*</span>
-                      </FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className={cn(
-                                "h-10 w-full justify-between border-[#D0D5DD] bg-white max-sm:h-11",
-                                !field.value && "text-muted-foreground",
-                              )}
-                            >
-                              {field.value
-                                ? bankLists.find(
-                                    (bank) => bank.value === field.value,
-                                  )?.label
-                                : "Select bank"}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0">
-                          <Command>
-                            <CommandInput placeholder="Search bank..." />
-                            <CommandList>
-                              <CommandEmpty>No bank found.</CommandEmpty>
-                              <CommandGroup>
-                                {bankLists.map((bank) => (
-                                  <CommandItem
-                                    key={bank.value}
-                                    value={bank.value}
-                                    onSelect={() => {
-                                      form.setValue("bankName", bank.value, {
-                                        shouldValidate: true,
-                                      });
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        field.value === bank.value
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                    {bank.label}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <TextInput
-                  form={form}
-                  name="accountNumber"
-                  label="Account Number"
-                  placeholder="Enter account number"
-                  type="number"
-                  required
-                  onChange={(e) => {
-                    // Allow only numeric input
-                    const value = e.target.value.replace(/\D/g, "");
-                    form.setValue("accountNumber", value, {
-                      shouldValidate: true,
-                    });
-                  }}
-                />
-              </div>
+              {bankAccountFields.map((account, index) => (
+                <div
+                  key={account.id}
+                  className="space-y-4 rounded-md border border-[#D0D5DD] p-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Account {index + 1}</h4>
+                    {bankAccountFields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeBankAccount(index)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Remove Account
+                      </Button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <ComboBoxInput
+                      form={form}
+                      name={`bankAccounts.${index}.bankName`}
+                      label="Bank Name"
+                      options={bankLists}
+                      placeholder="Select bank"
+                      searchPlaceholder="Search bank..."
+                      notFoundText="No bank found."
+                      required
+                    />
+                    <TextInput
+                      form={form}
+                      name={`bankAccounts.${index}.accountNumber`}
+                      label="Account Number"
+                      placeholder="Enter account number"
+                      type="text" // Changed to text to allow leading zeros if any, validation is regex based
+                      required
+                      inputMode="numeric" // Helps mobile users get numeric keyboard
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "");
+                        form.setValue(
+                          `bankAccounts.${index}.accountNumber`,
+                          value,
+                          { shouldValidate: true },
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+              {bankAccountFields.length < 3 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddBankAccount}
+                  className="mt-2"
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add More Account
+                </Button>
+              )}
             </div>
 
-            <CardFooter className="flex justify-between px-0">
+            <CardFooter className="mt-8 flex justify-between px-0">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push("/user/loan-application/step-3")}
+                onClick={() => router.push("/loan-application/step-3")}
               >
                 Back
               </Button>

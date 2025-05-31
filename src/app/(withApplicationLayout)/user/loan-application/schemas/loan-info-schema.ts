@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 // Schema for existing loan
 const existingLoanSchema = z.object({
@@ -21,7 +21,7 @@ const existingLoanSchema = z.object({
   adjustmentPlan: z.string({
     required_error: "Adjustment plan is required.",
   }),
-})
+});
 
 // Schema for credit card
 const creditCardSchema = z.object({
@@ -32,7 +32,25 @@ const creditCardSchema = z.object({
     message: "Card limit is required.",
   }),
   toBeClosedBeforeDisbursement: z.boolean().default(false),
-})
+});
+
+// Schema for bank account
+const bankAccountSchema = z.object({
+  bankName: z.string().min(1, {
+    message: "Bank name is required.",
+  }),
+  accountNumber: z
+    .string()
+    .min(5, {
+      message: "Account number must be at least 5 digits.",
+    })
+    .max(20, {
+      message: "Account number cannot exceed 20 digits.",
+    })
+    .regex(/^\d+$/, {
+      message: "Account number must contain only digits.",
+    }),
+});
 
 // Main loan info schema
 export const loanInfoSchema = z
@@ -51,23 +69,21 @@ export const loanInfoSchema = z
         message: "You can add a maximum of 5 credit cards.",
       })
       .optional(),
-    bankName: z.string().min(2, {
-      message: "Bank name is required.",
-    }),
-    accountNumber: z.string().min(5, {
-      message: "Account number is required.",
-    }),
+    bankAccounts: z
+      .array(bankAccountSchema)
+      .min(1, { message: "Please add at least one bank account." })
+      .max(3, { message: "You can add a maximum of 3 bank accounts." }),
   })
   .refine(
     (data) => {
       // If hasExistingLoan is true, existingLoans must be provided and not empty
       if (data.hasExistingLoan) {
-        return data.existingLoans && data.existingLoans.length > 0
+        return data.existingLoans && data.existingLoans.length > 0;
       }
-      return true
+      return true;
     },
     {
-      message: "Please add at least one existing loan",
+      message: "Please add at least one existing loan.",
       path: ["existingLoans"],
     },
   )
@@ -75,12 +91,12 @@ export const loanInfoSchema = z
     (data) => {
       // If hasCreditCard is true, creditCards must be provided and not empty
       if (data.hasCreditCard) {
-        return data.creditCards && data.creditCards.length > 0
+        return data.creditCards && data.creditCards.length > 0;
       }
-      return true
+      return true;
     },
     {
-      message: "Please add at least one credit card",
+      message: "Please add at least one credit card.",
       path: ["creditCards"],
     },
   )
@@ -91,17 +107,20 @@ export const loanInfoSchema = z
         return data.existingLoans.every(
           (loan) =>
             loan.loanType !== "OTHER_LOAN" ||
-            (loan.loanType === "OTHER_LOAN" && loan.otherLoanType && loan.otherLoanType.trim() !== ""),
-        )
+            (loan.loanType === "OTHER_LOAN" &&
+              loan.otherLoanType &&
+              loan.otherLoanType.trim() !== ""),
+        );
       }
-      return true
+      return true;
     },
     {
-      message: "Please specify the other loan type",
-      path: ["existingLoans"],
+      message: "Please specify the other loan type.",
+      path: ["existingLoans"], // Path to the specific loan causing the error
     },
-  )
+  );
 
-export type LoanInfoValues = z.infer<typeof loanInfoSchema>
-export type ExistingLoanValues = z.infer<typeof existingLoanSchema>
-export type CreditCardValues = z.infer<typeof creditCardSchema>
+export type LoanInfoValues = z.infer<typeof loanInfoSchema>;
+export type ExistingLoanValues = z.infer<typeof existingLoanSchema>;
+export type CreditCardValues = z.infer<typeof creditCardSchema>;
+export type BankAccountValues = z.infer<typeof bankAccountSchema>;

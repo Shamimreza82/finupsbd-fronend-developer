@@ -570,17 +570,29 @@ export default function PreviewPage() {
         <Separator />
         <div>
           <h4 className="text-md mb-1 font-medium">Bank Account Details</h4>
-          {/* ... content based on previous implementation ... */}
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <p className="text-sm font-medium">Bank Name</p>
-              <p className="text-sm">{info.bankName}</p>
+          {info.bankAccounts && info.bankAccounts.length > 0 ? (
+            <div className="space-y-4">
+              {info.bankAccounts.map((account, index) => (
+                <div key={index} className="rounded-md border p-3">
+                  <h5 className="mb-2 text-sm font-medium">
+                    Bank Account {index + 1}
+                  </h5>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <p className="text-sm font-medium">Bank Name</p>
+                      <p className="text-sm">{account.bankName}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Account Number</p>
+                      <p className="text-sm">{account.accountNumber}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div>
-              <p className="text-sm font-medium">Account Number</p>
-              <p className="text-sm">{info.accountNumber}</p>
-            </div>
-          </div>
+          ) : (
+            <p className="text-sm">No bank accounts provided.</p>
+          )}
         </div>
       </div>
     );

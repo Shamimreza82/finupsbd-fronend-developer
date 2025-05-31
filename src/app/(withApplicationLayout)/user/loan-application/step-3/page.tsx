@@ -216,9 +216,11 @@ export default function EmploymentInfoPage() {
   ];
 
   return (
-    <Card>
+    <Card className="border-[#E9EFF6] text-tertiary-primary">
       <CardHeader>
-        <CardTitle>Employment & Financial Information</CardTitle>
+        <CardTitle className="text-xl">
+          Employment & Financial Information
+        </CardTitle>
         <CardDescription>
           Provide details about your employment and financial status.
         </CardDescription>
