@@ -72,6 +72,7 @@ export default function EmploymentInfoPage() {
       grossMonthlyIncome: "",
       rentIncome: "",
       otherIncome: "",
+      sourceOfOtherIncome: "",
       totalIncome: "",
     },
   });
@@ -564,37 +565,51 @@ export default function EmploymentInfoPage() {
             {/* Income Details Section */}
             <section>
               <h3 className="mb-4 text-xl font-semibold">Income Details</h3>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <TextInput
-                  form={form}
-                  name="grossMonthlyIncome"
-                  label="Gross Monthly Salary/Income"
-                  placeholder="Enter gross monthly income"
-                  type="number"
-                  required
-                />
-                <TextInput
-                  form={form}
-                  name="rentIncome"
-                  label="Rent Income (if any)"
-                  placeholder="Enter rent income"
-                  type="number"
-                />
-                <TextInput
-                  form={form}
-                  name="otherIncome"
-                  label="Other Income (if any)"
-                  placeholder="Enter other income"
-                  type="number"
-                />
-                <TextInput
-                  form={form}
-                  name="totalIncome"
-                  label="Total Income"
-                  placeholder="Enter total income"
-                  type="number"
-                  required
-                />
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <TextInput
+                    form={form}
+                    name="grossMonthlyIncome"
+                    label="Gross Monthly Salary/Income"
+                    placeholder="Enter gross monthly income"
+                    type="number"
+                    required
+                  />
+                  <TextInput
+                    form={form}
+                    name="rentIncome"
+                    label="Rent Income (if any)"
+                    placeholder="Enter rent income"
+                    type="number"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <TextInput
+                    form={form}
+                    name="otherIncome"
+                    label="Other Income (if any)"
+                    placeholder="Enter other income"
+                    type="number"
+                  />
+                  <TextInput
+                    form={form}
+                    name="sourceOfOtherIncome"
+                    label="Source of Other Income"
+                    placeholder="e.g., FDR, DPS, Sanchaypatra, Shares/Stocks"
+                    type="text"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <TextInput
+                    form={form}
+                    name="totalIncome"
+                    label="Total Income"
+                    placeholder="Enter total income"
+                    type="number"
+                    required
+                  />
+                </div>
               </div>
             </section>
 

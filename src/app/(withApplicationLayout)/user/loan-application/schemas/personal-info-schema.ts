@@ -62,13 +62,9 @@ export const personalInfoSchema = z
     alternateMobileNumber: z
       .string()
       .optional()
-      .refine(
-        (val) =>
-          !val || /^(\+880\s?|0)1[3-9]\d{2}-?\d{6}$/.test(val),
-        {
-          message: "Invalid phone number.",
-        }
-      ),
+      .refine((val) => !val || /^(\+880\s?|0)1[3-9]\d{2}-?\d{6}$/.test(val), {
+        message: "Invalid phone number.",
+      }),
     emailAddress: z.string().email({
       message: "Please enter a valid email address.",
     }),
@@ -87,8 +83,6 @@ export const personalInfoSchema = z
         path: ["spouseName"],
       });
     }
-    // If not married, spouseName can be empty or undefined, which is handled by .optional()
-    // If married and spouseName is provided, it should meet other string criteria if any (e.g. min length already handled)
   });
 
 export type PersonalInfoValues = z.infer<typeof personalInfoSchema>;

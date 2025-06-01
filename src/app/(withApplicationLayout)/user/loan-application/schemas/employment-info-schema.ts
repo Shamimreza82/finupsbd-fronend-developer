@@ -120,24 +120,40 @@ const otherEmploymentSchema = baseEmploymentSchema.extend({
 });
 
 // Income details schema
-const incomeDetailsSchema = z.object({
-  grossMonthlyIncome: z
-    .string()
-    .min(1, { message: "Gross monthly income is required." })
-    .regex(/^\d+$/, "Must be a number"),
-  rentIncome: z
-    .string()
-    .regex(/^\d*$/, "Must be a number if provided")
-    .optional(),
-  otherIncome: z
-    .string()
-    .regex(/^\d*$/, "Must be a number if provided")
-    .optional(),
-  totalIncome: z
-    .string()
-    .min(1, { message: "Total income is required." })
-    .regex(/^\d+$/, "Must be a number"),
-});
+const incomeDetailsSchema = z
+  .object({
+    grossMonthlyIncome: z
+      .string()
+      .min(1, { message: "Gross monthly income is required." })
+      .regex(/^\d+$/, "Must be a number"),
+    rentIncome: z
+      .string()
+      .regex(/^\d*$/, "Must be a number if provided")
+      .optional(),
+    otherIncome: z
+      .string()
+      .regex(/^\d*$/, "Must be a number if provided")
+      .optional(),
+    sourceOfOtherIncome: z
+      .string()
+      .regex(/^\d*$/, "Must be a number if provided")
+      .optional(),
+
+    totalIncome: z
+      .string()
+      .min(1, { message: "Total income is required." })
+      .regex(/^\d+$/, "Must be a number"),
+  })
+  // Conditional validation for spouseName based on maritalStatus
+  .superRefine((data, ctx) => {
+    if (data.otherIncome !== "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Specify the source of your other income.",
+        path: ["sourceOfOtherIncome"],
+      });
+    }
+  });
 
 // Combined schema with discriminated union for employment status
 const employmentInfoBaseSchema = z
