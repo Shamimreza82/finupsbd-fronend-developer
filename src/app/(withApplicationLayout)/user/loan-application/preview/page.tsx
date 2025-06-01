@@ -316,7 +316,11 @@ export default function PreviewPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">Date of Joining</p>
-                  <p className="text-sm">{info.dateOfJoining}</p>
+                  <p className="text-sm">
+                    {info.dateOfJoining instanceof Date
+                      ? info.dateOfJoining.toLocaleDateString()
+                      : info.dateOfJoining}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Organization Name</p>

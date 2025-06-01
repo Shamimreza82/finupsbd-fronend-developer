@@ -1,8 +1,7 @@
 "use client";
 
-import { CheckboxInput } from "@/components/loan-application/checkbox-input";
-
 import { DatePickerInput } from "@/components/form/FormInputs";
+import { CheckboxInput } from "@/components/loan-application/checkbox-input";
 import {
   SelectInput,
   TextInput,
@@ -33,9 +32,7 @@ import {
 export default function EmploymentInfoPage() {
   const router = useRouter();
   const { formData, updateFormData, isStepEditable } = useAppFormContext();
-  const [employmentStatus, setEmploymentStatus] = useState<string | undefined>(
-    undefined,
-  );
+  // Removed employmentStatus state
   const [hasPreviousOrganization, setHasPreviousOrganization] = useState(false);
   const [propertyError, setPropertyError] = useState<string | null>(null);
   const [isFormInitialized, setIsFormInitialized] = useState(false);
@@ -50,7 +47,7 @@ export default function EmploymentInfoPage() {
       department: "",
       employeeId: "",
       employmentType: undefined,
-      dateOfJoining: "",
+      dateOfJoining: undefined,
       organizationName: "",
       organizationAddress: "",
       serviceYears: "",
@@ -71,7 +68,7 @@ export default function EmploymentInfoPage() {
       sharePortion: "",
       businessRegistrationNumber: "",
       tradeLicenseAge: "",
-      properties: [], // Start with empty array, will be populated by useEffect if needed
+      properties: [],
       grossMonthlyIncome: "",
       rentIncome: "",
       otherIncome: "",
@@ -83,7 +80,7 @@ export default function EmploymentInfoPage() {
     fields: propertyFields,
     append: appendProperty,
     remove: removeProperty,
-    replace: replaceProperties, // Import replace from useFieldArray
+    replace: replaceProperties,
   } = useFieldArray({
     control: form.control,
     name: "properties",
@@ -92,17 +89,14 @@ export default function EmploymentInfoPage() {
   const watchEmploymentStatus = form.watch("employmentStatus");
   const watchHasPreviousOrganization = form.watch("hasPreviousOrganization");
 
-  useEffect(() => {
-    setEmploymentStatus(watchEmploymentStatus);
-  }, [watchEmploymentStatus]);
-
+  // Remove setEmploymentStatus effect
   useEffect(() => {
     setHasPreviousOrganization(watchHasPreviousOrganization || false);
   }, [watchHasPreviousOrganization]);
 
   // Calculate total experience
   useEffect(() => {
-    if (employmentStatus === "SALARIED") {
+    if (watchEmploymentStatus === "SALARIED") {
       const currentYears = Number.parseInt(
         form.getValues("serviceYears") || "0",
         10,
@@ -144,35 +138,30 @@ export default function EmploymentInfoPage() {
     form.watch("previousServiceYears"),
     form.watch("previousServiceMonths"),
     hasPreviousOrganization,
-    employmentStatus,
+    watchEmploymentStatus,
     form,
   ]);
 
   // Load saved data or initialize form
   useEffect(() => {
     if (formData.employmentInfo) {
-      // If there's saved data, reset the form with it.
-      // Ensure properties array in saved data is used, or default to empty if not present.
       const savedProperties = formData.employmentInfo.properties || [];
       form.reset({ ...formData.employmentInfo, properties: savedProperties });
-      setEmploymentStatus(formData.employmentInfo.employmentStatus);
       setHasPreviousOrganization(
         formData.employmentInfo.employmentStatus === "SALARIED"
           ? formData.employmentInfo.hasPreviousOrganization || false
           : false,
       );
     } else {
-      // No saved data, reset to initial default values (which has properties: [])
       form.reset();
     }
-    setIsFormInitialized(true); // Mark form as initialized
-  }, [formData.employmentInfo, form.reset]); // form.reset is stable
+    setIsFormInitialized(true);
+  }, [formData.employmentInfo, form.reset]);
 
   // Effect to ensure at least one property card is shown by default
   useEffect(() => {
     if (isFormInitialized) {
       const currentProperties = form.getValues("properties");
-      // Check both RHF's value and useFieldArray's state (propertyFields)
       if (
         (!currentProperties || currentProperties.length === 0) &&
         propertyFields.length === 0
@@ -212,12 +201,9 @@ export default function EmploymentInfoPage() {
   };
 
   const employmentStatusOptions = [
-    { label: "Salaried", value: "SALARIED" },
+    { label: "Employed", value: "SALARIED" },
     { label: "Business Owner", value: "BUSINESS_OWNER" },
     { label: "Self Employed", value: "SELF_EMPLOYED" },
-    { label: "Retired", value: "RETIRED" },
-    { label: "Housewife", value: "HOUSEWIFE" },
-    { label: "Unemployed", value: "UNEMPLOYED" },
   ];
 
   const employmentTypeOptions = [
@@ -286,7 +272,7 @@ export default function EmploymentInfoPage() {
                     required
                   />
                 </div>
-                {employmentStatus === "SALARIED" && (
+                {watchEmploymentStatus === "SALARIED" && (
                   <>
                     <TextInput
                       form={form}
@@ -448,7 +434,7 @@ export default function EmploymentInfoPage() {
                     </div>
                   </>
                 )}
-                {employmentStatus === "BUSINESS_OWNER" && (
+                {watchEmploymentStatus === "BUSINESS_OWNER" && (
                   <>
                     <TextInput
                       form={form}
@@ -536,7 +522,7 @@ export default function EmploymentInfoPage() {
                   key={field.id}
                   className="relative mb-4 space-y-4 rounded-md border p-4"
                 >
-                  <Button // Always show remove button if there's at least one item
+                  <Button
                     type="button"
                     variant="ghost"
                     size="sm"
@@ -566,13 +552,11 @@ export default function EmploymentInfoPage() {
                   </div>
                 </div>
               ))}
-              {propertyFields.length === 0 &&
-                isFormInitialized && ( // Only show "No properties" if form is initialized and array is empty
-                  <p className="text-sm text-muted-foreground">
-                    No properties added. Click "Add Property" to include
-                    details.
-                  </p>
-                )}
+              {propertyFields.length === 0 && isFormInitialized && (
+                <p className="text-sm text-muted-foreground">
+                  No properties added. Click "Add Property" to include details.
+                </p>
+              )}
             </section>
 
             <Separator />

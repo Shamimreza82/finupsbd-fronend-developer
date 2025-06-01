@@ -40,7 +40,10 @@ const salariedSchema = baseEmploymentSchema.extend({
       required_error: "Please select your employment type.",
     },
   ),
-  dateOfJoining: z.string().min(1, { message: "Date of joining is required." }),
+  dateOfJoining: z.date({
+    required_error: "Date of joining is required.",
+    invalid_type_error: "Date of joining must be a valid date.",
+  }),
   organizationName: z
     .string()
     .min(2, { message: "Organization name must be at least 2 characters." }),
