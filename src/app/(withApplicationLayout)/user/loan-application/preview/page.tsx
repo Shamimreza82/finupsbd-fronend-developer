@@ -26,6 +26,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { PropertyDetailValues } from "../schemas/employment-info-schema"; // Ensure this type is imported
 import type { GuarantorSectionValues } from "../schemas/guarantor-info-schema";
 
 export default function PreviewPage() {
@@ -39,9 +40,6 @@ export default function PreviewPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // isFormComplete checks if the guarantorInfo object itself exists in formData.
-  // Step 7 ensures this object is created even if no specific guarantor details are filled.
-  // The schema for guarantorInfo allows both personalGuarantor and businessGuarantor to be undefined.
   const isFormComplete =
     formData.personalInfo &&
     formData.residentialInfo &&
@@ -49,14 +47,13 @@ export default function PreviewPage() {
     formData.loanInfo &&
     formData.loanRequest &&
     formData.documentInfo &&
-    formData.guarantorInfo; // This means the step was visited and data (even if empty objects) was set.
+    formData.guarantorInfo;
 
 
 console.log(formData)
 
   const handleSubmit = async () => {
     if (!isFormComplete) {
-      // This generic message is fine as isFormComplete covers all steps.
       setError("Please complete all required steps before submitting.");
       return;
     }
@@ -65,16 +62,14 @@ console.log(formData)
     setError(null);
 
     try {
-      setAllStepsToNonDraft(); // Mark all steps as non-draft upon submission attempt
+      setAllStepsToNonDraft();
       const result = await submitApplication(formData as AppFormData);
 
 
       if (result.success) {
         setIsFormSubmitted(true);
         setSubmittedData(formData as AppFormData);
-        router.push(
-          `/user/loan-application/success?id=${result.applicationId}`,
-        );
+        router.push(`/loan-application/success?id=${result.applicationId}`);
       } else {
         console.error("Error submitting application:", result.error);
         setError(
@@ -91,12 +86,9 @@ console.log(formData)
   };
 
   const navigateToStep = (step: string) => {
-    router.push(`/user/loan-application/${step}`);
+    router.push(`/loan-application/${step}`);
   };
 
-  // --- Functions to render each section (personalInfo, residentialInfo, etc.) ---
-  // These are assumed to be correct and are omitted for brevity,
-  // except for renderGuarantorInfo and its helper.
   const renderPersonalInfo = () => {
     const info = formData.personalInfo;
     if (!info)
@@ -114,7 +106,7 @@ console.log(formData)
           </div>
           <div>
             <p className="text-sm font-medium">Father's/Husband's Name</p>
-            <p className="text-sm">{info.fatherOrHusbandName}</p>
+            <p className="text-sm">{info.fatherName}</p>
           </div>
           <div>
             <p className="text-sm font-medium">Mother's Name</p>
@@ -140,14 +132,14 @@ console.log(formData)
             <p className="text-sm font-medium">Nationality</p>
             <p className="text-sm">{info.nationality}</p>
           </div>
-          <div>
+          {/* <div>
             <p className="text-sm font-medium">Identification Type</p>
             <p className="text-sm capitalize">{info.identificationType}</p>
           </div>
           <div>
             <p className="text-sm font-medium">Identification Number</p>
             <p className="text-sm">{info.identificationNumber}</p>
-          </div>
+          </div> */}
           <div>
             <p className="text-sm font-medium">Marital Status</p>
             <p className="text-sm capitalize">{info.maritalStatus}</p>
@@ -296,12 +288,11 @@ console.log(formData)
       <div className="space-y-4">
         <div>
           <h4 className="text-md mb-1 font-medium">Employment Details</h4>
-          {/* ... content based on previous implementation ... */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             <div>
               <p className="text-sm font-medium">Employment Status</p>
               <p className="text-sm capitalize">
-                {info.employmentStatus.replace("_", " ").toLowerCase()}
+                {info.employmentStatus.replace(/_/g, " ").toLowerCase()}
               </p>
             </div>
             {info.employmentStatus === "SALARIED" && (
@@ -325,7 +316,7 @@ console.log(formData)
                 <div>
                   <p className="text-sm font-medium">Employment Type</p>
                   <p className="text-sm capitalize">
-                    {info.employmentType.replace("_", " ").toLowerCase()}
+                    {info.employmentType.replace(/_/g, " ").toLowerCase()}
                   </p>
                 </div>
                 <div>
@@ -340,7 +331,7 @@ console.log(formData)
                   <p className="text-sm font-medium">Organization Name</p>
                   <p className="text-sm">{info.organizationName}</p>
                 </div>
-                <div className="col-span-2">
+                <div className="md:col-span-2">
                   <p className="text-sm font-medium">Organization Address</p>
                   <p className="text-sm">{info.organizationAddress}</p>
                 </div>
@@ -362,7 +353,7 @@ console.log(formData)
                 )}
                 {info.hasPreviousOrganization && (
                   <>
-                    <div className="col-span-2 mt-2">
+                    <div className="mt-2 md:col-span-2">
                       <h5 className="text-sm font-medium">
                         Previous Organization
                       </h5>
@@ -384,7 +375,7 @@ console.log(formData)
                     </div>
                   </>
                 )}
-                <div className="col-span-2 mt-2">
+                <div className="mt-2 md:col-span-2">
                   <h5 className="text-sm font-medium">Total Experience</h5>
                   <p className="text-sm">
                     {info.totalExperienceYears} years,{" "}
@@ -399,20 +390,20 @@ console.log(formData)
                   <p className="text-sm font-medium">Business Name</p>
                   <p className="text-sm">{info.businessName}</p>
                 </div>
-                <div className="col-span-2">
+                <div className="md:col-span-2">
                   <p className="text-sm font-medium">Business Address</p>
                   <p className="text-sm">{info.businessAddress}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Business Owner Type</p>
                   <p className="text-sm capitalize">
-                    {info.businessOwnerType.replace("_", " ").toLowerCase()}
+                    {info.businessOwnerType.replace(/_/g, " ").toLowerCase()}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Business Type</p>
                   <p className="text-sm capitalize">
-                    {info.businessType.replace("_", " ").toLowerCase()}
+                    {info.businessType.replace(/_/g, " ").toLowerCase()}
                   </p>
                 </div>
                 <div>
@@ -429,46 +420,68 @@ console.log(formData)
                   <p className="text-sm font-medium">Trade License Age</p>
                   <p className="text-sm">
                     {info.tradeLicenseAge}{" "}
-                    {Number.parseInt(info.tradeLicenseAge) === 1
+                    {Number.parseInt(info.tradeLicenseAge || "0") === 1
                       ? "year"
                       : "years"}
                   </p>
                 </div>
               </>
             )}
+            {/* Consider adding a case for OTHER_EMPLOYMENT if it has specific fields */}
           </div>
         </div>
         <Separator />
         <div>
           <h4 className="text-md mb-1 font-medium">Property Details</h4>
-          {/* ... content based on previous implementation ... */}
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <p className="text-sm font-medium">Property Type</p>
-              <p className="text-sm capitalize">{info.propertyType}</p>
+          {info.properties && info.properties.length > 0 ? (
+            <div className="space-y-3">
+              {info.properties.map(
+                (property: PropertyDetailValues, index: number) => (
+                  <div key={index} className="rounded-md border p-3">
+                    <h5 className="mb-1 text-sm font-semibold">
+                      Property {index + 1}
+                    </h5>
+                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                      <div>
+                        <p className="text-sm font-medium">Type of Property</p>
+                        <p className="text-sm capitalize">
+                          {property.propertyType
+                            .replace(/_/g, " ")
+                            .toLowerCase()}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          Approximate Value (BDT)
+                        </p>
+                        <p className="text-sm">{property.propertyValue}</p>
+                      </div>
+                    </div>
+                  </div>
+                ),
+              )}
             </div>
-            <div>
-              <p className="text-sm font-medium">Approximate Value (BDT)</p>
-              <p className="text-sm">{info.propertyValue}</p>
-            </div>
-          </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No properties added.
+            </p>
+          )}
         </div>
         <Separator />
         <div>
           <h4 className="text-md mb-1 font-medium">Income Details</h4>
-          {/* ... content based on previous implementation ... */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             <div>
               <p className="text-sm font-medium">Gross Monthly Income</p>
               <p className="text-sm">{info.grossMonthlyIncome}</p>
             </div>
-            {info.rentIncome && (
+            {info.rentIncome && ( // Check if rentIncome has a value before displaying
               <div>
                 <p className="text-sm font-medium">Rent Income</p>
                 <p className="text-sm">{info.rentIncome}</p>
               </div>
             )}
-            {info.otherIncome && (
+            {info.otherIncome && ( // Check if otherIncome has a value
               <div>
                 <p className="text-sm font-medium">Other Income</p>
                 <p className="text-sm">{info.otherIncome}</p>
@@ -495,7 +508,6 @@ console.log(formData)
       <div className="space-y-4">
         <div>
           <h4 className="text-md mb-1 font-medium">Existing Loans</h4>
-          {/* ... content based on previous implementation ... */}
           {info.hasExistingLoan ? (
             <div className="space-y-4">
               {info.existingLoans?.map((loan, index) => (
@@ -543,7 +555,6 @@ console.log(formData)
         <Separator />
         <div>
           <h4 className="text-md mb-1 font-medium">Credit Cards</h4>
-          {/* ... content based on previous implementation ... */}
           {info.hasCreditCard ? (
             <div className="space-y-4">
               {info.creditCards?.map((card, index) => (
@@ -614,7 +625,6 @@ console.log(formData)
       );
     return (
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-        {/* ... content based on previous implementation ... */}
         <div>
           <p className="text-sm font-medium">Loan Amount Requested (BDT)</p>
           <p className="text-sm">{info.loanAmount}</p>
@@ -634,12 +644,14 @@ console.log(formData)
       </div>
     );
   };
-
-  // Render document info section
   const renderDocumentInfo = () => {
     const info = formData.documentInfo;
-    if (!info) return <p>Document information not completed.</p>;
-
+    if (!info)
+      return (
+        <p className="text-sm text-muted-foreground">
+          Documents not completed.
+        </p>
+      );
     const documents = [
       {
         key: "passportPhoto",
@@ -682,56 +694,56 @@ console.log(formData)
         label: "Additional Documents",
         value: info.additionalDocuments,
       },
-    ].filter((doc) => doc.value); // Only show uploaded documents
+    ].filter((doc) => doc.value);
 
+    if (documents.length === 0) {
+      return (
+        <p className="text-sm text-muted-foreground">No documents uploaded.</p>
+      );
+    }
     return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {documents.map((doc) => (
-            <div key={doc.key} className="space-y-2">
-              <p className="text-sm font-medium">{doc.label}</p>
-              <div className="flex h-32 items-center justify-center overflow-hidden rounded-md border p-2">
-                {doc.value && doc.value.type === "application/pdf" ? (
-                  <div className="flex flex-col items-center justify-center text-muted-foreground">
-                    <FileText className="mb-1 h-8 w-8" />
-                    <p className="text-center text-xs">{doc.value.name}</p>
-                  </div>
-                ) : doc.value && doc.value.type.startsWith("image/") ? (
-                  <Image
-                    src={doc.value.dataUrl || "/placeholder.svg"}
-                    alt={doc.label}
-                    className="max-h-full max-w-full object-contain"
-                  />
-                ) : doc.value ? (
-                  <div className="flex flex-col items-center justify-center text-muted-foreground">
-                    <ImageIcon className="mb-1 h-8 w-8" />
-                    <p className="text-center text-xs">{doc.value.name}</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-muted-foreground">
-                    <ImageIcon className="mb-1 h-8 w-8" />
-                    <p className="text-center text-xs">No file</p>
-                  </div>
-                )}
-              </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        {documents.map((doc) => (
+          <div key={doc.key} className="space-y-1">
+            <p className="text-sm font-medium">{doc.label}</p>
+            <div className="flex h-32 items-center justify-center overflow-hidden rounded-md border bg-slate-50 p-2">
+              {doc.value && doc.value.type === "application/pdf" ? (
+                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                  <FileText className="mb-1 h-8 w-8" />
+                  <p className="w-28 truncate text-center text-xs">
+                    {doc.value.name}
+                  </p>
+                </div>
+              ) : doc.value && doc.value.type.startsWith("image/") ? (
+                <Image
+                  src={doc.value.dataUrl || "/placeholder.svg"}
+                  alt={doc.label}
+                  className="max-h-full max-w-full object-contain"
+                />
+              ) : doc.value ? (
+                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                  <ImageIcon className="mb-1 h-8 w-8" />
+                  <p className="w-28 truncate text-center text-xs">
+                    {doc.value.name}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                  <ImageIcon className="mb-1 h-8 w-8" />
+                  <p className="w-28 truncate text-center text-xs">No file</p>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-        {documents.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            No documents uploaded yet.
-          </p>
-        )}
+          </div>
+        ))}
       </div>
     );
   };
 
-  // Helper to render a single guarantor's details
   const renderGuarantorDetails = (
     guarantor: GuarantorSectionValues | undefined,
     title: string,
   ) => {
-    // Check if guarantor object exists and has at least one non-empty/non-undefined value
     const isDataProvided =
       guarantor &&
       Object.values(guarantor).some(
@@ -803,12 +815,10 @@ console.log(formData)
           <p className="text-sm font-medium">Work Address</p>
           <p className="text-sm">{guarantor.workAddress}</p>
         </div>
-        {/* Digital Signature and Date fields are removed */}
       </div>
     );
   };
 
-  // Main function to render the entire Guarantor Information section
   const renderGuarantorInfo = () => {
     const guarantorInfo = formData.guarantorInfo;
 
@@ -985,7 +995,7 @@ console.log(formData)
         <CardFooter className="flex justify-end space-x-2">
           <Button
             variant="outline"
-            onClick={() => router.push("/user/loan-application/step-7")}
+            onClick={() => router.push("/loan-application/step-7")}
           >
             Back
           </Button>

@@ -1,7 +1,9 @@
 "use client";
 
+import { districts } from "@/_data/districts";
 import { DatePickerInput } from "@/components/form/FormInputs";
 import {
+  ComboBoxInput,
   SelectInput,
   TextInput,
 } from "@/components/loan-application/form-inputs";
@@ -20,8 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { z } from "zod";
+import { useForm } from "react-hook-form";
 import {
   personalInfoSchema,
   type PersonalInfoValues,
@@ -31,123 +32,121 @@ export default function PersonalInfoPage() {
   const router = useRouter();
   const { formData, updateFormData, isStepEditable } = useFormContext();
   const [showSpouseField, setShowSpouseField] = useState(false);
-  // Initialize form with react-hook-form
+
   const form = useForm<PersonalInfoValues>({
-    resolver: zodResolver(personalInfoSchema) as any,
+    resolver: zodResolver(personalInfoSchema),
     defaultValues: {
       fullName: "",
-      fatherOrHusbandName: "",
+      fatherName: "", // Changed from fatherOrHusbandName
       motherName: "",
       gender: "",
-      dateOfBirth: undefined,
+      dateOfBirth: new Date("January 01, 1985"),
       placeOfBirth: "",
       nationality: "Bangladeshi",
-      educationalLevel: undefined,
-      identificationType: "",
-      identificationNumber: "",
+      educationalLevel: "",
+      NIDNumber: "",
+      passportNumber: "",
       maritalStatus: "",
       spouseName: "",
       residentialStatus: "",
       religion: "",
-      mobileNumber: "+880",
-      alternateMobileNumber: "+880",
+      mobileNumber: "",
+      alternateMobileNumber: "",
       emailAddress: "",
       socialMediaProfiles: [""],
     },
   });
 
-  // Watch marital status to show/hide spouse field
   const maritalStatus = form.watch("maritalStatus");
   const socialMediaProfiles = form.watch("socialMediaProfiles");
 
   useEffect(() => {
-    setShowSpouseField(maritalStatus === "MARRIED");
-  }, [maritalStatus]);
+    const isMarried = maritalStatus === "MARRIED";
+    setShowSpouseField(isMarried);
+    if (!isMarried) {
+      form.setValue("spouseName", "", { shouldValidate: true }); // Clear spouse name if not married
+    }
+  }, [maritalStatus, form]);
 
-  // Load saved data if available
   useEffect(() => {
     if (formData.personalInfo) {
-      // Make sure spouseName is never null
+      const currentData = formData.personalInfo;
       const formattedData = {
-        ...formData.personalInfo,
-        spouseName: formData.personalInfo.spouseName || "",
-        socialMediaProfiles: Array.isArray(
-          formData.personalInfo.socialMediaProfiles,
-        )
-          ? formData.personalInfo.socialMediaProfiles
-          : formData.personalInfo.socialMediaProfiles
-            ? [formData.personalInfo.socialMediaProfiles]
+        ...currentData,
+        fatherName: currentData.fatherName || "", // Ensure fatherName is present
+        spouseName: currentData.spouseName || "",
+        socialMediaProfiles:
+          Array.isArray(currentData.socialMediaProfiles) &&
+          currentData.socialMediaProfiles.length > 0
+            ? currentData.socialMediaProfiles
             : [""],
+        educationalLevel: currentData.educationalLevel || "",
+        NIDNumber: currentData.NIDNumber || "",
+        passportNumber: currentData.passportNumber || "",
+        mobileNumber: currentData.mobileNumber || "+880",
+        alternateMobileNumber: currentData.alternateMobileNumber || "+880",
       };
       form.reset(formattedData);
-      setShowSpouseField(formData.personalInfo.maritalStatus === "MARRIED");
+      setShowSpouseField(currentData.maritalStatus === "MARRIED");
     }
   }, [formData.personalInfo, form]);
 
-  // Redirect if step is not editable
   useEffect(() => {
     if (!isStepEditable("personalInfo")) {
       router.push("/user/loan-application/preview");
     }
   }, [isStepEditable, router]);
 
-  // Handle form submission
-  const onSubmit: SubmitHandler<z.infer<typeof personalInfoSchema>> = (
-    data,
-  ) => {
-    // Filter out empty social media links
-    data.socialMediaProfiles = data.socialMediaProfiles.filter(
-      (link) => link.trim() !== "",
-    );
-
-    // If all social media links are removed, set to empty array
-    if (data.socialMediaProfiles.length === 0) {
-      data.socialMediaProfiles = [];
+  function onSubmit(data: PersonalInfoValues) {
+    const cleanedSocialMediaProfiles =
+      data.socialMediaProfiles?.filter((link) => link && link.trim() !== "") ||
+      [];
+    const submittedData = {
+      ...data,
+      socialMediaProfiles:
+        cleanedSocialMediaProfiles.length > 0 ? cleanedSocialMediaProfiles : [],
+    };
+    if (data.maritalStatus !== "MARRIED") {
+      submittedData.spouseName = undefined; // Ensure spouseName is not sent if not married
     }
-
-    updateFormData("personalInfo", data);
+    updateFormData("personalInfo", submittedData);
     router.push("/user/loan-application/step-2");
-  };
+  }
 
-  // Add a new social media input field
   const addSocialMediaField = () => {
     const currentLinks = form.getValues("socialMediaProfiles") || [];
     form.setValue("socialMediaProfiles", [...currentLinks, ""]);
   };
 
-  // Remove a social media input field
   const removeSocialMediaField = (index: number) => {
     const currentLinks = form.getValues("socialMediaProfiles") || [];
-    if (currentLinks.length > 1) {
+    if (currentLinks.length > 0) {
+      // Allow removing even if it's the last one, to clear it
       const newLinks = [...currentLinks];
       newLinks.splice(index, 1);
-      form.setValue("socialMediaProfiles", newLinks);
+      form.setValue(
+        "socialMediaProfiles",
+        newLinks.length > 0 ? newLinks : [""],
+      ); // Reset to one empty field if all removed
     }
   };
 
-  // Gender options
   const genderOptions = [
     { label: "Male", value: "MALE" },
     { label: "Female", value: "FEMALE" },
     { label: "Other", value: "OTHER" },
   ];
 
-  // Educational level options
-  const educationOptions = [
-    { label: "High School", value: "HIGHSCHOOL" },
-    { label: "Bachelor's Degree", value: "BACHELOR" },
-    { label: "Master's Degree", value: "MASTER" },
+  const educationalLevelOptions = [
+    { label: "Below SSC", value: "BELOW_SSC" },
+    { label: "SSC/Equivalent", value: "SSC" },
+    { label: "HSC/Equivalent", value: "HSC" },
+    { label: "Graduate", value: "GRADUATE" },
+    { label: "Post Graduate", value: "POST_GRADUATE" },
     { label: "PhD", value: "PHD" },
-    { label: "Other", value: "OTHER" },
+    { label: "Other", value: "OTHER_EDUCATION" },
   ];
 
-  // Identification type options
-  const idTypeOptions = [
-    { label: "National ID", value: "NID" },
-    { label: "Passport", value: "PASSPORT" },
-  ];
-
-  // Marital status options
   const maritalStatusOptions = [
     { label: "Single", value: "SINGLE" },
     { label: "Married", value: "MARRIED" },
@@ -155,14 +154,12 @@ export default function PersonalInfoPage() {
     { label: "Widowed", value: "WIDOWED" },
   ];
 
-  // Residential status options
   const residentialStatusOptions = [
     { label: "Resident", value: "RESIDENT" },
     { label: "Non-Resident", value: "NONRESIDENT" },
     { label: "Temporary Resident", value: "TEMPORARYRESIDENT" },
   ];
 
-  // Religion options
   const religionOptions = [
     { label: "Islam", value: "ISLAM" },
     { label: "Hinduism", value: "HINDUISM" },
@@ -171,7 +168,6 @@ export default function PersonalInfoPage() {
     { label: "Other", value: "OTHER" },
   ];
 
-  // Social media platform labels
   const socialMediaLabels = [
     "Facebook",
     "Twitter",
@@ -181,11 +177,11 @@ export default function PersonalInfoPage() {
   ];
 
   return (
-    <Card className="border-[#E9EFF6] text-tertiary-primary">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-xl">Personal Information</CardTitle>
+        <CardTitle>Personal Information</CardTitle>
         <CardDescription>
-          Update your photo and personal details here.
+          Please fill in your personal details accurately.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -199,15 +195,13 @@ export default function PersonalInfoPage() {
                 placeholder="Enter your full name"
                 required
               />
-
               <TextInput
                 form={form}
-                name="fatherOrHusbandName"
-                label="Father's/Husband's Name"
+                name="fatherName" // Changed from fatherOrHusbandName
+                label="Father's Name"
                 placeholder="Enter your father's name"
                 required
               />
-
               <TextInput
                 form={form}
                 name="motherName"
@@ -215,7 +209,6 @@ export default function PersonalInfoPage() {
                 placeholder="Enter your mother's name"
                 required
               />
-
               <SelectInput
                 form={form}
                 name="gender"
@@ -223,22 +216,26 @@ export default function PersonalInfoPage() {
                 options={genderOptions}
                 required
               />
-
               <DatePickerInput
                 form={form}
-                label="Date of Birth"
                 name="dateOfBirth"
+                label="Date of Birth"
+                placeholder="Select your date of birth"
                 required
               />
-
-              <TextInput
+              <ComboBoxInput
                 form={form}
                 name="placeOfBirth"
-                label="Place of Birth"
-                placeholder="Enter your Place of Birth"
+                label="Place of Birth (District)"
+                options={districts.map((d) => ({
+                  label: d.name,
+                  value: d.name,
+                }))} // Assuming value should be district name
+                placeholder="Select District"
+                searchPlaceholder="Search districts..."
+                notFoundText="No district found."
                 required
               />
-
               <TextInput
                 form={form}
                 name="nationality"
@@ -246,31 +243,26 @@ export default function PersonalInfoPage() {
                 placeholder="Enter your nationality"
                 required
               />
-
               <SelectInput
                 form={form}
                 name="educationalLevel"
                 label="Educational Level"
-                options={educationOptions}
+                options={educationalLevelOptions}
                 required
               />
-
-              <SelectInput
-                form={form}
-                name="identificationType"
-                label="Identification Type"
-                options={idTypeOptions}
-                required
-              />
-
               <TextInput
                 form={form}
-                name="identificationNumber"
-                label="Identification Number"
-                placeholder="Enter your Identification Number"
+                name="NIDNumber"
+                label="National Identification Number (NID)"
+                placeholder="Enter your NID number"
                 required
               />
-
+              <TextInput
+                form={form}
+                name="passportNumber"
+                label="Passport Number (Optional)"
+                placeholder="Enter your passport number"
+              />
               <SelectInput
                 form={form}
                 name="maritalStatus"
@@ -278,16 +270,15 @@ export default function PersonalInfoPage() {
                 options={maritalStatusOptions}
                 required
               />
-
               {showSpouseField && (
                 <TextInput
                   form={form}
                   name="spouseName"
-                  label="Spouse's Name (if applicable)"
+                  label="Spouse's Name"
                   placeholder="Enter your spouse's name"
+                  required={maritalStatus === "MARRIED"} // Conditionally required
                 />
               )}
-
               <SelectInput
                 form={form}
                 name="residentialStatus"
@@ -295,7 +286,6 @@ export default function PersonalInfoPage() {
                 options={residentialStatusOptions}
                 required
               />
-
               <SelectInput
                 form={form}
                 name="religion"
@@ -303,22 +293,21 @@ export default function PersonalInfoPage() {
                 options={religionOptions}
                 required
               />
-
               <TextInput
                 form={form}
                 name="mobileNumber"
                 label="Mobile Number"
                 type="tel"
+                placeholder="+880XXXXXXXXXX"
                 required
               />
-
               <TextInput
                 form={form}
                 name="alternateMobileNumber"
-                label="Alternate Mobile Number"
+                label="Alternate Mobile Number (Optional)"
                 type="tel"
+                placeholder="+880XXXXXXXXXX"
               />
-
               <TextInput
                 form={form}
                 name="emailAddress"
@@ -376,10 +365,9 @@ export default function PersonalInfoPage() {
 
             <div className="mt-4 text-sm text-muted-foreground">
               All identity information is encrypted in transit and at rest,
-              accessible only to authorized personnel for verification
+              accessible only to authorized personnel for verification.
             </div>
-
-            <CardFooter className="flex justify-between px-0">
+            <CardFooter className="flex justify-between px-0 pt-6">
               <Button
                 type="button"
                 variant="outline"

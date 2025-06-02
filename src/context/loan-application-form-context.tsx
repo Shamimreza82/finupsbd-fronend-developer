@@ -31,11 +31,6 @@ export type FormData = {
   };
 };
 
-
-
-
-
-
 // Define the form context type
 interface FormContextType {
   formData: FormData;
@@ -62,7 +57,7 @@ const initialFormData: FormData = {
   loanInfo: null,
   loanRequest: null,
   documentInfo: null,
-  guarantorInfo: null, // Add guarantorInfo
+  guarantorInfo: null,
   draftMode: {
     personalInfo: true,
     residentialInfo: true,
@@ -70,22 +65,20 @@ const initialFormData: FormData = {
     loanInfo: true,
     loanRequest: true,
     documentInfo: true,
-    guarantorInfo: true, // Add guarantorInfo
+    guarantorInfo: true,
   },
 };
 
 // Form provider component
 export function FormProvider({ children }: { children: React.ReactNode }) {
-
-
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<FormData | null>(null);
 
   // Load form data from localStorage on initial render
   useEffect(() => {
-    const savedData = localStorage.getItem("loanApplicationForm"); // Updated key
-    const LoanRequest = localStorage.getItem("loanRequest")
+    const savedData = localStorage.getItem("loan-application-form-data"); // Updated key
+    const LoanRequest = localStorage.getItem("loanRequest");
     if (savedData && LoanRequest) {
       try {
         const parsedData = JSON.parse(savedData);
@@ -109,7 +102,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
 
     // Save to localStorage
     localStorage.setItem(
-      "loanApplicationForm",
+      "loan-application-form-data",
       JSON.stringify(updatedFormData),
     ); // Updated key
   };
@@ -117,7 +110,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
   // Reset the form data
   const resetForm = () => {
     setFormData(initialFormData);
-    localStorage.removeItem("loanApplicationForm"); // Updated key
+    localStorage.removeItem("loan-application-form-data"); // Updated key
   };
 
   // Check if a step is completed
@@ -141,7 +134,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     };
     setFormData(updatedFormData);
     localStorage.setItem(
-      "loanApplicationForm",
+      "loan-application-form-data",
       JSON.stringify(updatedFormData),
     ); // Updated key
   };
@@ -159,7 +152,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     };
     setFormData(updatedFormData);
     localStorage.setItem(
-      "loanApplicationForm",
+      "loan-application-form-data",
       JSON.stringify(updatedFormData),
     ); // Updated key
   };

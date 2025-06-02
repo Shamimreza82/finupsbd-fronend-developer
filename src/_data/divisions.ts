@@ -1,4 +1,4 @@
-export const division = [
+export const divisions = [
   {
     id: "1",
     name: "Chattagram",

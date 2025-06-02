@@ -1,5 +1,12 @@
 "use client";
 
+import { CheckboxInput } from "@/components/loan-application/checkbox-input";
+import {
+  ComboBoxInput,
+  SelectInput,
+  TextInput,
+  type SelectOption,
+} from "@/components/loan-application/form-inputs";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,38 +17,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { useFormContext } from "@/context/loan-application-form-context";
+import { Separator } from "@/components/ui/separator";
+import { useFormContext as useAppFormContext } from "@/context/loan-application-form-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   residentialInfoSchema,
   type ResidentialInfoValues,
 } from "../schemas/residential-info-schema";
-// Updated import: ComboBoxInput added, SelectOption is now exported from form-inputs
-import { CheckboxInput } from "@/components/loan-application/checkbox-input";
-import {
-  ComboBoxInput,
-  SelectInput,
-  TextInput,
-  type SelectOption,
-} from "@/components/loan-application/form-inputs";
-import { Separator } from "@/components/ui/separator";
 
-import { district as allDistricts } from "@/_data/district";
-import { division as allDivisions } from "@/_data/division";
-import { thana as allThanas } from "@/_data/thana";
+import { districts as allDistricts } from "@/_data/districts";
+import { divisions as allDivisions } from "@/_data/divisions";
+import { thanas as allThanas } from "@/_data/thanas";
 
 export default function ResidentialInfoPage() {
   const router = useRouter();
-  const { formData, updateFormData, isStepEditable } = useFormContext();
-  const [isPermanentSameAsPresent, setIsPermanentSameAsPresent] =
-    useState(false);
+  const { formData, updateFormData, isStepEditable } = useAppFormContext();
+  const [isPermanentSameAsPresent, setIsPermanentSameAsPresent] = useState(
+    formData.residentialInfo?.isPermanentSameAsPresent || false,
+  );
+
+  const isInitializing = useRef(true); // Flag to manage initial load and cascading effects
 
   const form = useForm<ResidentialInfoValues>({
     resolver: zodResolver(residentialInfoSchema),
-    defaultValues: {
+    mode: "onTouched",
+    defaultValues: formData.residentialInfo || {
       presentAddress: "",
       presentDivision: "",
       presentDistrict: "",
@@ -90,159 +93,368 @@ export default function ResidentialInfoPage() {
   const watchPermanentDistrict = form.watch("permanentDistrict");
   const watchIsPermanentSameAsPresent = form.watch("isPermanentSameAsPresent");
 
+  // Effect to initialize and update form when formData.residentialInfo changes
   useEffect(() => {
+    isInitializing.current = true;
+    if (formData.residentialInfo) {
+      form.reset(formData.residentialInfo);
+      setIsPermanentSameAsPresent(
+        formData.residentialInfo.isPermanentSameAsPresent || false,
+      );
+
+      // Populate Present Address filtered options
+      if (formData.residentialInfo.presentDivision) {
+        const filteredD = allDistricts
+          .filter(
+            (d) => d.division_id === formData.residentialInfo!.presentDivision,
+          )
+          .map((d) => ({ label: d.name, value: d.id }));
+        setPresentFilteredDistricts(filteredD);
+        if (formData.residentialInfo.presentDistrict) {
+          const filteredT = allThanas
+            .filter(
+              (t) =>
+                t.district_id === formData.residentialInfo!.presentDistrict,
+            )
+            .map((t) => ({ label: t.name, value: t.id }));
+          setPresentFilteredThanas(filteredT);
+        } else {
+          setPresentFilteredThanas([]);
+        }
+      } else {
+        setPresentFilteredDistricts([]);
+        setPresentFilteredThanas([]);
+      }
+
+      // Populate Permanent Address filtered options
+      if (formData.residentialInfo.isPermanentSameAsPresent) {
+        if (formData.residentialInfo.presentDivision) {
+          const filteredD = allDistricts
+            .filter(
+              (d) =>
+                d.division_id === formData.residentialInfo!.presentDivision,
+            )
+            .map((d) => ({ label: d.name, value: d.id }));
+          setPermanentFilteredDistricts(filteredD);
+          if (formData.residentialInfo.presentDistrict) {
+            const filteredT = allThanas
+              .filter(
+                (t) =>
+                  t.district_id === formData.residentialInfo!.presentDistrict,
+              )
+              .map((t) => ({ label: t.name, value: t.id }));
+            setPermanentFilteredThanas(filteredT);
+          } else {
+            setPermanentFilteredThanas([]);
+          }
+        } else {
+          setPermanentFilteredDistricts([]);
+          setPermanentFilteredThanas([]);
+        }
+      } else {
+        if (formData.residentialInfo.permanentDivision) {
+          const filteredD = allDistricts
+            .filter(
+              (d) =>
+                d.division_id === formData.residentialInfo!.permanentDivision,
+            )
+            .map((d) => ({ label: d.name, value: d.id }));
+          setPermanentFilteredDistricts(filteredD);
+          if (formData.residentialInfo.permanentDistrict) {
+            const filteredT = allThanas
+              .filter(
+                (t) =>
+                  t.district_id === formData.residentialInfo!.permanentDistrict,
+              )
+              .map((t) => ({ label: t.name, value: t.id }));
+            setPermanentFilteredThanas(filteredT);
+          } else {
+            setPermanentFilteredThanas([]);
+          }
+        } else {
+          setPermanentFilteredDistricts([]);
+          setPermanentFilteredThanas([]);
+        }
+      }
+    } else {
+      // No saved data, reset to initial default values defined in useForm
+      form.reset(form.formState.defaultValues);
+      setIsPermanentSameAsPresent(
+        form.formState.defaultValues?.isPermanentSameAsPresent || false,
+      );
+      setPresentFilteredDistricts([]);
+      setPresentFilteredThanas([]);
+      setPermanentFilteredDistricts([]);
+      setPermanentFilteredThanas([]);
+    }
+    // Use a timeout or rAF to ensure initialization completes before allowing cascading effects
+    const timer = setTimeout(() => {
+      isInitializing.current = false;
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [formData.residentialInfo, form]); // form is a stable dependency
+
+  // Effect for Present Division change (Cascading)
+  useEffect(() => {
+    if (isInitializing.current) return;
+
     if (watchPresentDivision) {
       const filtered = allDistricts
         .filter((district) => district.division_id === watchPresentDivision)
         .map((d) => ({ label: d.name, value: d.id }));
       setPresentFilteredDistricts(filtered);
-      form.setValue("presentDistrict", "", { shouldValidate: true });
-      form.setValue("presentThana", "", { shouldValidate: true });
-      setPresentFilteredThanas([]);
+      // Only reset if the current district is not valid for the new division
+      const currentDistrict = form.getValues("presentDistrict");
+      if (
+        currentDistrict &&
+        !filtered.find((d) => d.value === currentDistrict)
+      ) {
+        form.setValue("presentDistrict", "", {
+          shouldValidate: false,
+          shouldDirty: true,
+          shouldTouch: false,
+        });
+        form.clearErrors("presentDistrict");
+        form.setValue("presentThana", "", {
+          shouldValidate: false,
+          shouldDirty: true,
+          shouldTouch: false,
+        });
+        form.clearErrors("presentThana");
+        setPresentFilteredThanas([]);
+      } else if (!currentDistrict) {
+        // If district was already empty, ensure thana is also cleared
+        form.setValue("presentThana", "", {
+          shouldValidate: false,
+          shouldDirty: true,
+          shouldTouch: false,
+        });
+        form.clearErrors("presentThana");
+        setPresentFilteredThanas([]);
+      }
     } else {
+      // No division selected
       setPresentFilteredDistricts([]);
+      form.setValue("presentDistrict", "", {
+        shouldValidate: false,
+        shouldDirty: true,
+        shouldTouch: false,
+      });
+      form.clearErrors("presentDistrict");
       setPresentFilteredThanas([]);
-      form.setValue("presentDistrict", "", { shouldValidate: true });
-      form.setValue("presentThana", "", { shouldValidate: true });
+      form.setValue("presentThana", "", {
+        shouldValidate: false,
+        shouldDirty: true,
+        shouldTouch: false,
+      });
+      form.clearErrors("presentThana");
     }
   }, [watchPresentDivision, form]);
 
+  // Effect for Present District change (Cascading)
   useEffect(() => {
+    if (isInitializing.current) return;
+
     if (watchPresentDistrict) {
       const filtered = allThanas
         .filter((thana) => thana.district_id === watchPresentDistrict)
         .map((t) => ({ label: t.name, value: t.id }));
       setPresentFilteredThanas(filtered);
-      form.setValue("presentThana", "", { shouldValidate: true });
+      // Only reset if the current thana is not valid for the new district
+      const currentThana = form.getValues("presentThana");
+      if (currentThana && !filtered.find((t) => t.value === currentThana)) {
+        form.setValue("presentThana", "", {
+          shouldValidate: false,
+          shouldDirty: true,
+          shouldTouch: false,
+        });
+        form.clearErrors("presentThana");
+      }
     } else {
+      // No district selected
       setPresentFilteredThanas([]);
-      form.setValue("presentThana", "", { shouldValidate: true });
+      form.setValue("presentThana", "", {
+        shouldValidate: false,
+        shouldDirty: true,
+        shouldTouch: false,
+      });
+      form.clearErrors("presentThana");
     }
   }, [watchPresentDistrict, form]);
 
+  // Effect for Permanent Division change (Cascading)
   useEffect(() => {
-    if (!isPermanentSameAsPresent && watchPermanentDivision) {
+    if (isInitializing.current || watchIsPermanentSameAsPresent) return;
+
+    if (watchPermanentDivision) {
       const filtered = allDistricts
         .filter((district) => district.division_id === watchPermanentDivision)
         .map((d) => ({ label: d.name, value: d.id }));
       setPermanentFilteredDistricts(filtered);
-      form.setValue("permanentDistrict", "", { shouldValidate: true });
-      form.setValue("permanentThana", "", { shouldValidate: true });
-      setPermanentFilteredThanas([]);
-    } else if (!isPermanentSameAsPresent) {
+      const currentDistrict = form.getValues("permanentDistrict");
+      if (
+        currentDistrict &&
+        !filtered.find((d) => d.value === currentDistrict)
+      ) {
+        form.setValue("permanentDistrict", "", {
+          shouldValidate: false,
+          shouldDirty: true,
+          shouldTouch: false,
+        });
+        form.clearErrors("permanentDistrict");
+        form.setValue("permanentThana", "", {
+          shouldValidate: false,
+          shouldDirty: true,
+          shouldTouch: false,
+        });
+        form.clearErrors("permanentThana");
+        setPermanentFilteredThanas([]);
+      } else if (!currentDistrict) {
+        form.setValue("permanentThana", "", {
+          shouldValidate: false,
+          shouldDirty: true,
+          shouldTouch: false,
+        });
+        form.clearErrors("permanentThana");
+        setPermanentFilteredThanas([]);
+      }
+    } else {
       setPermanentFilteredDistricts([]);
+      form.setValue("permanentDistrict", "", {
+        shouldValidate: false,
+        shouldDirty: true,
+        shouldTouch: false,
+      });
+      form.clearErrors("permanentDistrict");
       setPermanentFilteredThanas([]);
-      form.setValue("permanentDistrict", "", { shouldValidate: true });
-      form.setValue("permanentThana", "", { shouldValidate: true });
+      form.setValue("permanentThana", "", {
+        shouldValidate: false,
+        shouldDirty: true,
+        shouldTouch: false,
+      });
+      form.clearErrors("permanentThana");
     }
-  }, [watchPermanentDivision, isPermanentSameAsPresent, form]);
+  }, [watchPermanentDivision, form, watchIsPermanentSameAsPresent]);
 
+  // Effect for Permanent District change (Cascading)
   useEffect(() => {
-    if (!isPermanentSameAsPresent && watchPermanentDistrict) {
+    if (isInitializing.current || watchIsPermanentSameAsPresent) return;
+
+    if (watchPermanentDistrict) {
       const filtered = allThanas
         .filter((thana) => thana.district_id === watchPermanentDistrict)
         .map((t) => ({ label: t.name, value: t.id }));
       setPermanentFilteredThanas(filtered);
-      form.setValue("permanentThana", "", { shouldValidate: true });
-    } else if (!isPermanentSameAsPresent) {
+      const currentThana = form.getValues("permanentThana");
+      if (currentThana && !filtered.find((t) => t.value === currentThana)) {
+        form.setValue("permanentThana", "", {
+          shouldValidate: false,
+          shouldDirty: true,
+          shouldTouch: false,
+        });
+        form.clearErrors("permanentThana");
+      }
+    } else {
       setPermanentFilteredThanas([]);
-      form.setValue("permanentThana", "", { shouldValidate: true });
+      form.setValue("permanentThana", "", {
+        shouldValidate: false,
+        shouldDirty: true,
+        shouldTouch: false,
+      });
+      form.clearErrors("permanentThana");
     }
-  }, [watchPermanentDistrict, isPermanentSameAsPresent, form]);
+  }, [watchPermanentDistrict, form, watchIsPermanentSameAsPresent]);
 
+  // Effect for "isPermanentSameAsPresent" checkbox
   useEffect(() => {
+    // This effect should run regardless of isInitializing, as it's a direct data sync
+    // However, we need to be careful not to clear loaded permanent data if it's different
+    // and the checkbox is initially false.
+    const currentFormValues = form.getValues();
     setIsPermanentSameAsPresent(watchIsPermanentSameAsPresent);
+
     if (watchIsPermanentSameAsPresent) {
-      const presentValues = form.getValues();
-      form.setValue("permanentAddress", presentValues.presentAddress);
-      form.setValue("permanentDivision", presentValues.presentDivision);
-      form.setValue("permanentDistrict", presentValues.presentDistrict);
-      form.setValue("permanentThana", presentValues.presentThana);
-      form.setValue("permanentPostalCode", presentValues.presentPostalCode);
-      form.setValue("permanentLengthOfStay", presentValues.presentLengthOfStay);
+      form.setValue("permanentAddress", currentFormValues.presentAddress, {
+        shouldDirty: true,
+      });
+      form.setValue("permanentDivision", currentFormValues.presentDivision, {
+        shouldDirty: true,
+      });
+      form.setValue("permanentDistrict", currentFormValues.presentDistrict, {
+        shouldDirty: true,
+      });
+      form.setValue("permanentThana", currentFormValues.presentThana, {
+        shouldDirty: true,
+      });
+      form.setValue(
+        "permanentPostalCode",
+        currentFormValues.presentPostalCode,
+        { shouldDirty: true },
+      );
+      form.setValue(
+        "permanentLengthOfStay",
+        currentFormValues.presentLengthOfStay,
+        { shouldDirty: true },
+      );
       form.setValue(
         "permanentOwnershipStatus",
-        presentValues.presentOwnershipStatus,
+        currentFormValues.presentOwnershipStatus,
+        { shouldDirty: true },
       );
 
-      if (presentValues.presentDivision) {
+      if (currentFormValues.presentDivision) {
         const filteredD = allDistricts
-          .filter((d) => d.division_id === presentValues.presentDivision)
+          .filter((d) => d.division_id === currentFormValues.presentDivision)
           .map((d) => ({ label: d.name, value: d.id }));
         setPermanentFilteredDistricts(filteredD);
       } else {
         setPermanentFilteredDistricts([]);
       }
-      if (presentValues.presentDistrict) {
+      if (currentFormValues.presentDistrict) {
         const filteredT = allThanas
-          .filter((t) => t.district_id === presentValues.presentDistrict)
+          .filter((t) => t.district_id === currentFormValues.presentDistrict)
           .map((t) => ({ label: t.name, value: t.id }));
         setPermanentFilteredThanas(filteredT);
       } else {
         setPermanentFilteredThanas([]);
       }
+      const permanentFieldsToClearErrors: Array<keyof ResidentialInfoValues> = [
+        "permanentAddress",
+        "permanentDivision",
+        "permanentDistrict",
+        "permanentThana",
+        "permanentPostalCode",
+        "permanentLengthOfStay",
+        "permanentOwnershipStatus",
+      ];
+      permanentFieldsToClearErrors.forEach((field) => form.clearErrors(field));
     } else {
-      form.setValue("permanentAddress", "");
-      form.setValue("permanentDivision", "");
-      form.setValue("permanentDistrict", "");
-      form.setValue("permanentThana", "");
-      form.setValue("permanentPostalCode", "");
-      form.setValue("permanentLengthOfStay", "");
-      form.setValue("permanentOwnershipStatus", "");
-      setPermanentFilteredDistricts([]);
-      setPermanentFilteredThanas([]);
-    }
-  }, [watchIsPermanentSameAsPresent, form]);
-
-  useEffect(() => {
-    if (formData.residentialInfo) {
-      const { propertyType, propertyValue, ...restData } =
-        formData.residentialInfo as any;
-      form.reset(restData);
-      setIsPermanentSameAsPresent(restData.isPermanentSameAsPresent || false);
-
-      if (restData.presentDivision) {
-        const filteredD = allDistricts
-          .filter((d) => d.division_id === restData.presentDivision)
-          .map((d) => ({ label: d.name, value: d.id }));
-        setPresentFilteredDistricts(filteredD);
-        if (restData.presentDistrict) {
-          const filteredT = allThanas
-            .filter((t) => t.district_id === restData.presentDistrict)
-            .map((t) => ({ label: t.name, value: t.id }));
-          setPresentFilteredThanas(filteredT);
-        }
+      // If unchecking, and it's not the initial load where permanent data might be different
+      if (!isInitializing.current) {
+        const fieldsToClear: Array<keyof ResidentialInfoValues> = [
+          "permanentAddress",
+          "permanentDivision",
+          "permanentDistrict",
+          "permanentThana",
+          "permanentPostalCode",
+          "permanentLengthOfStay",
+          "permanentOwnershipStatus",
+        ];
+        fieldsToClear.forEach((field) => {
+          form.setValue(field, "", {
+            shouldDirty: true,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+          form.clearErrors(field);
+        });
+        setPermanentFilteredDistricts([]);
+        setPermanentFilteredThanas([]);
       }
-
-      if (restData.isPermanentSameAsPresent) {
-        if (restData.presentDivision) {
-          const filteredD = allDistricts
-            .filter((d) => d.division_id === restData.presentDivision)
-            .map((d) => ({ label: d.name, value: d.id }));
-          setPermanentFilteredDistricts(filteredD);
-        }
-        if (restData.presentDistrict) {
-          const filteredT = allThanas
-            .filter((t) => t.district_id === restData.presentDistrict)
-            .map((t) => ({ label: t.name, value: t.id }));
-          setPermanentFilteredThanas(filteredT);
-        }
-      } else {
-        if (restData.permanentDivision) {
-          const filteredD = allDistricts
-            .filter((d) => d.division_id === restData.permanentDivision)
-            .map((d) => ({ label: d.name, value: d.id }));
-          setPermanentFilteredDistricts(filteredD);
-          if (restData.permanentDistrict) {
-            const filteredT = allThanas
-              .filter((t) => t.district_id === restData.permanentDistrict)
-              .map((t) => ({ label: t.name, value: t.id }));
-            setPermanentFilteredThanas(filteredT);
-          }
-        }
-      }
+      // If it IS initializing and permanent address is different, the values from form.reset() should persist.
+      // The cascading effects for permanentDivision/District will handle their options.
     }
-  }, [formData.residentialInfo, form]);
+  }, [watchIsPermanentSameAsPresent, form]); // Removed isInitializing from deps here, logic inside handles it
 
   useEffect(() => {
     if (!isStepEditable("residentialInfo")) {
@@ -256,14 +468,15 @@ export default function ResidentialInfoPage() {
   }
 
   return (
-    <Card className="border-[#E9EFF6] text-tertiary-primary">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-xl">Residential Information</CardTitle>
+        <CardTitle>Residential Information</CardTitle>
         <CardDescription>Update your residential details here.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Present Address Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Present Address</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -284,7 +497,6 @@ export default function ResidentialInfoPage() {
                   placeholder="Select Division"
                   required
                 />
-                {/* Replaced SelectInput with ComboBoxInput for Present District */}
                 <ComboBoxInput
                   form={form}
                   name="presentDistrict"
@@ -299,7 +511,6 @@ export default function ResidentialInfoPage() {
                     presentFilteredDistricts.length === 0
                   }
                 />
-                {/* Replaced SelectInput with ComboBoxInput for Present Thana */}
                 <ComboBoxInput
                   form={form}
                   name="presentThana"
@@ -340,6 +551,7 @@ export default function ResidentialInfoPage() {
 
             <Separator className="my-6" />
 
+            {/* Permanent Address Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Permanent Address</h3>
               <CheckboxInput
@@ -347,7 +559,7 @@ export default function ResidentialInfoPage() {
                 name="isPermanentSameAsPresent"
                 label="Permanent address is the same as Present Address"
               />
-              {!isPermanentSameAsPresent && (
+              {!watchIsPermanentSameAsPresent && ( // Use watchIsPermanentSameAsPresent for rendering
                 <div className="mt-4 space-y-4">
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div className="md:col-span-2">
@@ -367,7 +579,6 @@ export default function ResidentialInfoPage() {
                       placeholder="Select Division"
                       required
                     />
-                    {/* Replaced SelectInput with ComboBoxInput for Permanent District */}
                     <ComboBoxInput
                       form={form}
                       name="permanentDistrict"
@@ -382,7 +593,6 @@ export default function ResidentialInfoPage() {
                         permanentFilteredDistricts.length === 0
                       }
                     />
-                    {/* Replaced SelectInput with ComboBoxInput for Permanent Thana */}
                     <ComboBoxInput
                       form={form}
                       name="permanentThana"

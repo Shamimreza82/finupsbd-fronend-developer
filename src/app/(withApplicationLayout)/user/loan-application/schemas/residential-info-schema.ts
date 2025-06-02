@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const residentialInfoSchema = z
   .object({
@@ -6,14 +6,14 @@ export const residentialInfoSchema = z
     presentAddress: z.string().min(2, {
       message: "Address must be at least 2 characters.",
     }),
-    presentDivision: z.string({
-      required_error: "Please select a division.",
+    presentDivision: z.string().min(1, {
+      message: "Please select a division.",
     }),
-    presentDistrict: z.string({
-      required_error: "Please select a district.",
+    presentDistrict: z.string().min(1, {
+      message: "Please select a district.",
     }),
-    presentThana: z.string({
-      required_error: "Please select a thana.",
+    presentThana: z.string().min(1, {
+      message: "Please select a thana.",
     }),
     presentPostalCode: z.string().min(2, {
       message: "Postal code must be at least 2 characters.",
@@ -21,8 +21,8 @@ export const residentialInfoSchema = z
     presentLengthOfStay: z.string().min(1, {
       message: "Length of stay is required.",
     }),
-    presentOwnershipStatus: z.string({
-      required_error: "Please select an ownership status.",
+    presentOwnershipStatus: z.string().min(1, {
+      message: "Please select an ownership status.",
     }),
 
     // Permanent Address
@@ -35,26 +35,64 @@ export const residentialInfoSchema = z
     permanentLengthOfStay: z.string().optional(),
     permanentOwnershipStatus: z.string().optional(),
   })
-  .refine(
-    (data) => {
-      // If isPermanentSameAsPresent is false, then permanent address fields are required
-      if (!data.isPermanentSameAsPresent) {
-        return (
-          !!data.permanentAddress &&
-          !!data.permanentDivision &&
-          !!data.permanentDistrict &&
-          !!data.permanentThana &&
-          !!data.permanentPostalCode &&
-          !!data.permanentLengthOfStay &&
-          !!data.permanentOwnershipStatus
-        )
+  .superRefine((data, ctx) => {
+    if (!data.isPermanentSameAsPresent) {
+      if (!data.permanentAddress || data.permanentAddress.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Permanent address is required.",
+          path: ["permanentAddress"],
+        });
       }
-      return true
-    },
-    {
-      message: "Permanent address fields are required when different from present address",
-      path: ["permanentAddress"],
-    },
-  )
+      if (!data.permanentDivision || data.permanentDivision.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Permanent division is required.",
+          path: ["permanentDivision"],
+        });
+      }
+      if (!data.permanentDistrict || data.permanentDistrict.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Permanent district is required.",
+          path: ["permanentDistrict"],
+        });
+      }
+      if (!data.permanentThana || data.permanentThana.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Permanent thana is required.",
+          path: ["permanentThana"],
+        });
+      }
+      if (!data.permanentPostalCode || data.permanentPostalCode.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Permanent postal code is required.",
+          path: ["permanentPostalCode"],
+        });
+      }
+      if (
+        !data.permanentLengthOfStay ||
+        data.permanentLengthOfStay.trim() === ""
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Permanent length of stay is required.",
+          path: ["permanentLengthOfStay"],
+        });
+      }
+      if (
+        !data.permanentOwnershipStatus ||
+        data.permanentOwnershipStatus.trim() === ""
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Permanent ownership status is required.",
+          path: ["permanentOwnershipStatus"],
+        });
+      }
+    }
+  });
 
-export type ResidentialInfoValues = z.infer<typeof residentialInfoSchema>
+export type ResidentialInfoValues = z.infer<typeof residentialInfoSchema>;
