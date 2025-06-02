@@ -51,6 +51,9 @@ export default function PreviewPage() {
     formData.documentInfo &&
     formData.guarantorInfo; // This means the step was visited and data (even if empty objects) was set.
 
+
+console.log(formData)
+
   const handleSubmit = async () => {
     if (!isFormComplete) {
       // This generic message is fine as isFormComplete covers all steps.
@@ -64,6 +67,8 @@ export default function PreviewPage() {
     try {
       setAllStepsToNonDraft(); // Mark all steps as non-draft upon submission attempt
       const result = await submitApplication(formData as AppFormData);
+
+
       if (result.success) {
         setIsFormSubmitted(true);
         setSubmittedData(formData as AppFormData);
@@ -74,7 +79,7 @@ export default function PreviewPage() {
         console.error("Error submitting application:", result.error);
         setError(
           result.error ||
-            "Failed to submit application. Please try again later.",
+          "Failed to submit application. Please try again later.",
         );
       }
     } catch (err) {

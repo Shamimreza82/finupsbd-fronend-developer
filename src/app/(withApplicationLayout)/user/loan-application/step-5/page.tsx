@@ -133,7 +133,7 @@ export default function LoanRequestPage() {
                 }}
               />
 
-              <SelectInput
+              <SelectInput 
                 form={form}
                 name="loanTenure"
                 label="Preferred Loan Tenure (years)"
