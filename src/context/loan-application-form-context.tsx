@@ -2,7 +2,7 @@
 
 import type { documentInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/document-info-schema";
 import type { employmentInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/employment-info-schema";
-import type { guarantorInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/guarantor-info-schema"; // Import new schema
+import type { guarantorInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/guarantor-info-schema";
 import type { loanInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/loan-info-schema";
 import type { loanRequestSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/loan-request-schema";
 import type { personalInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/personal-info-schema";
@@ -19,7 +19,7 @@ export type FormData = {
   loanInfo: z.infer<typeof loanInfoSchema> | null;
   loanRequest: z.infer<typeof loanRequestSchema> | null;
   documentInfo: z.infer<typeof documentInfoSchema> | null;
-  guarantorInfo: z.infer<typeof guarantorInfoSchema> | null; // Add guarantorInfo
+  guarantorInfo: z.infer<typeof guarantorInfoSchema> | null;
   draftMode: {
     personalInfo: boolean;
     residentialInfo: boolean;
@@ -27,7 +27,7 @@ export type FormData = {
     loanInfo: boolean;
     loanRequest: boolean;
     documentInfo: boolean;
-    guarantorInfo: boolean; // Add guarantorInfo
+    guarantorInfo: boolean;
   };
 };
 
@@ -69,6 +69,70 @@ const initialFormData: FormData = {
   },
 };
 
+// Storage utility functions
+const STORAGE_KEY = "loanApplicationForm";
+const DOCUMENT_STORAGE_KEY = "loanApplicationDocuments";
+
+// Function to estimate storage size
+const getStorageSize = (data: any): number => {
+  return new Blob([JSON.stringify(data)]).size;
+};
+
+// Function to save data with quota handling
+const saveToStorage = (key: string, data: any): boolean => {
+  try {
+    const dataString = JSON.stringify(data);
+    const dataSize = new Blob([dataString]).size;
+
+    // Check if data size is reasonable (less than 4MB to be safe)
+    if (dataSize > 4 * 1024 * 1024) {
+      console.warn(
+        `Data size (${(dataSize / 1024 / 1024).toFixed(2)}MB) is too large for localStorage`,
+      );
+      return false;
+    }
+
+    localStorage.setItem(key, dataString);
+    return true;
+  } catch (error) {
+    if (error instanceof DOMException && error.code === 22) {
+      console.error("Storage quota exceeded. Attempting to clear old data...");
+
+      // Try to clear document storage first
+      try {
+        localStorage.removeItem(DOCUMENT_STORAGE_KEY);
+        localStorage.setItem(key, JSON.stringify(data));
+        return true;
+      } catch (retryError) {
+        console.error(
+          "Failed to save even after clearing documents:",
+          retryError,
+        );
+        return false;
+      }
+    }
+    console.error("Error saving to localStorage:", error);
+    return false;
+  }
+};
+
+// Function to load data from storage
+const loadFromStorage = (key: string): any => {
+  try {
+    const savedData = localStorage.getItem(key);
+    return savedData ? JSON.parse(savedData) : null;
+  } catch (error) {
+    console.error("Error loading from localStorage:", error);
+    return null;
+  }
+};
+
+// Function to separate documents from form data
+const separateDocuments = (formData: FormData) => {
+  const { documentInfo, ...otherData } = formData;
+  return { documentInfo, otherData };
+};
+
 // Form provider component
 export function FormProvider({ children }: { children: React.ReactNode }) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -77,15 +141,15 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
 
   // Load form data from localStorage on initial render
   useEffect(() => {
-    const savedData = localStorage.getItem("loan-application-form-data"); // Updated key
-    const LoanRequest = localStorage.getItem("loanRequest");
-    if (savedData && LoanRequest) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        setFormData(parsedData);
-      } catch (error) {
-        console.error("Error parsing saved form data:", error);
-      }
+    const savedData = loadFromStorage(STORAGE_KEY);
+    const savedDocuments = loadFromStorage(DOCUMENT_STORAGE_KEY);
+
+    if (savedData) {
+      const combinedData = {
+        ...savedData,
+        documentInfo: savedDocuments || null,
+      };
+      setFormData(combinedData);
     }
   }, []);
 
@@ -100,17 +164,33 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     };
     setFormData(updatedFormData);
 
-    // Save to localStorage
-    localStorage.setItem(
-      "loan-application-form-data",
-      JSON.stringify(updatedFormData),
-    ); // Updated key
+    // Separate documents from other data for storage
+    const { documentInfo, otherData } = separateDocuments(updatedFormData);
+
+    // Save non-document data
+    const mainDataSaved = saveToStorage(STORAGE_KEY, otherData);
+
+    // Save document data separately if it exists
+    if (documentInfo && step === "documentInfo") {
+      const documentsSaved = saveToStorage(DOCUMENT_STORAGE_KEY, documentInfo);
+
+      if (!documentsSaved) {
+        console.warn("Documents could not be saved due to storage limitations");
+        // You might want to show a user notification here
+      }
+    }
+
+    if (!mainDataSaved) {
+      console.warn("Form data could not be saved due to storage limitations");
+      // You might want to show a user notification here
+    }
   };
 
   // Reset the form data
   const resetForm = () => {
     setFormData(initialFormData);
-    localStorage.removeItem("loan-application-form-data"); // Updated key
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(DOCUMENT_STORAGE_KEY);
   };
 
   // Check if a step is completed
@@ -129,14 +209,14 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
         loanInfo: false,
         loanRequest: false,
         documentInfo: false,
-        guarantorInfo: false, // Add guarantorInfo
+        guarantorInfo: false,
       },
     };
     setFormData(updatedFormData);
-    localStorage.setItem(
-      "loan-application-form-data",
-      JSON.stringify(updatedFormData),
-    ); // Updated key
+
+    // Save updated data
+    const { documentInfo, otherData } = separateDocuments(updatedFormData);
+    saveToStorage(STORAGE_KEY, otherData);
   };
 
   // Enable document editing only
@@ -146,15 +226,13 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
       draftMode: {
         ...formData.draftMode,
         documentInfo: true,
-        // If guarantor info also needs to be editable post-submission, add it here
-        // guarantorInfo: true,
       },
     };
     setFormData(updatedFormData);
-    localStorage.setItem(
-      "loan-application-form-data",
-      JSON.stringify(updatedFormData),
-    ); // Updated key
+
+    // Save updated data
+    const { documentInfo, otherData } = separateDocuments(updatedFormData);
+    saveToStorage(STORAGE_KEY, otherData);
   };
 
   // Check if a step is editable

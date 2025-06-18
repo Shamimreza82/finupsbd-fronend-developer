@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   useFormContext,
   type FormData as AppFormData,
-} from "@/context/loan-application-form-context";
+} from "@/context/loan-application-form-context"; // Updated import path
 import {
   AlertCircle,
   FileText,
@@ -23,10 +23,9 @@ import {
   Loader2,
   PenSquare,
 } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { PropertyDetailValues } from "../schemas/employment-info-schema"; // Ensure this type is imported
+import type { PropertyDetailValues } from "../schemas/employment-info-schema";
 import type { GuarantorSectionValues } from "../schemas/guarantor-info-schema";
 
 export default function PreviewPage() {
@@ -49,32 +48,27 @@ export default function PreviewPage() {
     formData.documentInfo &&
     formData.guarantorInfo;
 
-
-console.log(formData)
-
   const handleSubmit = async () => {
     if (!isFormComplete) {
       setError("Please complete all required steps before submitting.");
       return;
     }
-
     setIsSubmitting(true);
     setError(null);
-
     try {
       setAllStepsToNonDraft();
       const result = await submitApplication(formData as AppFormData);
-
-
       if (result.success) {
         setIsFormSubmitted(true);
         setSubmittedData(formData as AppFormData);
-        router.push(`/loan-application/success?id=${result.applicationId}`);
+        router.push(
+          `/user/loan-application/success?id=${result.applicationId}`,
+        );
       } else {
         console.error("Error submitting application:", result.error);
         setError(
           result.error ||
-          "Failed to submit application. Please try again later.",
+            "Failed to submit application. Please try again later.",
         );
       }
     } catch (err) {
@@ -86,7 +80,7 @@ console.log(formData)
   };
 
   const navigateToStep = (step: string) => {
-    router.push(`/loan-application/${step}`);
+    router.push(`/user/loan-application/${step}`);
   };
 
   const renderPersonalInfo = () => {
@@ -105,7 +99,7 @@ console.log(formData)
             <p className="text-sm">{info.fullName}</p>
           </div>
           <div>
-            <p className="text-sm font-medium">Father's/Husband's Name</p>
+            <p className="text-sm font-medium">Father's Name</p>
             <p className="text-sm">{info.fatherName}</p>
           </div>
           <div>
@@ -119,9 +113,11 @@ console.log(formData)
           <div>
             <p className="text-sm font-medium">Date of Birth</p>
             <p className="text-sm">
-              {info.dateOfBirth instanceof Date
-                ? info.dateOfBirth.toLocaleDateString()
-                : info.dateOfBirth}
+              {typeof info.dateOfBirth === "string"
+                ? info.dateOfBirth
+                : info.dateOfBirth
+                  ? info.dateOfBirth.toLocaleDateString()
+                  : ""}
             </p>
           </div>
           <div>
@@ -132,19 +128,25 @@ console.log(formData)
             <p className="text-sm font-medium">Nationality</p>
             <p className="text-sm">{info.nationality}</p>
           </div>
-          {/* <div>
-            <p className="text-sm font-medium">Identification Type</p>
-            <p className="text-sm capitalize">{info.identificationType}</p>
+          <div>
+            <p className="text-sm font-medium">Educational Level</p>
+            <p className="text-sm capitalize">{info.educationalLevel}</p>
           </div>
           <div>
-            <p className="text-sm font-medium">Identification Number</p>
-            <p className="text-sm">{info.identificationNumber}</p>
-          </div> */}
+            <p className="text-sm font-medium">NID Number</p>
+            <p className="text-sm">{info.NIDNumber}</p>
+          </div>
+          {info.passportNumber && (
+            <div>
+              <p className="text-sm font-medium">Passport Number</p>
+              <p className="text-sm">{info.passportNumber}</p>
+            </div>
+          )}
           <div>
             <p className="text-sm font-medium">Marital Status</p>
             <p className="text-sm capitalize">{info.maritalStatus}</p>
           </div>
-          {info.maritalStatus === "MARRIED" && (
+          {info.maritalStatus === "MARRIED" && info.spouseName && (
             <div>
               <p className="text-sm font-medium">Spouse's Name</p>
               <p className="text-sm">{info.spouseName}</p>
@@ -162,17 +164,19 @@ console.log(formData)
             <p className="text-sm font-medium">Mobile Number</p>
             <p className="text-sm">{info.mobileNumber}</p>
           </div>
-          <div>
-            <p className="text-sm font-medium">Alternate Mobile Number</p>
-            <p className="text-sm">{info.alternateMobileNumber || "N/A"}</p>
-          </div>
+          {info.alternateMobileNumber && (
+            <div>
+              <p className="text-sm font-medium">Alternate Mobile Number</p>
+              <p className="text-sm">{info.alternateMobileNumber}</p>
+            </div>
+          )}
           <div>
             <p className="text-sm font-medium">Email</p>
             <p className="text-sm">{info.emailAddress}</p>
           </div>
-          <div>
-            <p className="text-sm font-medium">Social Media</p>
-            {info.socialMediaProfiles && info.socialMediaProfiles.length > 0 ? (
+          {info.socialMediaProfiles && info.socialMediaProfiles.length > 0 && (
+            <div className="md:col-span-2">
+              <p className="text-sm font-medium">Social Media</p>
               <div className="space-y-1">
                 {info.socialMediaProfiles.map((link, index) => (
                   <p key={index} className="break-all text-sm">
@@ -180,14 +184,13 @@ console.log(formData)
                   </p>
                 ))}
               </div>
-            ) : (
-              <p className="text-sm">N/A</p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     );
   };
+
   const renderResidentialInfo = () => {
     const info = formData.residentialInfo;
     if (!info)
@@ -276,6 +279,7 @@ console.log(formData)
       </div>
     );
   };
+
   const renderEmploymentInfo = () => {
     const info = formData.employmentInfo;
     if (!info)
@@ -292,7 +296,7 @@ console.log(formData)
             <div>
               <p className="text-sm font-medium">Employment Status</p>
               <p className="text-sm capitalize">
-                {info.employmentStatus.replace(/_/g, " ").toLowerCase()}
+                {info.employmentStatus?.replace(/_/g, " ").toLowerCase()}
               </p>
             </div>
             {info.employmentStatus === "SALARIED" && (
@@ -316,15 +320,17 @@ console.log(formData)
                 <div>
                   <p className="text-sm font-medium">Employment Type</p>
                   <p className="text-sm capitalize">
-                    {info.employmentType.replace(/_/g, " ").toLowerCase()}
+                    {info.employmentType?.replace(/_/g, " ").toLowerCase()}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Date of Joining</p>
                   <p className="text-sm">
-                    {info.dateOfJoining instanceof Date
-                      ? info.dateOfJoining.toLocaleDateString()
-                      : info.dateOfJoining}
+                    {typeof info.dateOfJoining === "string"
+                      ? info.dateOfJoining
+                      : info.dateOfJoining
+                        ? info.dateOfJoining.toLocaleDateString()
+                        : ""}
                   </p>
                 </div>
                 <div>
@@ -397,13 +403,13 @@ console.log(formData)
                 <div>
                   <p className="text-sm font-medium">Business Owner Type</p>
                   <p className="text-sm capitalize">
-                    {info.businessOwnerType.replace(/_/g, " ").toLowerCase()}
+                    {info.businessOwnerType?.replace(/_/g, " ").toLowerCase()}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Business Type</p>
                   <p className="text-sm capitalize">
-                    {info.businessType.replace(/_/g, " ").toLowerCase()}
+                    {info.businessType?.replace(/_/g, " ").toLowerCase()}
                   </p>
                 </div>
                 <div>
@@ -427,7 +433,80 @@ console.log(formData)
                 </div>
               </>
             )}
-            {/* Consider adding a case for OTHER_EMPLOYMENT if it has specific fields */}
+            {info.employmentStatus === "SELF_EMPLOYED" && (
+              <>
+                <div>
+                  <p className="text-sm font-medium">Profession Type</p>
+                  <p className="text-sm capitalize">
+                    {info.professionType === "OTHER"
+                      ? info.otherProfession
+                      : info.professionType?.replace(/_/g, " ").toLowerCase()}
+                  </p>
+                </div>
+                {info.professionalTitle && (
+                  <div>
+                    <p className="text-sm font-medium">
+                      Professional Title/Designation
+                    </p>
+                    <p className="text-sm">{info.professionalTitle}</p>
+                  </div>
+                )}
+                {info.institutionName && (
+                  <div>
+                    <p className="text-sm font-medium">
+                      Institution/Organization Name
+                    </p>
+                    <p className="text-sm">{info.institutionName}</p>
+                  </div>
+                )}
+                {info.workplaceAddress && (
+                  <div className="md:col-span-2">
+                    <p className="text-sm font-medium">Workplace Address</p>
+                    <p className="text-sm">{info.workplaceAddress}</p>
+                  </div>
+                )}
+                {info.yearsOfExperience && (
+                  <div>
+                    <p className="text-sm font-medium">Years of Experience</p>
+                    <p className="text-sm">{info.yearsOfExperience} years</p>
+                  </div>
+                )}
+                {info.startedPracticeSince && (
+                  <div>
+                    <p className="text-sm font-medium">
+                      Started Practice Since
+                    </p>
+                    <p className="text-sm">{info.startedPracticeSince}</p>
+                  </div>
+                )}
+                {info.tin && (
+                  <div>
+                    <p className="text-sm font-medium">TIN</p>
+                    <p className="text-sm">{info.tin}</p>
+                  </div>
+                )}
+                {info.websitePortfolioLink && (
+                  <div>
+                    <p className="text-sm font-medium">
+                      Website/Portfolio Link
+                    </p>
+                    <p className="break-all text-sm">
+                      {info.websitePortfolioLink}
+                    </p>
+                  </div>
+                )}
+                {info.professionalRegistrationNumber && (
+                  <div>
+                    <p className="text-sm font-medium">
+                      Professional Registration Number
+                    </p>
+                    <p className="text-sm">
+                      {info.professionalRegistrationNumber}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
         <Separator />
@@ -442,20 +521,26 @@ console.log(formData)
                       Property {index + 1}
                     </h5>
                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-                      <div>
-                        <p className="text-sm font-medium">Type of Property</p>
-                        <p className="text-sm capitalize">
-                          {property.propertyType
-                            .replace(/_/g, " ")
-                            .toLowerCase()}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">
-                          Approximate Value (BDT)
-                        </p>
-                        <p className="text-sm">{property.propertyValue}</p>
-                      </div>
+                      {property.propertyType && (
+                        <div>
+                          <p className="text-sm font-medium">
+                            Type of Property
+                          </p>
+                          <p className="text-sm capitalize">
+                            {property.propertyType
+                              .replace(/_/g, " ")
+                              .toLowerCase()}
+                          </p>
+                        </div>
+                      )}
+                      {property.propertyValue && (
+                        <div>
+                          <p className="text-sm font-medium">
+                            Approximate Value (BDT)
+                          </p>
+                          <p className="text-sm">{property.propertyValue}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ),
@@ -475,16 +560,22 @@ console.log(formData)
               <p className="text-sm font-medium">Gross Monthly Income</p>
               <p className="text-sm">{info.grossMonthlyIncome}</p>
             </div>
-            {info.rentIncome && ( // Check if rentIncome has a value before displaying
+            {info.rentIncome && (
               <div>
                 <p className="text-sm font-medium">Rent Income</p>
                 <p className="text-sm">{info.rentIncome}</p>
               </div>
             )}
-            {info.otherIncome && ( // Check if otherIncome has a value
+            {info.otherIncome && (
               <div>
                 <p className="text-sm font-medium">Other Income</p>
                 <p className="text-sm">{info.otherIncome}</p>
+              </div>
+            )}
+            {info.sourceOfOtherIncome && (
+              <div>
+                <p className="text-sm font-medium">Source of Other Income</p>
+                <p className="text-sm">{info.sourceOfOtherIncome}</p>
               </div>
             )}
             <div>
@@ -496,6 +587,7 @@ console.log(formData)
       </div>
     );
   };
+
   const renderLoanInfo = () => {
     const info = formData.loanInfo;
     if (!info)
@@ -615,6 +707,7 @@ console.log(formData)
       </div>
     );
   };
+
   const renderLoanRequest = () => {
     const info = formData.loanRequest;
     if (!info)
@@ -644,6 +737,7 @@ console.log(formData)
       </div>
     );
   };
+
   const renderDocumentInfo = () => {
     const info = formData.documentInfo;
     if (!info)
@@ -714,8 +808,10 @@ console.log(formData)
                     {doc.value.name}
                   </p>
                 </div>
-              ) : doc.value && doc.value.type.startsWith("image/") ? (
-                <Image
+              ) : doc.value &&
+                doc.value.type &&
+                doc.value.type.startsWith("image/") ? (
+                <img
                   src={doc.value.dataUrl || "/placeholder.svg"}
                   alt={doc.label}
                   className="max-h-full max-w-full object-contain"
@@ -763,57 +859,13 @@ console.log(formData)
         <h4 className="text-md mb-2 font-semibold">{title}</h4>
         <div className="grid grid-cols-1 gap-x-4 gap-y-2 md:grid-cols-2">
           <div>
-            <p className="text-sm font-medium">Full Name</p>
-            <p className="text-sm">{guarantor.fullName}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Father's/Husband's Name</p>
-            <p className="text-sm">{guarantor.fatherOrHusbandName}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Mother's Name</p>
-            <p className="text-sm">{guarantor.motherName}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Date of Birth</p>
-            <p className="text-sm">
-              {guarantor.dateOfBirth instanceof Date
-                ? guarantor.dateOfBirth.toLocaleDateString()
-                : guarantor.dateOfBirth}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Nationality</p>
-            <p className="text-sm">{guarantor.nationality}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium">National ID Number (NID)</p>
-            <p className="text-sm">{guarantor.nationalIdNumber}</p>
-          </div>
-          <div>
             <p className="text-sm font-medium">Mobile Number</p>
             <p className="text-sm">{guarantor.mobileNumber}</p>
           </div>
           <div>
             <p className="text-sm font-medium">Email Address</p>
-            <p className="text-sm">{guarantor.emailAddress || "N/A"}</p>
+            <p className="text-sm">{guarantor.emailAddress}</p>
           </div>
-          <div>
-            <p className="text-sm font-medium">Relation with Applicant</p>
-            <p className="text-sm">{guarantor.relationWithApplicant}</p>
-          </div>
-        </div>
-        <div className="space-y-1">
-          <p className="text-sm font-medium">Present Address</p>
-          <p className="text-sm">{guarantor.presentAddress}</p>
-        </div>
-        <div className="space-y-1">
-          <p className="text-sm font-medium">Permanent & Mailing Address</p>
-          <p className="text-sm">{guarantor.permanentAddress}</p>
-        </div>
-        <div className="space-y-1">
-          <p className="text-sm font-medium">Work Address</p>
-          <p className="text-sm">{guarantor.workAddress}</p>
         </div>
       </div>
     );
@@ -821,10 +873,8 @@ console.log(formData)
 
   const renderGuarantorInfo = () => {
     const guarantorInfo = formData.guarantorInfo;
-
     const personalGuarantorData = guarantorInfo?.personalGuarantor;
     const businessGuarantorData = guarantorInfo?.businessGuarantor;
-
     const isPersonalProvided =
       personalGuarantorData &&
       Object.values(personalGuarantorData).some(
@@ -843,7 +893,6 @@ console.log(formData)
         </p>
       );
     }
-
     return (
       <div className="space-y-6">
         {isPersonalProvided &&
@@ -866,7 +915,6 @@ console.log(formData)
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-
       <Card>
         <CardHeader>
           <CardTitle>Application Preview</CardTitle>
@@ -875,7 +923,6 @@ console.log(formData)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Personal Info */}
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-lg font-semibold">Personal Information</h3>
@@ -890,8 +937,6 @@ console.log(formData)
             {renderPersonalInfo()}
           </section>
           <Separator />
-
-          {/* Residential Info */}
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-lg font-semibold">Residential Information</h3>
@@ -906,8 +951,6 @@ console.log(formData)
             {renderResidentialInfo()}
           </section>
           <Separator />
-
-          {/* Employment & Financial Info */}
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-lg font-semibold">
@@ -924,8 +967,6 @@ console.log(formData)
             {renderEmploymentInfo()}
           </section>
           <Separator />
-
-          {/* Existing Financial Obligations */}
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-lg font-semibold">
@@ -942,8 +983,6 @@ console.log(formData)
             {renderLoanInfo()}
           </section>
           <Separator />
-
-          {/* Loan Request & Specifications */}
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-lg font-semibold">
@@ -960,11 +999,9 @@ console.log(formData)
             {renderLoanRequest()}
           </section>
           <Separator />
-
-          {/* Documents */}
           <section>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Documents</h3>
+              <h3 className="text-lg font-semibold">Document Verification</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -976,8 +1013,6 @@ console.log(formData)
             {renderDocumentInfo()}
           </section>
           <Separator />
-
-          {/* Guarantor Information */}
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-lg font-semibold">Guarantor Information</h3>
@@ -992,10 +1027,10 @@ console.log(formData)
             {renderGuarantorInfo()}
           </section>
         </CardContent>
-        <CardFooter className="flex justify-end space-x-2">
+        <CardFooter className="mt-6 flex justify-between space-x-2">
           <Button
             variant="outline"
-            onClick={() => router.push("/loan-application/step-7")}
+            onClick={() => router.push("/user/loan-application/step-7")}
           >
             Back
           </Button>

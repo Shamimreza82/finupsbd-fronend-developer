@@ -1,8 +1,15 @@
 "use client";
 
-import type { FileWithPreview } from "@/app/(withApplicationLayout)/user/loan-application/schemas/document-info-schema";
+import { FileWithPreview } from "@/app/(withApplicationLayout)/user/loan-application/schemas/document-info-schema";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, FileText, ImageIcon, Upload, X } from "lucide-react";
+import {
+  AlertCircle,
+  FileText,
+  ImageIcon,
+  Info,
+  Upload,
+  X,
+} from "lucide-react";
 import type React from "react";
 import { useRef, useState } from "react";
 
@@ -23,6 +30,7 @@ export function FileUpload({
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [validationError, setValidationError] = useState<string>("");
+  const [storageWarning, setStorageWarning] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Parse accepted file types from accept string
@@ -45,12 +53,12 @@ export function FileUpload({
   };
 
   const validateFile = (file: File): string | null => {
-    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // Reduced to 2MB to help with storage
     const acceptedTypes = getAcceptedTypes(accept);
 
     // Check file size
     if (file.size > MAX_FILE_SIZE) {
-      return `File size must be less than 5MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+      return `File size must be less than 2MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB`;
     }
 
     // Check file type
@@ -61,9 +69,42 @@ export function FileUpload({
     return null;
   };
 
-  const processFile = (file: File) => {
-    // Clear any previous validation errors
+  // Compress image if needed
+  const compressImage = (
+    file: File,
+    maxWidth = 1200,
+    quality = 0.8,
+  ): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+
+      img.onload = () => {
+        // Calculate new dimensions
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL(file.type, quality);
+        resolve(compressedDataUrl);
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const processFile = async (file: File) => {
+    // Clear any previous errors/warnings
     setValidationError("");
+    setStorageWarning("");
 
     // Validate file
     const validationResult = validateFile(file);
@@ -76,19 +117,44 @@ export function FileUpload({
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        const fileWithPreview: FileWithPreview = {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          dataUrl: event.target.result as string,
-        };
-        onChange(fileWithPreview);
+    try {
+      let dataUrl: string;
+
+      // Compress images to reduce storage usage
+      if (file.type.startsWith("image/")) {
+        dataUrl = await compressImage(file);
+
+        // Check if compression helped enough
+        const compressedSize = new Blob([dataUrl]).size;
+        if (compressedSize > 1024 * 1024) {
+          // Still larger than 1MB
+          setStorageWarning(
+            "Large file detected. This may cause storage issues.",
+          );
+        }
+      } else {
+        // For PDFs, convert to base64
+        const reader = new FileReader();
+        dataUrl = await new Promise<string>((resolve) => {
+          reader.onload = (event) => {
+            resolve(event.target?.result as string);
+          };
+          reader.readAsDataURL(file);
+        });
       }
-    };
-    reader.readAsDataURL(file);
+
+      const fileWithPreview: FileWithPreview = {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        dataUrl: dataUrl,
+      };
+
+      onChange(fileWithPreview);
+    } catch (error) {
+      console.error("Error processing file:", error);
+      setValidationError("Error processing file. Please try again.");
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,6 +184,7 @@ export function FileUpload({
   const removeFile = () => {
     onChange(null);
     setValidationError("");
+    setStorageWarning("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -149,7 +216,7 @@ export function FileUpload({
           <p className="mt-1 text-xs text-muted-foreground">
             Supported formats: {getFileTypeMessage(accept).toUpperCase()}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">Max size: 5MB</p>
+          <p className="mt-1 text-xs text-muted-foreground">Max size: 2MB</p>
           <input
             type="file"
             ref={fileInputRef}
@@ -203,6 +270,12 @@ export function FileUpload({
         <div className="flex items-center gap-2 text-sm font-medium text-destructive">
           <AlertCircle className="h-4 w-4" />
           <span>{displayError}</span>
+        </div>
+      )}
+      {storageWarning && (
+        <div className="flex items-center gap-2 text-sm font-medium text-amber-600">
+          <Info className="h-4 w-4" />
+          <span>{storageWarning}</span>
         </div>
       )}
     </div>

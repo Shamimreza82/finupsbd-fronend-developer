@@ -63,13 +63,13 @@ export default function DocumentsPage() {
   // Handle form submission
   function onSubmit(data: DocumentInfoValues) {
     updateFormData("documentInfo", data);
-
+    router.push("/user/loan-application/step-7");
     // If form is already submitted, go back to success page
-    if (isFormSubmitted) {
-      router.push("/user/loan-application/success");
-    } else {
-      router.push("/user/loan-application/preview");
-    }
+    // if (isFormSubmitted) {
+    //   router.push("/user/loan-application/success");
+    // } else {
+    //   router.push("/user/loan-application/preview");
+    // }
   }
 
   return (
@@ -348,9 +348,7 @@ export default function DocumentsPage() {
                   Back
                 </Button>
               )}
-              <Button type="submit">
-                {isFormSubmitted ? "Update Documents" : "Continue to Preview"}
-              </Button>
+              <Button type="submit">Upload Documents and Continue</Button>
             </CardFooter>
           </form>
         </Form>
