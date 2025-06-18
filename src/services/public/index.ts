@@ -1,14 +1,9 @@
 "use server";
 
+import { EmiCalculatorPayload } from "@/types/public/emiCalculator";
 
-export interface EmiCalculatorPayload {
-  disbursementDate: string;
-  loanAmount: string;
-  numberOfMonths: number;
-  numberOfSchedule?: number;
-  interestRate: string
-  emiAmount?: string;
- }
+
+
 
 
 export const emiCalculatorApi = async (payload: EmiCalculatorPayload) => {
@@ -88,3 +83,28 @@ export const forgotApplication = async (payload: {email: string}) => {
     };
   }
 };
+
+
+
+// export const guarantorInfoUpdate = async (payload:  ) => {
+//     console.log(payload)
+//   try {
+//     const res = await fetch( `${process.env.NEXT_PUBLIC_BASE_API}/application/applicant-guarator-info`, 
+//       {
+//         method: "POST",
+//         body: JSON.stringify(payload),
+//       },
+//     );
+
+//     const jsonData = await res.json();
+//     // console.log(jsonData)
+//     return jsonData;
+//   } catch (error) {
+//     console.error("Error forgot application api call:", error);
+//     return {
+//       success: false,
+//       message:
+//         error instanceof Error ? error.message : "An unknown error occurred",
+//     };
+//   }
+// };

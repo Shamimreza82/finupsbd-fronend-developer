@@ -12,12 +12,16 @@ const roleBasedPrivateRoutes: Record<TUser["role"], RegExp[]> = {
   SUPER_ADMIN: [/^\/super-admin/, /^\/admin(?:\/.*)?$/],
 }
 
+
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   console.log("Middleware executing - Path:", pathname)
 
   // Fetch user information
   const userInfo = await getCurrentUser()
+
+  console.log(userInfo)
 
   // ✅ 1️⃣ Allow public routes without authentication
   if (publicRoutes.includes(pathname)) {
@@ -30,9 +34,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next() // Allow login & register pages
     } else {
       // Redirect unauthorized users to login with a redirect path
-      return NextResponse.redirect(
-        new URL(`/login?redirectPath=${encodeURIComponent(pathname)}`, request.url)
-      )
+     console.log(request.url)
+      return NextResponse.redirect(new URL(`/login?redirectPath=${encodeURIComponent(pathname)}`, request.url))
     }
   }
 

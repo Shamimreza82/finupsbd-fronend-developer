@@ -102,6 +102,9 @@ export const getCurrentUser = async (): Promise<DecodedUser | null> => {
 
 
 
+
+
+
 export const logout = async () => {
     (await cookies()).delete("accessToken")
 }

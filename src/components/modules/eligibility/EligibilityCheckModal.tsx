@@ -100,7 +100,7 @@ function EligibilityCheckModal({
   // };
 
   const validateStep = async () => {
-    const schema = step === 0 ? stepOneSchema : step === 1? stepTwoSchema : step === 2 ? stepThreeSchema : fullFormSchema;
+    const schema = step === 0 ? stepOneSchema : step === 1 ? stepTwoSchema : step === 2 ? stepThreeSchema : fullFormSchema;
     const valid = await form.trigger(
       Object.keys(
         "shape" in schema ? schema.shape : schema._def.schema.shape,
@@ -112,10 +112,7 @@ function EligibilityCheckModal({
   const onSubmit = (data: FullFormSchema) => {
     let formatedData: Partial<FullFormSchema> = { ...data };
 
-    if (
-      data.profession !== "BUSINESS_OWNER" &&
-      data.profession !== "SELF_EMPLOYED"
-    ) {
+    if (data.profession !== "BUSINESS_OWNER" && data.profession !== "SELF_EMPLOYED" ) {
       delete formatedData.businessOwnerType;
       delete formatedData.businessType;
       delete formatedData.sharePortion;

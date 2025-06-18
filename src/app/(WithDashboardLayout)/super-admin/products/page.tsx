@@ -14,7 +14,6 @@ export default function ProductsPage() {
           Add Product
         </Button>
       </div>
-
       <ProductsFilter />
       <ProductsTable />
     </div>
