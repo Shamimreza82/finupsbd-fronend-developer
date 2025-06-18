@@ -80,7 +80,7 @@ export const TextInput = <T extends FieldValues>({
             <div className="relative">
               <Input
                 className={cn(
-                  "h-10 border-[#D0D5DD] bg-white max-sm:h-11",
+                  "h-10 border-[#D0D5DD] bg-white disabled:bg-gray-200 disabled:text-gray-900 disabled:opacity-100 max-sm:h-11",
                   icon && "pr-12",
                 )}
                 type={type}

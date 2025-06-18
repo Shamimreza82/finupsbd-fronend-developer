@@ -2,21 +2,8 @@ import { z } from "zod";
 
 const phoneRegex = /^\+?[1-9]\d{1,14}$/; // Basic E.164 phone number regex
 
-// Schema for individual guarantor details (shared by Personal and Business)
-// Fields are marked as required here as per UI asterisks
+// Simplified schema for guarantor with only mobile and email
 const guarantorSectionSchema = z.object({
-  fullName: z.string().min(1, "Full name is required."),
-  fatherOrHusbandName: z
-    .string()
-    .min(1, "Father's/Husband's name is required."),
-  motherName: z.string().min(1, "Mother's name is required."),
-  dateOfBirth: z
-    .date()
-    .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
-      message: "Date of joining must be a valid date.",
-    }),
-  nationality: z.string().min(1, "Nationality is required."),
-  nationalIdNumber: z.string().min(1, "National ID Number (NID) is required."),
   mobileNumber: z
     .string()
     .regex(phoneRegex, "Invalid mobile number format.")
@@ -24,24 +11,16 @@ const guarantorSectionSchema = z.object({
   emailAddress: z
     .string()
     .email("Invalid email address.")
-    .optional()
-    .or(z.literal("")), // Optional as per UI (no asterisk)
-  relationWithApplicant: z
-    .string()
-    .min(1, "Relation with applicant is required."),
-  presentAddress: z.string().min(1, "Present address is required."),
-  permanentAddress: z
-    .string()
-    .min(1, "Permanent & Mailing address is required."),
-  workAddress: z.string().min(1, "Work address is required."),
+    .min(1, "Email address is required."),
 });
+
 // Export the inferred type for GuarantorSectionValues
 export type GuarantorSectionValues = z.infer<typeof guarantorSectionSchema>;
 
-// Specific schema for Personal Guarantor, extending the base
+// Specific schema for Personal Guarantor
 const personalGuarantorSchema = guarantorSectionSchema.extend({});
 
-// Specific schema for Business Guarantor (currently same as base, can be extended)
+// Specific schema for Business Guarantor
 const businessGuarantorSchema = guarantorSectionSchema.extend({});
 
 // Main schema for the Guarantor Information step

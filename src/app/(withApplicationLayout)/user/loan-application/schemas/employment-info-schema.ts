@@ -2,121 +2,11 @@ import { z } from "zod";
 
 // Schema for a single property entry
 const propertyDetailSchema = z.object({
-  propertyType: z.string().min(1, { message: "Please select property type." }),
+  propertyType: z.string().optional(),
   propertyValue: z
     .string()
-    .min(1, { message: "Approximate Value is required." })
-    .regex(/^\d+$/, { message: "Approximate Value must be a number." }),
-});
-
-// Base schema for employment info (discriminator)
-const baseEmploymentSchema = z.object({
-  employmentStatus: z.enum([
-    "SALARIED",
-    "BUSINESS_OWNER",
-    "SELF_EMPLOYED",
-    "RETIRED",
-    "HOUSEWIFE",
-    "UNEMPLOYED",
-  ]),
-});
-
-// Schema for salaried professionals
-const salariedSchema = baseEmploymentSchema.extend({
-  employmentStatus: z.literal("SALARIED"),
-  jobTitle: z
-    .string()
-    .min(2, { message: "Job title must be at least 2 characters." }),
-  designation: z
-    .string()
-    .min(2, { message: "Designation must be at least 2 characters." }),
-  department: z
-    .string()
-    .min(2, { message: "Department must be at least 2 characters." }),
-  employeeId: z.string().min(1, { message: "Employee ID is required." }),
-  employmentType: z.enum(
-    ["PERMANENT", "CONTRACTUAL", "PARTTIME", "PROBATION"],
-    {
-      required_error: "Please select your employment type.",
-    },
-  ),
-  dateOfJoining: z.date({
-    required_error: "Date of joining is required.",
-    invalid_type_error: "Date of joining must be a valid date.",
-  }),
-  organizationName: z
-    .string()
-    .min(2, { message: "Organization name must be at least 2 characters." }),
-  organizationAddress: z
-    .string()
-    .min(2, { message: "Organization address must be at least 2 characters." }),
-  serviceYears: z
-    .string()
-    .min(1, { message: "Years of service is required." })
-    .regex(/^\d+$/, "Must be a number"),
-  serviceMonths: z
-    .string()
-    .min(1, { message: "Months of service is required." })
-    .regex(/^[0-9]$|^1[0-1]$/, "Must be between 0-11"), // 0-11
-  eTin: z.string().min(1, { message: "E-TIN is required." }),
-  officialContact: z.string().optional(),
-  hasPreviousOrganization: z.boolean().default(false),
-  previousOrganizationName: z.string().optional(),
-  previousDesignation: z.string().optional(),
-  previousServiceYears: z
-    .string()
-    .regex(/^\d*$/, "Must be a number if provided")
+    .regex(/^\d*$/, { message: "Property value must be a number if provided." })
     .optional(),
-  previousServiceMonths: z
-    .string()
-    .regex(/^([0-9]|1[0-1])?$/, "Must be between 0-11 if provided") // 0-11 or empty
-    .optional(),
-  totalExperienceYears: z
-    .string()
-    .min(1, { message: "Total experience years is required." }),
-  totalExperienceMonths: z
-    .string()
-    .min(1, { message: "Total experience months is required." }),
-});
-
-// Schema for business owners
-const businessOwnerSchema = baseEmploymentSchema.extend({
-  employmentStatus: z.literal("BUSINESS_OWNER"),
-  businessName: z
-    .string()
-    .min(2, { message: "Business name must be at least 2 characters." }),
-  businessAddress: z
-    .string()
-    .min(2, { message: "Business address must be at least 2 characters." }),
-  businessOwnerType: z.enum(
-    ["PROPRIETORSHIP", "PARTNERSHIP", "PUBLIC_LIMITED_COMPANY"],
-    {
-      required_error: "Please select your business owner type.",
-    },
-  ),
-  businessType: z.enum(["RETAIL", "WHOLESALE", "MANUFACTURING"], {
-    required_error: "Please select your business type.",
-  }),
-  sharePortion: z
-    .string()
-    .min(1, { message: "Share portion is required." })
-    .regex(/^\d+$/, "Must be a number"),
-  businessRegistrationNumber: z.string().min(1, {
-    message: "Business registration/trade license number is required.",
-  }),
-  tradeLicenseAge: z
-    .string()
-    .min(1, { message: "Please select trade license age." }),
-});
-
-// Schema for other employment types (no additional fields beyond status)
-const otherEmploymentSchema = baseEmploymentSchema.extend({
-  employmentStatus: z.enum([
-    "SELF_EMPLOYED",
-    "RETIRED",
-    "HOUSEWIFE",
-    "UNEMPLOYED",
-  ]),
 });
 
 // Income details schema
@@ -134,78 +24,357 @@ const incomeDetailsSchema = z
       .string()
       .regex(/^\d*$/, "Must be a number if provided")
       .optional(),
-    sourceOfOtherIncome: z
-      .string()
-      .regex(/^\d*$/, "Must be a number if provided")
-      .optional(),
-
+    sourceOfOtherIncome: z.string().optional(),
     totalIncome: z
       .string()
       .min(1, { message: "Total income is required." })
       .regex(/^\d+$/, "Must be a number"),
   })
-  // Conditional validation for spouseName based on maritalStatus
   .superRefine((data, ctx) => {
-    if (data.otherIncome !== "") {
+    if (
+      data.otherIncome &&
+      data.otherIncome.trim() !== "" &&
+      (!data.sourceOfOtherIncome || data.sourceOfOtherIncome.trim() === "")
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Specify the source of your other income.",
+        message:
+          "Specify the source of your other income if other income is provided.",
         path: ["sourceOfOtherIncome"],
       });
     }
   });
 
-// Combined schema with discriminated union for employment status
+// Base employment schema with all possible fields
 const employmentInfoBaseSchema = z
-  .discriminatedUnion(
-    "employmentStatus",
-    [salariedSchema, businessOwnerSchema, otherEmploymentSchema],
-    {
-      errorMap: (issue, ctx) => {
-        if (issue.code === z.ZodIssueCode.invalid_union_discriminator) {
-          return { message: "Please select your employment status." };
-        }
-        return { message: ctx.defaultError };
-      },
-    },
-  )
-  .and(
-    z.object({
-      properties: z
-        .array(propertyDetailSchema)
-        .optional()
-        .default([])
-        .refine((arr) => arr.length <= 3, {
-          message: "You can add a maximum of 3 properties.",
-        }),
+  .object({
+    employmentStatus: z.enum(["SALARIED", "BUSINESS_OWNER", "SELF_EMPLOYED"], {
+      required_error: "Please select your employment status.",
     }),
-  )
-  .and(incomeDetailsSchema);
+    // Salaried fields
+    jobTitle: z.string().optional(),
+    designation: z.string().optional(),
+    department: z.string().optional(),
+    employeeId: z.string().optional(),
+    employmentType: z
+      .enum(["PERMANENT", "CONTRACTUAL", "PARTTIME", "PROBATION"])
+      .optional(),
+    dateOfJoining: z.coerce.date({
+      required_error: "Date of Joining is required",
+      invalid_type_error: "Date of Joining must be a valid date",
+    }),
+    organizationName: z.string().optional(),
+    organizationAddress: z.string().optional(),
+    serviceYears: z
+      .string()
+      .regex(/^\d*$/, "Must be a number if provided")
+      .optional(),
+    serviceMonths: z
+      .string()
+      .regex(/^([0-9]|1[0-1])?$/, "Must be between 0-11 if provided")
+      .optional(),
+    eTin: z.string().optional(),
+    officialContact: z.string().optional(),
+    hasPreviousOrganization: z.boolean().default(false),
+    previousOrganizationName: z.string().optional(),
+    previousDesignation: z.string().optional(),
+    previousServiceYears: z
+      .string()
+      .regex(/^\d*$/, "Must be a number if provided")
+      .optional(),
+    previousServiceMonths: z
+      .string()
+      .regex(/^([0-9]|1[0-1])?$/, "Must be between 0-11 if provided")
+      .optional(),
+    totalExperienceYears: z.string().optional(),
+    totalExperienceMonths: z.string().optional(),
+    // Business owner fields
+    businessName: z.string().optional(),
+    businessAddress: z.string().optional(),
+    businessOwnerType: z
+      .enum(["PROPRIETORSHIP", "PARTNERSHIP", "PUBLIC_LIMITED_COMPANY"])
+      .optional(),
+    businessType: z.enum(["RETAIL", "WHOLESALE", "MANUFACTURING"]).optional(),
+    sharePortion: z
+      .string()
+      .regex(/^\d*$/, "Must be a number if provided")
+      .optional(),
+    businessRegistrationNumber: z.string().optional(),
+    tradeLicenseAge: z.string().optional(),
+    // Self-employed fields
+    professionType: z.string().optional(),
+    otherProfession: z.string().optional(),
+    professionalTitle: z.string().optional(),
+    institutionName: z.string().optional(),
+    workplaceAddress: z.string().optional(),
+    yearsOfExperience: z
+      .string()
+      .regex(/^\d*$/, "Must be a number if provided")
+      .optional(),
+    startedPracticeSince: z.string().optional(),
+    tin: z.string().regex(/^\d*$/, "Must be a number if provided").optional(),
+    websitePortfolioLink: z.string().optional(),
+    professionalRegistrationNumber: z.string().optional(),
+    // Property details
+    properties: z
+      .array(propertyDetailSchema)
+      .optional()
+      .default([])
+      .refine((arr) => arr.length <= 3, {
+        message: "You can add a maximum of 3 properties.",
+      }),
+  })
+  .and(incomeDetailsSchema)
+  .superRefine((data, ctx) => {
+    // Validate based on employment status
+    if (data.employmentStatus === "SALARIED") {
+      // Required fields for salaried
+      if (!data.jobTitle || data.jobTitle.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Job title must be at least 2 characters.",
+          path: ["jobTitle"],
+        });
+      }
+      if (!data.designation || data.designation.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Designation must be at least 2 characters.",
+          path: ["designation"],
+        });
+      }
+      if (!data.department || data.department.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Department must be at least 2 characters.",
+          path: ["department"],
+        });
+      }
+      if (!data.employeeId || data.employeeId.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Employee ID is required.",
+          path: ["employeeId"],
+        });
+      }
+      if (!data.employmentType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please select your employment type.",
+          path: ["employmentType"],
+        });
+      }
+      if (!data.dateOfJoining || isNaN(data.dateOfJoining.getTime())) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Date of joining is required.",
+          path: ["dateOfJoining"],
+        });
+      }
+      if (!data.organizationName || data.organizationName.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Organization name must be at least 2 characters.",
+          path: ["organizationName"],
+        });
+      }
+      if (!data.organizationAddress || data.organizationAddress.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Organization address must be at least 2 characters.",
+          path: ["organizationAddress"],
+        });
+      }
+      if (!data.serviceYears || data.serviceYears.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Years of service is required.",
+          path: ["serviceYears"],
+        });
+      }
+      if (!data.serviceMonths || data.serviceMonths.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Months of service is required.",
+          path: ["serviceMonths"],
+        });
+      }
+      if (!data.eTin || data.eTin.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "E-TIN is required.",
+          path: ["eTin"],
+        });
+      }
 
-// Add refinement for previous organization fields when hasPreviousOrganization is true
-const refinedEmploymentInfoSchema = employmentInfoBaseSchema.refine(
-  (data) => {
-    if (data.employmentStatus === "SALARIED" && data.hasPreviousOrganization) {
-      return (
-        data.previousOrganizationName &&
-        data.previousOrganizationName.trim().length > 0 &&
-        data.previousDesignation &&
-        data.previousDesignation.trim().length > 0 &&
-        data.previousServiceYears &&
-        data.previousServiceYears.trim().length > 0 &&
-        data.previousServiceMonths &&
-        data.previousServiceMonths.trim().length > 0
-      );
+      // Previous organization validation
+      if (data.hasPreviousOrganization) {
+        if (
+          !data.previousOrganizationName ||
+          data.previousOrganizationName.trim() === ""
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Previous organization name is required.",
+            path: ["previousOrganizationName"],
+          });
+        }
+        if (
+          !data.previousDesignation ||
+          data.previousDesignation.trim() === ""
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Previous designation is required.",
+            path: ["previousDesignation"],
+          });
+        }
+        if (
+          !data.previousServiceYears ||
+          data.previousServiceYears.trim() === ""
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Previous service years is required.",
+            path: ["previousServiceYears"],
+          });
+        }
+        if (
+          !data.previousServiceMonths ||
+          data.previousServiceMonths.trim() === ""
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Previous service months is required.",
+            path: ["previousServiceMonths"],
+          });
+        }
+      }
     }
-    return true;
-  },
-  {
-    message:
-      "Previous organization details are required when you have a previous organization.",
-    path: ["previousOrganizationName"],
-  },
-);
 
-export { refinedEmploymentInfoSchema as employmentInfoSchema };
-export type EmploymentInfoValues = z.infer<typeof refinedEmploymentInfoSchema>;
+    if (data.employmentStatus === "BUSINESS_OWNER") {
+      // Required fields for business owner
+      if (!data.businessName || data.businessName.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Business name must be at least 2 characters.",
+          path: ["businessName"],
+        });
+      }
+      if (!data.businessAddress || data.businessAddress.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Business address must be at least 2 characters.",
+          path: ["businessAddress"],
+        });
+      }
+      if (!data.businessOwnerType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please select your business owner type.",
+          path: ["businessOwnerType"],
+        });
+      }
+      if (!data.businessType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please select your business type.",
+          path: ["businessType"],
+        });
+      }
+      if (!data.sharePortion || data.sharePortion.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Share portion is required.",
+          path: ["sharePortion"],
+        });
+      }
+      if (
+        !data.businessRegistrationNumber ||
+        data.businessRegistrationNumber.trim() === ""
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Business registration/trade license number is required.",
+          path: ["businessRegistrationNumber"],
+        });
+      }
+      if (!data.tradeLicenseAge || data.tradeLicenseAge.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please select trade license age.",
+          path: ["tradeLicenseAge"],
+        });
+      }
+    }
+
+    if (data.employmentStatus === "SELF_EMPLOYED") {
+      // Required fields for self-employed
+      if (!data.professionType || data.professionType.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Profession type is required.",
+          path: ["professionType"],
+        });
+      }
+      if (
+        data.professionType === "OTHER" &&
+        (!data.otherProfession || data.otherProfession.trim() === "")
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please specify your profession.",
+          path: ["otherProfession"],
+        });
+      }
+      if (!data.professionalTitle || data.professionalTitle.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Professional title/designation is required.",
+          path: ["professionalTitle"],
+        });
+      }
+      if (!data.institutionName || data.institutionName.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Institution/organization name is required.",
+          path: ["institutionName"],
+        });
+      }
+      if (!data.workplaceAddress || data.workplaceAddress.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Workplace address is required.",
+          path: ["workplaceAddress"],
+        });
+      }
+      if (!data.yearsOfExperience || data.yearsOfExperience.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Years of experience is required.",
+          path: ["yearsOfExperience"],
+        });
+      }
+      if (
+        !data.startedPracticeSince ||
+        data.startedPracticeSince.trim() === ""
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Started practice since date is required.",
+          path: ["startedPracticeSince"],
+        });
+      }
+      if (!data.tin || data.tin.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "TIN is required.",
+          path: ["tin"],
+        });
+      }
+    }
+  });
+
+export { employmentInfoBaseSchema as employmentInfoSchema };
+export type EmploymentInfoValues = z.infer<typeof employmentInfoBaseSchema>;
 export type PropertyDetailValues = z.infer<typeof propertyDetailSchema>;

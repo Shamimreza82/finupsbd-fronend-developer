@@ -1,9 +1,11 @@
 "use client";
 
-import { DatePickerInput } from "@/components/form/FormInputs";
 import { CheckboxInput } from "@/components/loan-application/checkbox-input";
+
+import { DatePickerInput } from "@/components/form/FormInputs";
 import {
   SelectInput,
+  TextAreaInput,
   TextInput,
 } from "@/components/loan-application/form-inputs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -32,10 +34,15 @@ import {
 export default function EmploymentInfoPage() {
   const router = useRouter();
   const { formData, updateFormData, isStepEditable } = useAppFormContext();
-  // Removed employmentStatus state
+  const [employmentStatus, setEmploymentStatus] = useState<string | undefined>(
+    undefined,
+  );
   const [hasPreviousOrganization, setHasPreviousOrganization] = useState(false);
   const [propertyError, setPropertyError] = useState<string | null>(null);
   const [isFormInitialized, setIsFormInitialized] = useState(false);
+  const [professionType, setProfessionType] = useState<string | undefined>(
+    undefined,
+  );
 
   const form = useForm<EmploymentInfoValues>({
     resolver: zodResolver(employmentInfoSchema),
@@ -47,7 +54,7 @@ export default function EmploymentInfoPage() {
       department: "",
       employeeId: "",
       employmentType: undefined,
-      dateOfJoining: undefined,
+      dateOfJoining: new Date(),
       organizationName: "",
       organizationAddress: "",
       serviceYears: "",
@@ -74,6 +81,17 @@ export default function EmploymentInfoPage() {
       otherIncome: "",
       sourceOfOtherIncome: "",
       totalIncome: "",
+      professionType: "",
+      otherProfession: "",
+      // New self-employed fields
+      professionalTitle: "",
+      institutionName: "",
+      workplaceAddress: "",
+      yearsOfExperience: "",
+      startedPracticeSince: "",
+      tin: "",
+      websitePortfolioLink: "",
+      professionalRegistrationNumber: "",
     },
   });
 
@@ -81,7 +99,6 @@ export default function EmploymentInfoPage() {
     fields: propertyFields,
     append: appendProperty,
     remove: removeProperty,
-    replace: replaceProperties,
   } = useFieldArray({
     control: form.control,
     name: "properties",
@@ -89,15 +106,40 @@ export default function EmploymentInfoPage() {
 
   const watchEmploymentStatus = form.watch("employmentStatus");
   const watchHasPreviousOrganization = form.watch("hasPreviousOrganization");
+  const watchProfessionType = form.watch("professionType");
 
-  // Remove setEmploymentStatus effect
+  // Watch income fields for automatic calculation
+  const watchGrossMonthlyIncome = form.watch("grossMonthlyIncome");
+  const watchRentIncome = form.watch("rentIncome");
+  const watchOtherIncome = form.watch("otherIncome");
+
+  useEffect(() => {
+    setEmploymentStatus(watchEmploymentStatus);
+  }, [watchEmploymentStatus]);
+
   useEffect(() => {
     setHasPreviousOrganization(watchHasPreviousOrganization || false);
   }, [watchHasPreviousOrganization]);
 
-  // Calculate total experience
   useEffect(() => {
-    if (watchEmploymentStatus === "SALARIED") {
+    setProfessionType(watchProfessionType);
+  }, [watchProfessionType]);
+
+  // Auto-calculate total income
+  useEffect(() => {
+    const grossIncome = Number.parseInt(watchGrossMonthlyIncome || "0", 10);
+    const rentIncome = Number.parseInt(watchRentIncome || "0", 10);
+    const otherIncome = Number.parseInt(watchOtherIncome || "0", 10);
+
+    const totalIncome = grossIncome + rentIncome + otherIncome;
+
+    form.setValue("totalIncome", totalIncome.toString(), {
+      shouldValidate: true,
+    });
+  }, [watchGrossMonthlyIncome, watchRentIncome, watchOtherIncome, form]);
+
+  useEffect(() => {
+    if (employmentStatus === "SALARIED") {
       const currentYears = Number.parseInt(
         form.getValues("serviceYears") || "0",
         10,
@@ -108,7 +150,6 @@ export default function EmploymentInfoPage() {
       );
       let totalYears = currentYears;
       let totalMonths = currentMonths;
-
       if (hasPreviousOrganization) {
         const prevYears = Number.parseInt(
           form.getValues("previousServiceYears") || "0",
@@ -121,7 +162,6 @@ export default function EmploymentInfoPage() {
         totalYears += prevYears;
         totalMonths += prevMonths;
       }
-
       if (totalMonths >= 12) {
         totalYears += Math.floor(totalMonths / 12);
         totalMonths %= 12;
@@ -139,18 +179,18 @@ export default function EmploymentInfoPage() {
     form.watch("previousServiceYears"),
     form.watch("previousServiceMonths"),
     hasPreviousOrganization,
-    watchEmploymentStatus,
+    employmentStatus,
     form,
   ]);
 
-  // Load saved data or initialize form
   useEffect(() => {
     if (formData.employmentInfo) {
       const savedProperties = formData.employmentInfo.properties || [];
       form.reset({ ...formData.employmentInfo, properties: savedProperties });
+      setEmploymentStatus(formData.employmentInfo.employmentStatus);
       setHasPreviousOrganization(
-        formData.employmentInfo.employmentStatus === "SALARIED"
-          ? formData.employmentInfo.hasPreviousOrganization || false
+        "hasPreviousOrganization" in formData.employmentInfo
+          ? (formData.employmentInfo as any).hasPreviousOrganization || false
           : false,
       );
     } else {
@@ -159,7 +199,6 @@ export default function EmploymentInfoPage() {
     setIsFormInitialized(true);
   }, [formData.employmentInfo, form.reset]);
 
-  // Effect to ensure at least one property card is shown by default
   useEffect(() => {
     if (isFormInitialized) {
       const currentProperties = form.getValues("properties");
@@ -167,7 +206,7 @@ export default function EmploymentInfoPage() {
         (!currentProperties || currentProperties.length === 0) &&
         propertyFields.length === 0
       ) {
-        appendProperty({ propertyType: "", propertyValue: "0" });
+        appendProperty({ propertyType: "", propertyValue: "" });
       }
     }
   }, [
@@ -184,10 +223,7 @@ export default function EmploymentInfoPage() {
   }, [isStepEditable, router]);
 
   function onSubmit(data: EmploymentInfoValues) {
-    const dataToSave = {
-      ...data,
-      properties: data.properties || [],
-    };
+    const dataToSave = { ...data, properties: data.properties || [] };
     updateFormData("employmentInfo", dataToSave);
     router.push("/user/loan-application/step-4");
   }
@@ -202,49 +238,47 @@ export default function EmploymentInfoPage() {
   };
 
   const employmentStatusOptions = [
-    { label: "Employed", value: "SALARIED" },
+    { label: "Salaried", value: "SALARIED" },
     { label: "Business Owner", value: "BUSINESS_OWNER" },
     { label: "Self Employed", value: "SELF_EMPLOYED" },
   ];
-
   const employmentTypeOptions = [
     { label: "Permanent", value: "PERMANENT" },
     { label: "Contractual", value: "CONTRACTUAL" },
     { label: "Parttime", value: "PARTTIME" },
     { label: "Probation", value: "PROBATION" },
   ];
-
   const businessOwnerOptions = [
     { label: "Proprietorship", value: "PROPRIETORSHIP" },
     { label: "Partnership", value: "PARTNERSHIP" },
     { label: "Public Limited Company", value: "PUBLIC_LIMITED_COMPANY" },
   ];
-
   const businessTypeOptions = [
     { label: "Retail", value: "RETAIL" },
     { label: "Wholesale", value: "WHOLESALE" },
     { label: "Manufacturing", value: "MANUFACTURING" },
   ];
-
-  const tradeLicenseExperienceOptions = [
-    { label: "1 Year", value: "1" },
-    { label: "2 Years", value: "2" },
-    { label: "3 Years", value: "3" },
-    { label: "4 Years", value: "4" },
-    { label: "5 Years", value: "5" },
-    { label: "6 Years", value: "6" },
-    { label: "7 Years", value: "7" },
-    { label: "8 Years", value: "8" },
-    { label: "9 Years", value: "9" },
-    { label: "10 Years", value: "10" },
-  ];
-
+  const tradeLicenseExperienceOptions = Array.from({ length: 10 }, (_, i) => ({
+    label: `${i + 1} Year${i === 0 ? "" : "s"}`,
+    value: (i + 1).toString(),
+  }));
   const propertyTypeOptions = [
     { label: "Residential", value: "RESIDENTIAL" },
     { label: "Commercial", value: "COMMERCIAL" },
     { label: "Land", value: "LAND" },
     { label: "Apartment", value: "APARTMENT" },
     { label: "House", value: "HOUSE" },
+    { label: "Other", value: "OTHER" },
+  ];
+
+  const selfEmploymentTypes = [
+    { label: "Doctor", value: "DOCTOR" },
+    { label: "Engineer", value: "ENGINEER" },
+    { label: "Architect", value: "ARCHITECT" },
+    { label: "Accountant", value: "ACCOUNTANT" },
+    { label: "Artist", value: "ARTIST" },
+    { label: "Teacher", value: "TEACHER" },
+    { label: "Freelancer", value: "FREELANCER" },
     { label: "Other", value: "OTHER" },
   ];
 
@@ -273,7 +307,7 @@ export default function EmploymentInfoPage() {
                     required
                   />
                 </div>
-                {watchEmploymentStatus === "SALARIED" && (
+                {employmentStatus === "SALARIED" && (
                   <>
                     <TextInput
                       form={form}
@@ -435,7 +469,7 @@ export default function EmploymentInfoPage() {
                     </div>
                   </>
                 )}
-                {watchEmploymentStatus === "BUSINESS_OWNER" && (
+                {employmentStatus === "BUSINESS_OWNER" && (
                   <>
                     <TextInput
                       form={form}
@@ -494,11 +528,88 @@ export default function EmploymentInfoPage() {
                     />
                   </>
                 )}
+                {employmentStatus === "SELF_EMPLOYED" && (
+                  <>
+                    <SelectInput
+                      form={form}
+                      name="professionType"
+                      label="Profession Type"
+                      options={selfEmploymentTypes}
+                      placeholder="Select profession type"
+                      required
+                    />
+                    {professionType === "OTHER" && (
+                      <TextInput
+                        form={form}
+                        name="otherProfession"
+                        label="Specify Profession"
+                        placeholder="Enter your profession"
+                        required
+                      />
+                    )}
+                    <TextInput
+                      form={form}
+                      name="professionalTitle"
+                      label="Professional Title / Designation"
+                      placeholder="Enter your professional title"
+                      required
+                    />
+                    <TextInput
+                      form={form}
+                      name="institutionName"
+                      label="Institution / Organization Name"
+                      placeholder="Enter institution or organization name"
+                      required
+                    />
+                    <div className="md:col-span-2">
+                      <TextAreaInput
+                        form={form}
+                        name="workplaceAddress"
+                        label="Workplace Address"
+                        placeholder="Enter your workplace address"
+                        required
+                      />
+                    </div>
+                    <TextInput
+                      form={form}
+                      name="yearsOfExperience"
+                      label="Years of Experience"
+                      placeholder="Enter years of experience"
+                      type="number"
+                      required
+                    />
+                    <DatePickerInput
+                      form={form}
+                      name="startedPracticeSince"
+                      label="Started Practice Since"
+                      placeholder="Select date"
+                      required
+                    />
+                    <TextInput
+                      form={form}
+                      name="tin"
+                      label="TIN"
+                      placeholder="Enter TIN number"
+                      type="number"
+                      required
+                    />
+                    <TextInput
+                      form={form}
+                      name="websitePortfolioLink"
+                      label="Website or Portfolio Link"
+                      placeholder="Enter website or portfolio URL"
+                    />
+                    <TextInput
+                      form={form}
+                      name="professionalRegistrationNumber"
+                      label="Professional Registration Number"
+                      placeholder="Enter registration number"
+                    />
+                  </>
+                )}
               </div>
             </section>
-
             <Separator />
-
             {/* Property Details Section */}
             <section>
               <div className="mb-4 flex items-center justify-between">
@@ -540,7 +651,7 @@ export default function EmploymentInfoPage() {
                       label="Type of Property"
                       options={propertyTypeOptions}
                       placeholder="Select property type"
-                      required
+                      // `required` prop removed as per previous request
                     />
                     <TextInput
                       form={form}
@@ -548,7 +659,7 @@ export default function EmploymentInfoPage() {
                       label="Approximate Value (in BDT)"
                       placeholder="Enter property value"
                       type="number"
-                      required
+                      // `required` prop removed as per previous request
                     />
                   </div>
                 </div>
@@ -559,9 +670,7 @@ export default function EmploymentInfoPage() {
                 </p>
               )}
             </section>
-
             <Separator />
-
             {/* Income Details Section */}
             <section>
               <h3 className="mb-4 text-xl font-semibold">Income Details</h3>
@@ -608,11 +717,11 @@ export default function EmploymentInfoPage() {
                     placeholder="Enter total income"
                     type="number"
                     required
+                    disabled
                   />
                 </div>
               </div>
             </section>
-
             <CardFooter className="mt-8 flex justify-between px-0">
               <Button
                 type="button"
