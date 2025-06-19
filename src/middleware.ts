@@ -21,8 +21,6 @@ export async function middleware(request: NextRequest) {
   // Fetch user information
   const userInfo = await getCurrentUser()
 
-  console.log(userInfo)
-
   // ✅ 1️⃣ Allow public routes without authentication
   if (publicRoutes.includes(pathname)) {
     return NextResponse.next()

@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { PropertyDetailValues } from "../schemas/employment-info-schema";
 import type { GuarantorSectionValues } from "../schemas/guarantor-info-schema";
+import { toast } from "sonner";
 
 export default function PreviewPage() {
   const router = useRouter();
@@ -40,19 +41,24 @@ export default function PreviewPage() {
   const [error, setError] = useState<string | null>(null);
 
   const isFormComplete =
-    formData.personalInfo &&
-    formData.residentialInfo &&
-    formData.employmentInfo &&
+    formData.personalInfo &&    
+    formData.residentialInfo &&   
+    formData.employmentInfo &&    
     formData.loanInfo &&
     formData.loanRequest &&
     formData.documentInfo &&
     formData.guarantorInfo;
 
+
+
+
+
   const handleSubmit = async () => {
     if (!isFormComplete) {
-      setError("Please complete all required steps before submitting.");
+      toast.error("Please complete all required steps before submitting.");
       return;
     }
+
     setIsSubmitting(true);
     setError(null);
     try {
@@ -61,9 +67,8 @@ export default function PreviewPage() {
       if (result.success) {
         setIsFormSubmitted(true);
         setSubmittedData(formData as AppFormData);
-        router.push(
-          `/user/loan-application/success?id=${result.applicationId}`,
-        );
+        // router.push(`/user/loan-application/success?id=${result.applicationId}`,
+        // );
       } else {
         console.error("Error submitting application:", result.error);
         setError(

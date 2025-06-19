@@ -9,23 +9,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  guarantorInfoSchema,
-  type GuarantorInfoValues,
-  type BaseGuarantorValues,
+import {guarantorInfoSchema, GuarantorInfoValues, GuarantorSectionValues
 } from "../schemas/guarantor-info-schema";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-const getDefaultGuarantorSectionValues = (): GuarantorSectionValues => ({
+const getDefaultGuarantorSectionValues = () => ({
   mobileNumber: "+880",
   emailAddress: "",
 });
 
 export default function Step7Page() {
   const router = useRouter();
-  const { formData, updateFormData, isFormSubmitted, isStepEditable } =
-    useFormContext();
+  const { formData, updateFormData, isStepEditable } = useFormContext();
+  const [showPersonalGuarantor, setShowPersonalGuarantor] = useState(true);
+  const [showBusinessGuarantor, setShowBusinessGuarantor] = useState(false);
 
   const form = useForm<GuarantorInfoValues>({
     resolver: zodResolver(guarantorInfoSchema),
@@ -60,9 +58,12 @@ export default function Step7Page() {
 
 
 
+  // You may need to adjust this logic based on your actual form submission state management
+  const isFormSubmitted = formData?.isFormSubmitted ?? false;
+
   function onSubmit(data: GuarantorInfoValues) {
     const isSectionEffectivelyEmpty = (
-      section: BaseGuarantorValues | undefined,
+      section: GuarantorSectionValues | undefined,
     ) => {
       if (!section) return true;
       const defaultSection = getDefaultGuarantorSectionValues();

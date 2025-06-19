@@ -33,12 +33,10 @@ export function FileUpload({
   const [storageWarning, setStorageWarning] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Parse accepted file types from accept string
   const getAcceptedTypes = (acceptString: string) => {
     return acceptString.split(",").map((type) => type.trim());
   };
 
-  // Get user-friendly file type message
   const getFileTypeMessage = (acceptString: string) => {
     const types = getAcceptedTypes(acceptString);
     const imageTypes = types.filter((type) => type.startsWith("image/"));
@@ -53,15 +51,13 @@ export function FileUpload({
   };
 
   const validateFile = (file: File): string | null => {
-    const MAX_FILE_SIZE = 2 * 1024 * 1024; // Reduced to 2MB to help with storage
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // ✅ Updated to 5MB
     const acceptedTypes = getAcceptedTypes(accept);
 
-    // Check file size
     if (file.size > MAX_FILE_SIZE) {
-      return `File size must be less than 2MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+      return `File size must be less than 5MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB`;
     }
 
-    // Check file type
     if (!acceptedTypes.includes(file.type)) {
       return `Invalid file type. Please upload ${getFileTypeMessage(accept)} files only`;
     }
@@ -69,11 +65,10 @@ export function FileUpload({
     return null;
   };
 
-  // Compress image if needed
   const compressImage = (
     file: File,
     maxWidth = 1200,
-    quality = 0.8,
+    quality = 0.8
   ): Promise<string> => {
     return new Promise((resolve) => {
       const canvas = document.createElement("canvas");
@@ -81,7 +76,6 @@ export function FileUpload({
       const img = new Image();
 
       img.onload = () => {
-        // Calculate new dimensions
         let { width, height } = img;
         if (width > maxWidth) {
           height = (height * maxWidth) / width;
@@ -91,7 +85,6 @@ export function FileUpload({
         canvas.width = width;
         canvas.height = height;
 
-        // Draw and compress
         ctx?.drawImage(img, 0, 0, width, height);
         const compressedDataUrl = canvas.toDataURL(file.type, quality);
         resolve(compressedDataUrl);
@@ -102,38 +95,26 @@ export function FileUpload({
   };
 
   const processFile = async (file: File) => {
-    // Clear any previous errors/warnings
     setValidationError("");
     setStorageWarning("");
 
-    // Validate file
     const validationResult = validateFile(file);
     if (validationResult) {
       setValidationError(validationResult);
-      // Clear the input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
     try {
       let dataUrl: string;
 
-      // Compress images to reduce storage usage
       if (file.type.startsWith("image/")) {
         dataUrl = await compressImage(file);
-
-        // Check if compression helped enough
         const compressedSize = new Blob([dataUrl]).size;
         if (compressedSize > 1024 * 1024) {
-          // Still larger than 1MB
-          setStorageWarning(
-            "Large file detected. This may cause storage issues.",
-          );
+          setStorageWarning("Large file detected. This may cause storage issues.");
         }
       } else {
-        // For PDFs, convert to base64
         const reader = new FileReader();
         dataUrl = await new Promise<string>((resolve) => {
           reader.onload = (event) => {
@@ -175,7 +156,6 @@ export function FileUpload({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
     processFile(file);
@@ -201,8 +181,8 @@ export function FileUpload({
             isDragging
               ? "border-primary bg-primary/10"
               : displayError
-                ? "border-destructive bg-destructive/5"
-                : "border-muted-foreground/20 hover:border-primary/50"
+              ? "border-destructive bg-destructive/5"
+              : "border-muted-foreground/20 hover:border-primary/50"
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -216,7 +196,7 @@ export function FileUpload({
           <p className="mt-1 text-xs text-muted-foreground">
             Supported formats: {getFileTypeMessage(accept).toUpperCase()}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">Max size: 2MB</p>
+          <p className="mt-1 text-xs text-muted-foreground">Max size: 5MB</p>
           <input
             type="file"
             ref={fileInputRef}
@@ -235,6 +215,7 @@ export function FileUpload({
             ) : (
               <div className="relative h-16 w-16 overflow-hidden rounded-md bg-muted">
                 {value.type.startsWith("image/") ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={value.dataUrl || "/placeholder.svg"}
                     alt={value.name}

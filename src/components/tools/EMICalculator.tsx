@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { emiCalculatorApi, EmiCalculatorPayload } from "@/services/public";
+import { emiCalculatorApi} from "@/services/public";
+import { EmiCalculatorPayload } from "@/types/public/emiCalculator";
 import { useState } from "react";
 import {
   Cell,

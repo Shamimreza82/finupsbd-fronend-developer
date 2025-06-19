@@ -13,6 +13,7 @@ import type { z } from "zod";
 
 // Define the form data structure
 export type FormData = {
+  isFormSubmitted?: boolean;
   personalInfo: z.infer<typeof personalInfoSchema> | null;
   residentialInfo: z.infer<typeof residentialInfoSchema> | null;
   employmentInfo: z.infer<typeof employmentInfoSchema> | null;
@@ -50,10 +51,10 @@ interface FormContextType {
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 // Initial form data
-const initialFormData: FormData = {
+const initialFormData: FormData  = {
   personalInfo: null,
   residentialInfo: null,
-  employmentInfo: null,
+  employmentInfo: null,    
   loanInfo: null,
   loanRequest: null,
   documentInfo: null,
@@ -238,8 +239,14 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
   // Check if a step is editable
   const isStepEditable = (step: keyof Omit<FormData, "draftMode">) => {
     if (!isFormSubmitted) return true;
-    return formData.draftMode[step];
+    // Only allow keys that exist in draftMode
+    if (step in formData.draftMode) {
+      return formData.draftMode[step as keyof typeof formData.draftMode];
+    }
+    return false;
   };
+
+
 
   return (
     <FormContext.Provider
