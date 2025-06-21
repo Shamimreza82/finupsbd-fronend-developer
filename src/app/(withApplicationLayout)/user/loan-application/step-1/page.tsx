@@ -30,14 +30,15 @@ import {
 
 export default function PersonalInfoPage() {
   const router = useRouter();
-  const { formData, updateFormData, isStepEditable } = useFormContext();
+  const { formData, updateFormData, isStepEditable, isDataLoaded } =
+    useFormContext();
   const [showSpouseField, setShowSpouseField] = useState(false);
 
   const form = useForm<PersonalInfoValues>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
       fullName: "",
-      fatherName: "", // Changed from fatherOrHusbandName
+      fatherName: "",
       motherName: "",
       gender: "",
       dateOfBirth: new Date("January 01, 1985"),
@@ -64,16 +65,19 @@ export default function PersonalInfoPage() {
     const isMarried = maritalStatus === "MARRIED";
     setShowSpouseField(isMarried);
     if (!isMarried) {
-      form.setValue("spouseName", "", { shouldValidate: true }); // Clear spouse name if not married
+      form.setValue("spouseName", "", { shouldValidate: true });
     }
   }, [maritalStatus, form]);
 
+  // Load saved data when context data is loaded
   useEffect(() => {
+    if (!isDataLoaded) return;
+
     if (formData.personalInfo) {
       const currentData = formData.personalInfo;
       const formattedData = {
         ...currentData,
-        fatherName: currentData.fatherName || "", // Ensure fatherName is present
+        fatherName: currentData.fatherName || "",
         spouseName: currentData.spouseName || "",
         socialMediaProfiles:
           Array.isArray(currentData.socialMediaProfiles) &&
@@ -86,10 +90,14 @@ export default function PersonalInfoPage() {
         mobileNumber: currentData.mobileNumber || "+880",
         alternateMobileNumber: currentData.alternateMobileNumber || "+880",
       };
-      form.reset(formattedData);
-      setShowSpouseField(currentData.maritalStatus === "MARRIED");
+
+      // Use setTimeout to ensure proper timing
+      setTimeout(() => {
+        form.reset(formattedData);
+        setShowSpouseField(currentData.maritalStatus === "MARRIED");
+      }, 100); // Small delay to ensure components are ready
     }
-  }, [formData.personalInfo, form]);
+  }, [formData.personalInfo, form, isDataLoaded]);
 
   useEffect(() => {
     if (!isStepEditable("personalInfo")) {
@@ -107,7 +115,7 @@ export default function PersonalInfoPage() {
         cleanedSocialMediaProfiles.length > 0 ? cleanedSocialMediaProfiles : [],
     };
     if (data.maritalStatus !== "MARRIED") {
-      submittedData.spouseName = undefined; // Ensure spouseName is not sent if not married
+      submittedData.spouseName = undefined;
     }
     updateFormData("personalInfo", submittedData);
     router.push("/user/loan-application/step-2");
@@ -121,13 +129,12 @@ export default function PersonalInfoPage() {
   const removeSocialMediaField = (index: number) => {
     const currentLinks = form.getValues("socialMediaProfiles") || [];
     if (currentLinks.length > 0) {
-      // Allow removing even if it's the last one, to clear it
       const newLinks = [...currentLinks];
       newLinks.splice(index, 1);
       form.setValue(
         "socialMediaProfiles",
         newLinks.length > 0 ? newLinks : [""],
-      ); // Reset to one empty field if all removed
+      );
     }
   };
 
@@ -197,7 +204,7 @@ export default function PersonalInfoPage() {
               />
               <TextInput
                 form={form}
-                name="fatherName" // Changed from fatherOrHusbandName
+                name="fatherName"
                 label="Father's Name"
                 placeholder="Enter your father's name"
                 required
@@ -219,7 +226,7 @@ export default function PersonalInfoPage() {
               <DatePickerInput
                 form={form}
                 name="dateOfBirth"
-                label="Date of Birth"
+                label="Date of Birth (DD/MM/YYYY)"
                 placeholder="Select your date of birth"
                 required
               />
@@ -230,7 +237,7 @@ export default function PersonalInfoPage() {
                 options={districts.map((d) => ({
                   label: d.name,
                   value: d.name,
-                }))} // Assuming value should be district name
+                }))}
                 placeholder="Select District"
                 searchPlaceholder="Search districts..."
                 notFoundText="No district found."
@@ -276,7 +283,7 @@ export default function PersonalInfoPage() {
                   name="spouseName"
                   label="Spouse's Name"
                   placeholder="Enter your spouse's name"
-                  required={maritalStatus === "MARRIED"} // Conditionally required
+                  required={maritalStatus === "MARRIED"}
                 />
               )}
               <SelectInput
@@ -362,7 +369,6 @@ export default function PersonalInfoPage() {
                 <Plus className="mr-2 h-4 w-4" /> Add Social Media Profile
               </Button>
             </div>
-
             <div className="mt-4 text-sm text-muted-foreground">
               All identity information is encrypted in transit and at rest,
               accessible only to authorized personnel for verification.

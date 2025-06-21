@@ -1,5 +1,4 @@
 "use client";
-
 import type { documentInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/document-info-schema";
 import type { employmentInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/employment-info-schema";
 import type { guarantorInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/guarantor-info-schema";
@@ -7,13 +6,13 @@ import type { loanInfoSchema } from "@/app/(withApplicationLayout)/user/loan-app
 import type { loanRequestSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/loan-request-schema";
 import type { personalInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/personal-info-schema";
 import type { residentialInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/residential-info-schema";
+
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { z } from "zod";
 
 // Define the form data structure
 export type FormData = {
-  isFormSubmitted?: boolean;
   personalInfo: z.infer<typeof personalInfoSchema> | null;
   residentialInfo: z.infer<typeof residentialInfoSchema> | null;
   employmentInfo: z.infer<typeof employmentInfoSchema> | null;
@@ -45,16 +44,17 @@ interface FormContextType {
   isStepEditable: (step: keyof Omit<FormData, "draftMode">) => boolean;
   setAllStepsToNonDraft: () => void;
   enableDocumentEditing: () => void;
+  isDataLoaded: boolean; // Add this
 }
 
 // Create the form context
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 // Initial form data
-const initialFormData: FormData  = {
+const initialFormData: FormData = {
   personalInfo: null,
   residentialInfo: null,
-  employmentInfo: null,    
+  employmentInfo: null,
   loanInfo: null,
   loanRequest: null,
   documentInfo: null,
@@ -139,19 +139,31 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<FormData | null>(null);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // Load form data from localStorage on initial render
   useEffect(() => {
-    const savedData = loadFromStorage(STORAGE_KEY);
-    const savedDocuments = loadFromStorage(DOCUMENT_STORAGE_KEY);
+    const loadData = () => {
+      try {
+        const savedData = loadFromStorage(STORAGE_KEY);
+        const savedDocuments = loadFromStorage(DOCUMENT_STORAGE_KEY);
 
-    if (savedData) {
-      const combinedData = {
-        ...savedData,
-        documentInfo: savedDocuments || null,
-      };
-      setFormData(combinedData);
-    }
+        if (savedData || savedDocuments) {
+          const combinedData = {
+            ...initialFormData,
+            ...savedData,
+            documentInfo: savedDocuments || null,
+          };
+          setFormData(combinedData);
+        }
+        setIsDataLoaded(true);
+      } catch (error) {
+        console.error("Error loading form data:", error);
+        setIsDataLoaded(true);
+      }
+    };
+
+    loadData();
   }, []);
 
   // Update form data for a specific step
@@ -192,6 +204,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     setFormData(initialFormData);
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(DOCUMENT_STORAGE_KEY);
+    setIsDataLoaded(true);
   };
 
   // Check if a step is completed
@@ -239,14 +252,8 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
   // Check if a step is editable
   const isStepEditable = (step: keyof Omit<FormData, "draftMode">) => {
     if (!isFormSubmitted) return true;
-    // Only allow keys that exist in draftMode
-    if (step in formData.draftMode) {
-      return formData.draftMode[step as keyof typeof formData.draftMode];
-    }
-    return false;
+    return formData.draftMode[step];
   };
-
-
 
   return (
     <FormContext.Provider
@@ -262,6 +269,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
         isStepEditable,
         setAllStepsToNonDraft,
         enableDocumentEditing,
+        isDataLoaded, // Add this to the context
       }}
     >
       {children}

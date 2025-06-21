@@ -21,7 +21,7 @@ import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { useFormContext as useAppFormContext } from "@/context/loan-application-form-context"; // Renamed to avoid conflict
+import { useFormContext as useAppFormContext } from "@/context/loan-application-form-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -34,28 +34,17 @@ import {
 
 export default function LoanInfoPage() {
   const router = useRouter();
-  const { formData, updateFormData, isStepEditable } = useAppFormContext();
+  const { formData, updateFormData, isStepEditable, isDataLoaded } =
+    useAppFormContext();
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoanInfoValues>({
     resolver: zodResolver(loanInfoSchema),
     defaultValues: {
       hasExistingLoan: false,
-      existingLoans: [
-        {
-          loanType: "",
-          otherLoanType: "",
-          lenderName: "",
-          disbursedAmount: "",
-          outstanding: "",
-          emi: "",
-          adjustmentPlan: "",
-        },
-      ],
+      existingLoans: [],
       hasCreditCard: false,
-      creditCards: [
-        { issuerName: "", cardLimit: "", toBeClosedBeforeDisbursement: false },
-      ],
+      creditCards: [],
       bankAccounts: [{ bankName: "", accountNumber: "" }],
     },
   });
@@ -64,31 +53,44 @@ export default function LoanInfoPage() {
     fields: existingLoanFields,
     append: appendExistingLoan,
     remove: removeExistingLoan,
-  } = useFieldArray({
-    control: form.control,
-    name: "existingLoans",
-  });
-
+  } = useFieldArray({ control: form.control, name: "existingLoans" });
   const {
     fields: creditCardFields,
     append: appendCreditCard,
     remove: removeCreditCard,
-  } = useFieldArray({
-    control: form.control,
-    name: "creditCards",
-  });
-
+  } = useFieldArray({ control: form.control, name: "creditCards" });
   const {
     fields: bankAccountFields,
     append: appendBankAccount,
     remove: removeBankAccount,
-  } = useFieldArray({
-    control: form.control,
-    name: "bankAccounts",
-  });
+  } = useFieldArray({ control: form.control, name: "bankAccounts" });
 
   const watchHasExistingLoan = form.watch("hasExistingLoan");
   const watchHasCreditCard = form.watch("hasCreditCard");
+
+  useEffect(() => {
+    if (!isDataLoaded) return;
+
+    if (formData.loanInfo && formData.loanInfo !== null) {
+      // Using setTimeout to ensure form is ready for reset, especially with field arrays
+      setTimeout(() => {
+        form.reset(formData.loanInfo as LoanInfoValues);
+      }, 100);
+    } else {
+      if (bankAccountFields.length === 0) {
+        appendBankAccount(
+          { bankName: "", accountNumber: "" },
+          { shouldFocus: false },
+        );
+      }
+    }
+  }, [
+    isDataLoaded,
+    formData.loanInfo,
+    form,
+    appendBankAccount,
+    bankAccountFields.length,
+  ]);
 
   useEffect(() => {
     if (!watchHasExistingLoan) {
@@ -127,20 +129,6 @@ export default function LoanInfoPage() {
   }, [watchHasCreditCard, form, appendCreditCard]);
 
   useEffect(() => {
-    if (formData.loanInfo) {
-      form.reset(formData.loanInfo);
-    } else {
-      // Ensure at least one bank account field is present on initial load if no saved data
-      if (bankAccountFields.length === 0) {
-        appendBankAccount(
-          { bankName: "", accountNumber: "" },
-          { shouldFocus: false },
-        );
-      }
-    }
-  }, [formData.loanInfo, form, appendBankAccount, bankAccountFields.length]);
-
-  useEffect(() => {
     if (!isStepEditable("loanInfo")) {
       router.push("/user/loan-application/preview");
     }
@@ -168,11 +156,8 @@ export default function LoanInfoPage() {
         adjustmentPlan: "",
       });
       setError(null);
-    } else {
-      setError("You can add a maximum of 3 existing loans.");
-    }
+    } else setError("You can add a maximum of 3 existing loans.");
   };
-
   const handleAddCreditCard = () => {
     if (creditCardFields.length < 5) {
       appendCreditCard({
@@ -181,18 +166,13 @@ export default function LoanInfoPage() {
         toBeClosedBeforeDisbursement: false,
       });
       setError(null);
-    } else {
-      setError("You can add a maximum of 5 credit cards.");
-    }
+    } else setError("You can add a maximum of 5 credit cards.");
   };
-
   const handleAddBankAccount = () => {
     if (bankAccountFields.length < 3) {
       appendBankAccount({ bankName: "", accountNumber: "" });
       setError(null);
-    } else {
-      setError("You can add a maximum of 3 bank accounts.");
-    }
+    } else setError("You can add a maximum of 3 bank accounts.");
   };
 
   const loanTypes: SelectOption[] = [
@@ -202,20 +182,10 @@ export default function LoanInfoPage() {
     { label: "SME Loan", value: "SME_LOAN" },
     { label: "Other Loan", value: "OTHER_LOAN" },
   ];
-
-  const bankLists: SelectOption[] = [
-    { label: "Bank One", value: "bank_one" },
-    { label: "Bank Two", value: "bank_two" },
-    { label: "Bank Three", value: "bank_three" },
-    { label: "Bank Four", value: "bank_four" },
-    { label: "Bank Five", value: "bank_five" },
-    { label: "Bank Six", value: "bank_six" },
-    { label: "Bank Seven", value: "bank_seven" },
-    { label: "Bank Eight", value: "bank_eight" },
-    { label: "Bank Nine", value: "bank_nine" },
-    { label: "Bank Ten", value: "bank_ten" },
-  ];
-
+  const bankLists: SelectOption[] = Array.from({ length: 10 }, (_, i) => ({
+    label: `Bank ${i + 1}`,
+    value: `bank_${i + 1}`,
+  }));
   const adjustmentPlans: SelectOption[] = [
     { label: "Take Over", value: "take_over" },
     { label: "Own Source", value: "own_source" },
@@ -223,11 +193,9 @@ export default function LoanInfoPage() {
   ];
 
   return (
-    <Card className="border-[#E9EFF6] text-tertiary-primary">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-xl">
-          Existing Financial Obligations
-        </CardTitle>
+        <CardTitle>Existing Financial Obligations</CardTitle>
         <CardDescription>
           Provide details about your loan requirements and existing financial
           obligations.
@@ -241,10 +209,8 @@ export default function LoanInfoPage() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Existing Loan Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">
@@ -258,12 +224,10 @@ export default function LoanInfoPage() {
                       form.setValue("hasExistingLoan", checked);
                       setError(null);
                     }}
-                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-tertiary-primary/70"
                   />
                   <Label htmlFor="hasExistingLoan">I have existing loans</Label>
                 </div>
               </div>
-
               {watchHasExistingLoan && (
                 <div className="space-y-6">
                   {existingLoanFields.map((loan, index) => (
@@ -357,10 +321,7 @@ export default function LoanInfoPage() {
                 </div>
               )}
             </div>
-
-            <Separator className="my-6 bg-[#D0D5DD]" />
-
-            {/* Credit Card Section */}
+            <Separator className="my-6" />
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Credit Card Information</h3>
@@ -372,12 +333,10 @@ export default function LoanInfoPage() {
                       form.setValue("hasCreditCard", checked);
                       setError(null);
                     }}
-                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-tertiary-primary/70"
                   />
                   <Label htmlFor="hasCreditCard">I have credit cards</Label>
                 </div>
               </div>
-
               {watchHasCreditCard && (
                 <div className="space-y-6">
                   {creditCardFields.map((card, index) => (
@@ -438,16 +397,13 @@ export default function LoanInfoPage() {
                 </div>
               )}
             </div>
-
-            <Separator className="my-6 bg-[#D0D5DD]" />
-
-            {/* Bank Account Details Section */}
+            <Separator className="my-6" />
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Bank Account Details</h3>
               {bankAccountFields.map((account, index) => (
                 <div
                   key={account.id}
-                  className="space-y-4 rounded-md border border-[#D0D5DD] p-4"
+                  className="space-y-4 rounded-md border p-4"
                 >
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium">Account {index + 1}</h4>
@@ -478,9 +434,9 @@ export default function LoanInfoPage() {
                       name={`bankAccounts.${index}.accountNumber`}
                       label="Account Number"
                       placeholder="Enter account number"
-                      type="text" // Changed to text to allow leading zeros if any, validation is regex based
+                      type="text"
                       required
-                      inputMode="numeric" // Helps mobile users get numeric keyboard
+                      inputMode="numeric"
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, "");
                         form.setValue(
@@ -505,7 +461,6 @@ export default function LoanInfoPage() {
                 </Button>
               )}
             </div>
-
             <CardFooter className="mt-8 flex justify-between px-0">
               <Button
                 type="button"

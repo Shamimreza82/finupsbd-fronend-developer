@@ -15,9 +15,7 @@ export const residentialInfoSchema = z
     presentThana: z.string().min(1, {
       message: "Please select a thana.",
     }),
-    presentPostalCode: z.string().min(2, {
-      message: "Postal code must be at least 2 characters.",
-    }),
+    presentPostalCode: z.string().optional(),
     presentLengthOfStay: z.string().min(1, {
       message: "Length of stay is required.",
     }),
@@ -65,13 +63,13 @@ export const residentialInfoSchema = z
           path: ["permanentThana"],
         });
       }
-      if (!data.permanentPostalCode || data.permanentPostalCode.trim() === "") {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Permanent postal code is required.",
-          path: ["permanentPostalCode"],
-        });
-      }
+      // if (!data.permanentPostalCode || data.permanentPostalCode.trim() === "") {
+      //   ctx.addIssue({
+      //     code: z.ZodIssueCode.custom,
+      //     message: "Permanent postal code is required.",
+      //     path: ["permanentPostalCode"],
+      //   });
+      // }
       if (
         !data.permanentLengthOfStay ||
         data.permanentLengthOfStay.trim() === ""
