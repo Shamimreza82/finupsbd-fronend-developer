@@ -9,10 +9,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {guarantorInfoSchema, GuarantorInfoValues, GuarantorSectionValues
+import {
+  guarantorInfoSchema,
+  GuarantorInfoValues,
+  GuarantorSectionValues,
 } from "../schemas/guarantor-info-schema";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 
 const getDefaultGuarantorSectionValues = () => ({
   mobileNumber: "+880",
@@ -53,13 +54,10 @@ export default function Step7Page() {
     }
   }, [isStepEditable, router]);
 
-
-
-
-
-
   // You may need to adjust this logic based on your actual form submission state management
-  const isFormSubmitted = formData?.isFormSubmitted ?? false;
+  // const isFormSubmitted = formData?.isFormSubmitted ?? false;
+
+  const isFormSubmitted = false; // Set to false or manage this state elsewhere
 
   function onSubmit(data: GuarantorInfoValues) {
     const isSectionEffectivelyEmpty = (
