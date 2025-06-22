@@ -54,10 +54,16 @@ export const documentInfoSchema = z.object({
     "Proof of Employment",
   ),
   utilityBill: createFileSchema(ACCEPTED_IMAGE_TYPES, "Utility Bill"),
-  propertyDocuments: createFileSchema(
-    ACCEPTED_DOCUMENT_TYPES,
-    "Property Documents",
-  ),
+  propertyDocuments: z
+    .object({
+      name: z.string(),
+      type: z.string(),
+      size: z.number(),
+      dataUrl: z.string(),
+    })
+    .nullable()
+    .optional(),
+
   additionalDocuments: z
     .object({
       name: z.string(),

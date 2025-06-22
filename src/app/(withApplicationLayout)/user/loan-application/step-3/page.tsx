@@ -49,11 +49,10 @@ export default function EmploymentInfoPage() {
     mode: "onTouched",
     defaultValues: {
       employmentStatus: undefined,
-      jobTitle: "",
+      employmentType: undefined,
       designation: "",
       department: "",
       employeeId: "",
-      employmentType: undefined,
       dateOfJoining: new Date(),
       organizationName: "",
       organizationAddress: "",
@@ -88,7 +87,7 @@ export default function EmploymentInfoPage() {
       institutionName: "",
       workplaceAddress: "",
       yearsOfExperience: "",
-      startedPracticeSince: "",
+      startedPracticeSince: new Date(),
       tin: "",
       websitePortfolioLink: "",
       professionalRegistrationNumber: "",
@@ -309,11 +308,12 @@ export default function EmploymentInfoPage() {
                 </div>
                 {employmentStatus === "SALARIED" && (
                   <>
-                    <TextInput
+                    <SelectInput
                       form={form}
-                      name="jobTitle"
-                      label="Job Title"
-                      placeholder="Enter job title"
+                      name="employmentType"
+                      label="Employment Type"
+                      options={employmentTypeOptions}
+                      placeholder="Select employment type"
                       required
                     />
                     <TextInput
@@ -337,14 +337,7 @@ export default function EmploymentInfoPage() {
                       placeholder="Enter employee ID"
                       required
                     />
-                    <SelectInput
-                      form={form}
-                      name="employmentType"
-                      label="Employment Type"
-                      options={employmentTypeOptions}
-                      placeholder="Select employment type"
-                      required
-                    />
+
                     <DatePickerInput
                       form={form}
                       name="dateOfJoining"
