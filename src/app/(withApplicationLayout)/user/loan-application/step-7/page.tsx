@@ -22,7 +22,8 @@ const getDefaultGuarantorSectionValues = () => ({
 
 export default function Step7Page() {
   const router = useRouter();
-  const { formData, updateFormData, isStepEditable } = useFormContext();
+  const { formData, updateFormData, isFormSubmitted, isStepEditable } =
+    useFormContext();
   const [showPersonalGuarantor, setShowPersonalGuarantor] = useState(true);
   const [showBusinessGuarantor, setShowBusinessGuarantor] = useState(false);
 
@@ -53,11 +54,6 @@ export default function Step7Page() {
       router.push("/user/loan-application/preview");
     }
   }, [isStepEditable, router]);
-
-  // You may need to adjust this logic based on your actual form submission state management
-  // const isFormSubmitted = formData?.isFormSubmitted ?? false;
-
-  const isFormSubmitted = false; // Set to false or manage this state elsewhere
 
   function onSubmit(data: GuarantorInfoValues) {
     const isSectionEffectivelyEmpty = (
