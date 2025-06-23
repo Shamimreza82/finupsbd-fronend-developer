@@ -13,6 +13,7 @@ import type { z } from "zod";
 
 // Define the form data structure
 export type FormData = {
+  isFormSubmitted: boolean;
   personalInfo: z.infer<typeof personalInfoSchema> | null;
   residentialInfo: z.infer<typeof residentialInfoSchema> | null;
   employmentInfo: z.infer<typeof employmentInfoSchema> | null;
