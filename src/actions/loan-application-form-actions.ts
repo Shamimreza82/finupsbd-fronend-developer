@@ -1,6 +1,7 @@
 "use server";
 
 import type { FormData } from "@/context/loan-application-form-context";
+import { TLoanRequest } from "@/hooks/useLoanRequestData";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -10,11 +11,11 @@ const API_TOKEN = process.env.API_TOKEN;
 
 // Check if environment variables are available
 if (!NEXT_PUBLIC_BASE_API) {
-  console.warn("BACKEND_API_URL environment variable is not set");
+  console.error("BACKEND_API_URL environment variable is not set");
 }
 
 
-export async function submitApplication(data: FormData) {
+export async function submitApplication(data: FormData, loanRequest: TLoanRequest) {
 
   const { documentInfo, draftMode, ...textData } = data
   const formData = new FormData();
@@ -51,6 +52,7 @@ export async function submitApplication(data: FormData) {
 
 
   formData.append("data", JSON.stringify(textData))
+  formData.append("loanRequest", JSON.stringify(loanRequest))
 
 
 

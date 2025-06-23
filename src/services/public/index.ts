@@ -60,7 +60,6 @@ export const applicationTracking = async (payload: {applicationId: string, phone
 
 
 export const forgotApplication = async (payload: {email: string}) => {
-    console.log(payload)
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/application/application-forget`, 

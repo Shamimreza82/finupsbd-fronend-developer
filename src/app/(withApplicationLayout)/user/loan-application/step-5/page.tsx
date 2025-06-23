@@ -19,33 +19,23 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { useFormContext } from "@/context/loan-application-form-context";
+import { TLoanRequest } from "@/hooks/useLoanRequestData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { LoanRequest } from "../layout";
 
 
 export default function LoanRequestPage() {
   const router = useRouter();
   const { formData, updateFormData, isStepEditable } = useFormContext();
-  const [loanRequest, setLoanRequest] = useState<LoanRequest>()
+  const [loanRequest, setLoanRequest] = useState<TLoanRequest>()
   const [loading, setLoading] = useState(true)
 
 
 
-  console.log(loanRequest)
 
-  useEffect(() => {
-    const LoanRequet = () => {
-      const result = localStorage.getItem("loanRequest")
-      if (result) {
-        setLoanRequest(JSON.parse(result))
-        setLoading(false)
-      }
-    }
-    LoanRequet()
-  }, [])
+
 
   console.log(parseFloat(loanRequest?.amount ?? "0").toString())
 

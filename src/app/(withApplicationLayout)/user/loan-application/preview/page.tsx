@@ -28,6 +28,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import type { PropertyDetailValues } from "../schemas/employment-info-schema";
 import type { GuarantorSectionValues } from "../schemas/guarantor-info-schema";
+import { useLoanRequestData } from "@/hooks/useLoanRequestData";
 
 export default function PreviewPage() {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function PreviewPage() {
   } = useFormContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const {isLoading, loanRequest} = useLoanRequestData()
 
   const isFormComplete =
     formData.personalInfo &&
@@ -59,7 +61,13 @@ export default function PreviewPage() {
     setError(null);
     try {
       setAllStepsToNonDraft();
-      const result = await submitApplication(formData as AppFormData);
+
+      if (!loanRequest) {
+        toast.error("Loan request data is missing. Please complete the loan request step.");
+        setIsSubmitting(false);
+        return;
+      }
+      const result = await submitApplication(formData as AppFormData, loanRequest);
       console.log("Submission result:", result);
       if (result.success) {
         toast.success(result.message || "Application create successfully");

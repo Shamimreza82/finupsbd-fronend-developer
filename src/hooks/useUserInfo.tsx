@@ -3,25 +3,25 @@ import { userInfo } from "@/services/UserData";
 
 export function useUserInfo() {
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [isloading, setisLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        setLoading(true);
+        setisLoading(true);
         const { data } = await userInfo();
         setUser(data);
       } catch (err) {
         setError("Failed to load user profile");
         console.error(err);
       } finally {
-        setLoading(false);
+        setisLoading(false);
       }
     };
 
     fetchUserData();
   }, []);
 
-  return { user, loading, error };
+  return { user, isloading, error, setisLoading, setError };
 }

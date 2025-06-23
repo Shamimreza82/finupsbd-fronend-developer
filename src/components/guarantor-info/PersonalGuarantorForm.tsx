@@ -25,7 +25,7 @@ import { toast } from "sonner"
 // Zod schema: supportingDocument is an optional array of files
 const personalGuarantorSchema = z.object({
     fullName: z.string().min(1, "Full name is required"),
-    fatherHusbandName: z.string().min(1, "Father's/Husband's name is required"),
+    fatherOrHusbandName: z.string().min(1, "Father's/Husband's name is required"),
     motherName: z.string().min(1, "Mother's name is required"),
     dateOfBirth: z.string().min(1, "Date of birth is required"),
     nationality: z.string().min(1, "Nationality is required"),
@@ -34,7 +34,7 @@ const personalGuarantorSchema = z.object({
     emailAddress: z.string().email("Invalid email address").optional().or(z.literal("")),
     relationWithApplicant: z.string().min(1, "Relation with applicant is required"),
     presentAddress: z.string().min(1, "Present address is required"),
-    permanentMailingAddress: z.string().min(1, "Permanent & mailing address is required"),
+    permanentAddress: z.string().min(1, "Permanent & mailing address is required"),
     workAddress: z.string().min(1, "Work address is required"),
     photo: z.any({
         required_error: "Photo is required",
@@ -72,7 +72,10 @@ const relations = [
     "Other",
 ]
 
-export default function PersonalGuarantorForm() {
+export default function PersonalGuarantorForm({ applicationId, id }: { applicationId: string, id: string }) {
+
+
+
     const [photoPreview, setPhotoPreview] = useState<string | null>(null)
     const [nidFrontPreview, setNidFrontPreview] = useState<string | null>(null)
     const [nidBackPreview, setNidBackPreview] = useState<string | null>(null)
@@ -100,16 +103,15 @@ export default function PersonalGuarantorForm() {
         resolver: zodResolver(personalGuarantorSchema),
         defaultValues: {
             fullName: "Shamim Reza",
-            fatherHusbandName: "Shadsfdsfdsf",
+            fatherOrHusbandName: "Shadsfdsfdsf",
             motherName: "sdfdsfdsfdsf",
-            dateOfBirth: "2025-06-18",
             nationality: "Bangladeshi",
             nationalIdNumber: "46632541414",
             mobileNumber: "+8801910479167",
             emailAddress: "shamimrezaone@gmail.com",
             relationWithApplicant: "Brother",
             presentAddress: "sfdsfsdfsdf",
-            permanentMailingAddress: "dsfsdfsdfsdf",
+            permanentAddress: "dsfsdfsdfsdf",
             workAddress: "dsfdsfsdfsdf",
         },
     })
@@ -204,6 +206,8 @@ export default function PersonalGuarantorForm() {
 
     const onSubmit = async (data: PersonalGuarantorFormData) => {
         const { photo, nidBack, nidFront, supportingDocument, ...textData } = data
+
+        console.log({ data })
         setIsLoading(true)
         const formData = new FormData()
         formData.append("data", JSON.stringify(textData))
@@ -228,7 +232,7 @@ export default function PersonalGuarantorForm() {
         console.log(formData)
 
         try {
-            const res = await fetch(`http://localhost:4000/api/v1/application/applicant-guarator-info`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/application/applicant-guarator-info?id=${id}`, {
                 method: "POST",
                 body: formData
             })
@@ -283,7 +287,7 @@ export default function PersonalGuarantorForm() {
                             />
                             <FormField
                                 control={form.control}
-                                name="fatherHusbandName"
+                                name="fatherOrHusbandName"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-sm font-medium">
@@ -324,7 +328,15 @@ export default function PersonalGuarantorForm() {
                                             Date of Birth <span className="text-red-500">*</span>
                                         </FormLabel>
                                         <FormControl>
-                                            <Input type="date" {...field} />
+                                            <Input
+                                                type="date"
+                                                value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                                                onChange={(e) => {
+                                                    const selectedDate = e.target.value; // "2025-06-14"
+                                                    const isoDate = new Date(selectedDate + 'T00:00:00Z').toISOString(); // "2025-06-14T00:00:00.000Z"
+                                                    field.onChange(isoDate);
+                                                }}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -455,7 +467,7 @@ export default function PersonalGuarantorForm() {
 
                         <FormField
                             control={form.control}
-                            name="permanentMailingAddress"
+                            name="permanentAddress"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-sm font-medium">

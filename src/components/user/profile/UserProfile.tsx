@@ -41,6 +41,7 @@ import { formatDate } from "@/lib/utils";
 import { userInfo } from "@/services/UserData";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useUserInfo } from "@/hooks/useUserInfo";
 
 interface ProfileField {
   label: string;
@@ -52,31 +53,9 @@ interface ProfileField {
 }
 
 export default function UserProfile() {
-  const [error, setError] = useState<string | null>(null);
   const [hideSensitiveInfo, setHideSensitiveInfo] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setLoading(true);
-        const { data } = await userInfo();
-        setUser(data);
-      } catch (err) {
-        setError("Failed to load user profile");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
+  const {user, isloading, error, setError, setisLoading}  = useUserInfo()
 
 
 
@@ -96,7 +75,7 @@ export default function UserProfile() {
     setHideSensitiveInfo(!hideSensitiveInfo);
   };
 
-  if (loading) {
+  if (isloading) {
     return <ProfileSkeleton />;
   }
 
@@ -147,7 +126,7 @@ export default function UserProfile() {
     },
     {
       label: "National ID Number (NID)",
-      value: user?.nid,
+      value: user?.profile?.nationalIdNumber,
       icon: CreditCard,
       sensitive: true,
       verified: true,

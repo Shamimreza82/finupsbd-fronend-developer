@@ -31,8 +31,8 @@ export default function TrackApplicationForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      applicationId: "325050700002",
-      phone: "01910479167",
+      applicationId: "",
+      phone: "",
     },
   });
 
@@ -50,7 +50,7 @@ export default function TrackApplicationForm() {
     }
     else {
       console.log(res.error);
-      toast.error(res.error.message || "Please provide a valid application ID and phone number");
+      toast.error(res?.error?.message || "Please provide a valid application ID and phone number");
     }
   }
 

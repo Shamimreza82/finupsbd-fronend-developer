@@ -41,7 +41,7 @@ const data = {
   ],
   navMain: [
     {
-      title: "My Application",
+      title: "Application",
       url: "#",
       icon: SquareTerminal,
       isActive: false,
@@ -49,6 +49,10 @@ const data = {
         {
           title: "Loan Application",
           url: "/user/loan-application",
+        },
+        {
+          title: "My Application",
+          url: "/user/my-application/my-application-loan",
         },
         {
           title: "Application Status",

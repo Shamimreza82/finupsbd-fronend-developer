@@ -22,6 +22,7 @@ import { ArrowLeft } from 'lucide-react'
 import { forgotApplication } from '@/services/public'
 import { EmailTrackingDialog } from './TrackingDialogProps'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 /** 1) Change schema: require a valid email instead of digits */
 const schema = z.object({
@@ -32,9 +33,9 @@ type FormValues = z.infer<typeof schema>
 
 export default function ForgotApplicationIdPage() {
   const router = useRouter()
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [forgotApplicationData, setForgotApplicationData] = useState({})
 
-  console.log(open)
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -43,16 +44,14 @@ export default function ForgotApplicationIdPage() {
   /** 2) Send { email } instead of { phone } */
   async function onSubmit(data: FormValues) {
     try {
+      const res = await forgotApplication({ email: data.email })
+      setForgotApplicationData(res)
+      // router.push('/track-application/track-application-public')
       setOpen(true)
-      // const res = await forgotApplication({ email: data.email })
-      // if (!res.ok) throw new Error('Network response was not ok')
 
-
-      // router.push('/forgot-application-id/sent')
     } catch (err) {
-      // Handle error, e.g., show a toast notification
       console.error('Failed to send reset request:', err)
-      alert('Failed to send reset request. Please try again later.')
+      toast.error('Failed to send reset request. Please try again later.')
     }
   }
 
@@ -101,10 +100,10 @@ export default function ForgotApplicationIdPage() {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 px-6 pb-6">
               <Button type="submit" disabled={isSubmitting} className="flex items-center justify-center">
-                {isSubmitting && (
-                  <p>Submitting........</p>
-                )}
-                Submit
+                {
+                  isSubmitting ? <p>Submitting........</p> : "Submit"
+                }
+
               </Button>
               <Link
                 href="/"
@@ -118,7 +117,7 @@ export default function ForgotApplicationIdPage() {
         </Card>
       </motion.div>
       <EmailTrackingDialog
-        email="johndoe@example.com"
+        submitData={forgotApplicationData}
         onResendEmail={resendEmail}
         setOpen={setOpen}
         open={open} // Pass the open state to control the dialog visibility

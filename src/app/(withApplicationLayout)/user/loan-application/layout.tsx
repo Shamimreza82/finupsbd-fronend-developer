@@ -4,6 +4,8 @@ import { FormProgress } from "@/components/loan-application/form-progress";
 import { SidebarNav } from "@/components/loan-application/sidebar-nav";
 import { Separator } from "@/components/ui/separator";
 import { FormProvider } from "@/context/loan-application-form-context";
+import { useLoanRequestData } from "@/hooks/useLoanRequestData";
+
 import {
   Briefcase,
   CreditCard,
@@ -15,7 +17,7 @@ import {
   User,
 } from "lucide-react"; // Added ShieldCheck
 import type React from "react";
-import { useEffect, useState } from "react";
+
 
 const sidebarNavItems = [
   {
@@ -68,18 +70,6 @@ const sidebarNavItems = [
   },
 ];
 
-export interface LoanRequest {
-  id: string
-  bankName: string
-  bankImage: string
-  loanType: string
-  amount: string
-  eligibleLoan: string
-  interestRate: string
-  periodMonths: number
-  processingFee: string
-}
-
 
 interface LoanApplicationLayoutProps {
   children: React.ReactNode;
@@ -88,19 +78,10 @@ interface LoanApplicationLayoutProps {
 export default function LoanApplicationLayout({
   children,
 }: LoanApplicationLayoutProps) {
-  const [loanRequest, setLoanRequest] = useState<LoanRequest>()
 
-  console.log(loanRequest)
+const {loanRequest, isLoading} = useLoanRequestData()
 
-  useEffect(() => {
-    const LoanRequet = () => {
-      const result = localStorage.getItem("loanRequest")
-      if (result) {
-        setLoanRequest(JSON.parse(result))
-      } 
-    }
-    LoanRequet()
-  }, [])
+console.log(isLoading)
 
   return (
     <FormProvider>
@@ -130,7 +111,9 @@ export default function LoanApplicationLayout({
             </aside>
             <div className="flex-1">
               <FormProgress />
-              {children}
+             {
+              !isLoading ? children :  <div>Form Loading.....</div>
+             }
             </div>
           </div>
         </div>

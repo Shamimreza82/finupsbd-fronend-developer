@@ -12,15 +12,20 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
+
+
+
+
+
 interface EmailTrackingDialogProps {
-  email: string;
+  submitData: any;
   onResendEmail: () => Promise<void> | void;
   setOpen: (visible: boolean) => void;
   open: boolean;
 }
 
 export function EmailTrackingDialog({
-  email,
+  submitData ,
   onResendEmail,
   setOpen,
   open
@@ -57,19 +62,18 @@ export function EmailTrackingDialog({
         <DialogHeader>
           <DialogTitle className="text-center mb-3">Verification Sent</DialogTitle>
           <DialogDescription>
-            We’ve sent your application ID to your registered Email{" "}
-            <span className="font-medium text-red-600">{maskEmail(email)}</span>.
+           {submitData?.message}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button
+          {/* <Button
             variant="default"
             onClick={handleResend}
             disabled={canResend}
             className="font-medium"
           >
             {resending ? "Resending..." : "Resend Email"}
-          </Button>
+          </Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -77,8 +81,8 @@ export function EmailTrackingDialog({
 }
 
 /** e.g. "johndoe@example.com" → "jo****@example.com" */
-function maskEmail(raw: string) {
-  const [local, domain] = raw.split("@");
-  const visible = local.length <= 2 ? local.slice(0, 1) : local.slice(0, 2);
-  return `${visible}****@${domain}`;
-}
+// function maskEmail(raw: string) {
+//   const [local, domain] = raw.split("@");
+//   const visible = local.length <= 2 ? local.slice(0, 1) : local.slice(0, 2);
+//   return `${visible}****@${domain}`;
+// }

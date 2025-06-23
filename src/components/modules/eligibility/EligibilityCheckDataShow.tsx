@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { banks } from "./EligibilityConostant";
 import { EligibilityData, TEligibilityCheckDataShow } from "./EligibilityTypes";
+import debounce from 'lodash/debounce';
 
 // Format number to BDT format
 
@@ -43,6 +44,9 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
 
   console.log(wishlist)
 
+
+
+
   // Send filter/query data to parent
   useEffect(() => {
     const queryData = {
@@ -55,6 +59,12 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
     };
     onSendData(queryData);
   }, [interestRate, searchTerm, sortOrder, sortKey, page, amount]);
+
+
+
+
+
+
 
 
 

@@ -36,7 +36,7 @@ export function NavUser() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, setIsLoading } = useUser();
-  const {user: userInfo, loading, error} = useUserInfo()
+  const {user: userInfo, error} = useUserInfo()
 
 console.log(userInfo)
 
