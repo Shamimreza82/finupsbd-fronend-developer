@@ -48,11 +48,15 @@ const incomeDetailsSchema = z
 // Base employment schema with all possible fields
 const employmentInfoBaseSchema = z
   .object({
-    employmentStatus: z.enum(["SALARIED", "BUSINESS_OWNER", "SELF_EMPLOYED"], {
-      required_error: "Please select your employment status.",
+    // employmentStatus: z.enum(["SALARIED", "BUSINESS_OWNER", "SELF_EMPLOYED"], {
+    //   required_error: "Please select your employment status.",
+    // }),
+
+    employmentStatus: z.string().min(1, {
+      message: "Please select your employment status.",
     }),
     // Salaried fields
-    jobTitle: z.string().optional(),
+    // jobTitle: z.string().optional(),
     designation: z.string().optional(),
     department: z.string().optional(),
     employeeId: z.string().optional(),
@@ -73,8 +77,19 @@ const employmentInfoBaseSchema = z
       .string()
       .regex(/^([0-9]|1[0-1])?$/, "Must be between 0-11 if provided")
       .optional(),
-    eTin: z.string().optional(),
-    officialContact: z.string().optional(),
+    eTin: z
+      .string()
+      .max(12, {
+        message: "Enter your E-TIN 12 number.",
+      })
+      .optional(),
+    officialContact: z
+      .string()
+      .max(11, {
+        message: "Phone number not more than 11 digit.",
+      })
+      .regex(/^(\+880\s?|0)1[3-9]\d{2}-?\d{6}$/, "Invalid phone number.")
+      .optional(),
     hasPreviousOrganization: z.boolean().default(false),
     previousOrganizationName: z.string().optional(),
     previousDesignation: z.string().optional(),
@@ -132,13 +147,7 @@ const employmentInfoBaseSchema = z
     // Validate based on employment status
     if (data.employmentStatus === "SALARIED") {
       // Required fields for salaried
-      if (!data.jobTitle || data.jobTitle.trim() === "") {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Job title must be at least 2 characters.",
-          path: ["jobTitle"],
-        });
-      }
+
       if (!data.designation || data.designation.trim() === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

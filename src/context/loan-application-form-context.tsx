@@ -1,4 +1,9 @@
 "use client";
+
+import type React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { z } from "zod";
+
 import type { documentInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/document-info-schema";
 import type { employmentInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/employment-info-schema";
 import type { guarantorInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/guarantor-info-schema";
@@ -7,13 +12,8 @@ import type { loanRequestSchema } from "@/app/(withApplicationLayout)/user/loan-
 import type { personalInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/personal-info-schema";
 import type { residentialInfoSchema } from "@/app/(withApplicationLayout)/user/loan-application/schemas/residential-info-schema";
 
-import type React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
-import type { z } from "zod";
-
 // Define the form data structure
 export type FormData = {
-  isFormSubmitted: boolean;
   personalInfo: z.infer<typeof personalInfoSchema> | null;
   residentialInfo: z.infer<typeof residentialInfoSchema> | null;
   employmentInfo: z.infer<typeof employmentInfoSchema> | null;
@@ -33,7 +33,6 @@ export type FormData = {
 };
 
 // Define the form context type
-type DraftStep = keyof FormData['draftMode'];
 interface FormContextType {
   formData: FormData;
   updateFormData: (step: keyof Omit<FormData, "draftMode">, data: any) => void;
@@ -43,7 +42,7 @@ interface FormContextType {
   setIsFormSubmitted: (value: boolean) => void;
   submittedData: FormData | null;
   setSubmittedData: (data: FormData | null) => void;
-  isStepEditable: (step: DraftStep) => boolean;
+  isStepEditable: (step: keyof Omit<FormData, "draftMode">) => boolean;
   setAllStepsToNonDraft: () => void;
   enableDocumentEditing: () => void;
   isDataLoaded: boolean; // Add this
@@ -61,7 +60,6 @@ const initialFormData: FormData = {
   loanRequest: null,
   documentInfo: null,
   guarantorInfo: null,
-  isFormSubmitted: false, // ✅ Add this line
   draftMode: {
     personalInfo: true,
     residentialInfo: true,
@@ -252,12 +250,11 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     saveToStorage(STORAGE_KEY, otherData);
   };
 
-type DraftStep = keyof FormData['draftMode'];
   // Check if a step is editable
-  const isStepEditable = (step: DraftStep) => {
-  if (!formData.isFormSubmitted) return true;
-  return formData.draftMode[step];
-};
+  const isStepEditable = (step: keyof Omit<FormData, "draftMode">) => {
+    if (!isFormSubmitted) return true;
+    return formData.draftMode[step];
+  };
 
   return (
     <FormContext.Provider

@@ -33,7 +33,8 @@ import {
 
 export default function EmploymentInfoPage() {
   const router = useRouter();
-  const { formData, updateFormData, isStepEditable } = useAppFormContext();
+  const { formData, updateFormData, isStepEditable, isDataLoaded } =
+    useAppFormContext();
   const [employmentStatus, setEmploymentStatus] = useState<string | undefined>(
     undefined,
   );
@@ -48,11 +49,11 @@ export default function EmploymentInfoPage() {
     resolver: zodResolver(employmentInfoSchema),
     mode: "onTouched",
     defaultValues: {
-      employmentStatus: undefined,
-      employmentType: undefined,
+      employmentStatus: "",
       designation: "",
       department: "",
       employeeId: "",
+      employmentType: undefined,
       dateOfJoining: new Date(),
       organizationName: "",
       organizationAddress: "",
@@ -80,7 +81,7 @@ export default function EmploymentInfoPage() {
       otherIncome: "",
       sourceOfOtherIncome: "",
       totalIncome: "",
-      professionType: undefined,
+      professionType: "",
       otherProfession: "",
       // New self-employed fields
       professionalTitle: "",
@@ -113,7 +114,9 @@ export default function EmploymentInfoPage() {
   const watchOtherIncome = form.watch("otherIncome");
 
   useEffect(() => {
+    console.log("Before Setting:", watchEmploymentStatus);
     setEmploymentStatus(watchEmploymentStatus);
+    console.log("After Setting:", watchEmploymentStatus);
   }, [watchEmploymentStatus]);
 
   useEffect(() => {
@@ -183,10 +186,12 @@ export default function EmploymentInfoPage() {
   ]);
 
   useEffect(() => {
+    console.log("FormData=>", formData.employmentInfo);
     if (formData.employmentInfo) {
+      console.log(formData.employmentInfo.employmentStatus);
+      setEmploymentStatus(formData.employmentInfo.employmentStatus);
       const savedProperties = formData.employmentInfo.properties || [];
       form.reset({ ...formData.employmentInfo, properties: savedProperties });
-      setEmploymentStatus(formData.employmentInfo.employmentStatus);
       setHasPreviousOrganization(
         "hasPreviousOrganization" in formData.employmentInfo
           ? (formData.employmentInfo as any).hasPreviousOrganization || false
@@ -308,14 +313,6 @@ export default function EmploymentInfoPage() {
                 </div>
                 {employmentStatus === "SALARIED" && (
                   <>
-                    <SelectInput
-                      form={form}
-                      name="employmentType"
-                      label="Employment Type"
-                      options={employmentTypeOptions}
-                      placeholder="Select employment type"
-                      required
-                    />
                     <TextInput
                       form={form}
                       name="designation"
@@ -337,7 +334,14 @@ export default function EmploymentInfoPage() {
                       placeholder="Enter employee ID"
                       required
                     />
-
+                    <SelectInput
+                      form={form}
+                      name="employmentType"
+                      label="Employment Type"
+                      options={employmentTypeOptions}
+                      placeholder="Select employment type"
+                      required
+                    />
                     <DatePickerInput
                       form={form}
                       name="dateOfJoining"

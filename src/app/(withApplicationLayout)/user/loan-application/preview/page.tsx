@@ -62,7 +62,7 @@ export default function PreviewPage() {
       const result = await submitApplication(formData as AppFormData);
       console.log("Submission result:", result);
       if (result.success) {
-        toast.success(result.message || "Application create successfully")
+        toast.success(result.message || "Application create successfully");
         // setIsFormSubmitted(true);
         // setSubmittedData(formData as AppFormData);
 
@@ -70,7 +70,7 @@ export default function PreviewPage() {
         // );
       } else {
         console.error("Error submitting application:", result);
-        toast.error(result.message || "Faild to create data")
+        toast.error(result.message || "Faild to create data");
       }
     } catch (err) {
       console.error("Error submitting application:", err);
@@ -303,9 +303,12 @@ export default function PreviewPage() {
             {info.employmentStatus === "SALARIED" && (
               <>
                 <div>
-                  <p className="text-sm font-medium">Job Title</p>
-                  <p className="text-sm">{info.jobTitle}</p>
+                  <p className="text-sm font-medium">Employment Type</p>
+                  <p className="text-sm capitalize">
+                    {info.employmentType?.replace(/_/g, " ").toLowerCase()}
+                  </p>
                 </div>
+
                 <div>
                   <p className="text-sm font-medium">Designation</p>
                   <p className="text-sm">{info.designation}</p>
@@ -318,12 +321,7 @@ export default function PreviewPage() {
                   <p className="text-sm font-medium">Employee ID</p>
                   <p className="text-sm">{info.employeeId}</p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium">Employment Type</p>
-                  <p className="text-sm capitalize">
-                    {info.employmentType?.replace(/_/g, " ").toLowerCase()}
-                  </p>
-                </div>
+
                 <div>
                   <p className="text-sm font-medium">Date of Joining</p>
                   <p className="text-sm">

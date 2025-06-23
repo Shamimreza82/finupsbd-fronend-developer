@@ -89,6 +89,7 @@ export default function PersonalInfoPage() {
         passportNumber: currentData.passportNumber || "",
         mobileNumber: currentData.mobileNumber || "+880",
         alternateMobileNumber: currentData.alternateMobileNumber || "+880",
+        placeOfBirth: currentData.placeOfBirth || "",
       };
 
       // Use setTimeout to ensure proper timing
@@ -230,6 +231,7 @@ export default function PersonalInfoPage() {
                 placeholder="Select your date of birth"
                 required
               />
+
               <ComboBoxInput
                 form={form}
                 name="placeOfBirth"
