@@ -305,7 +305,7 @@ export default function PersonalInfoPage() {
                 name="mobileNumber"
                 label="Mobile Number"
                 type="tel"
-                placeholder="+880XXXXXXXXXX"
+                placeholder="01XXXXXXXXX"
                 required
               />
               <TextInput
@@ -313,7 +313,7 @@ export default function PersonalInfoPage() {
                 name="alternateMobileNumber"
                 label="Alternate Mobile Number (Optional)"
                 type="tel"
-                placeholder="+880XXXXXXXXXX"
+                placeholder="01XXXXXXXXX"
               />
               <TextInput
                 form={form}

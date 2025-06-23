@@ -1,50 +1,34 @@
 export const divisions = [
   {
     id: "1",
-    name: "Chattagram",
-    bn_name: "চট্টগ্রাম",
-    url: "www.chittagongdiv.gov.bd",
+    name: "CHATTAGRAM",
   },
   {
     id: "2",
-    name: "Rajshahi",
-    bn_name: "রাজশাহী",
-    url: "www.rajshahidiv.gov.bd",
+    name: "RAJSHAHI",
   },
   {
     id: "3",
-    name: "Khulna",
-    bn_name: "খুলনা",
-    url: "www.khulnadiv.gov.bd",
+    name: "KHULNA",
   },
   {
     id: "4",
-    name: "Barisal",
-    bn_name: "বরিশাল",
-    url: "www.barisaldiv.gov.bd",
+    name: "BARISAL",
   },
   {
     id: "5",
-    name: "Sylhet",
-    bn_name: "সিলেট",
-    url: "www.sylhetdiv.gov.bd",
+    name: "SYLHET",
   },
   {
     id: "6",
-    name: "Dhaka",
-    bn_name: "ঢাকা",
-    url: "www.dhakadiv.gov.bd",
+    name: "DHAKA",
   },
   {
     id: "7",
-    name: "Rangpur",
-    bn_name: "রংপুর",
-    url: "www.rangpurdiv.gov.bd",
+    name: "RANGPUR",
   },
   {
     id: "8",
-    name: "Mymensingh",
-    bn_name: "ময়মনসিংহ",
-    url: "www.mymensinghdiv.gov.bd",
+    name: "MYMENSINGH",
   },
 ];

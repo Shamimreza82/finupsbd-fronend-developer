@@ -36,9 +36,14 @@ export const personalInfoSchema = z
       // Changed from z.string({ required_error: ... })
       message: "Please select your educational level.",
     }),
-    NIDNumber: z.string().min(10, {
-      message: "Enter your NID 10 digits or 13 digit identification number.",
-    }),
+    NIDNumber: z
+      .string()
+      .min(10, {
+        message: "Enter your NID 10 digits or 17 digit identification number.",
+      })
+      .max(17, {
+        message: "Enter your NID 10 digits or 17 digit identification number.",
+      }),
     passportNumber: z.string().optional(),
     maritalStatus: z.string().min(1, {
       // Changed from z.string({ required_error: ... })
