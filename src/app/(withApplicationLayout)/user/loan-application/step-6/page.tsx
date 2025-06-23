@@ -273,9 +273,7 @@ export default function DocumentsPage() {
                 name="propertyDocuments"
                 render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel>
-                      Property Documents <span className="text-red-500">*</span>
-                    </FormLabel>
+                    <FormLabel>Property Documents</FormLabel>
                     <FormDescription>
                       Upload documents related to the property (for home or
                       secured loans)
@@ -283,7 +281,7 @@ export default function DocumentsPage() {
                     <FormControl>
                       <FileUpload
                         accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
-                        value={field.value}
+                        value={field.value ?? null}
                         onChange={field.onChange}
                         error={fieldState.error?.message}
                         fieldName="Property Documents"

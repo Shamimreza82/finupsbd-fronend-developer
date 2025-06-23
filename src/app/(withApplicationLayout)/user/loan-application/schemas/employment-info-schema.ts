@@ -111,7 +111,10 @@ const employmentInfoBaseSchema = z
       .string()
       .regex(/^\d*$/, "Must be a number if provided")
       .optional(),
-    startedPracticeSince: z.string().optional(),
+    startedPracticeSince: z.coerce.date({
+      required_error: "Started practice since is required",
+      invalid_type_error: "Started practice since must be a valid date",
+    }),
     tin: z.string().regex(/^\d*$/, "Must be a number if provided").optional(),
     websitePortfolioLink: z.string().optional(),
     professionalRegistrationNumber: z.string().optional(),
@@ -357,7 +360,7 @@ const employmentInfoBaseSchema = z
       }
       if (
         !data.startedPracticeSince ||
-        data.startedPracticeSince.trim() === ""
+        isNaN(data.startedPracticeSince.getTime())
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

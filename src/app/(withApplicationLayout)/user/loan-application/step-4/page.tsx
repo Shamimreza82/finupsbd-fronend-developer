@@ -187,9 +187,10 @@ export default function LoanInfoPage() {
     value: `bank_${i + 1}`,
   }));
   const adjustmentPlans: SelectOption[] = [
-    { label: "Take Over", value: "take_over" },
-    { label: "Own Source", value: "own_source" },
-    { label: "Costing", value: "costing" },
+    { label: "Own Source", value: "OWN_SOURCE" },
+    { label: "Take Over", value: "TAKE_OVER" },
+    { label: "To Be Continued", value: "TO_BE_CONTINUED" },
+    { label: "Top-Up with Adjustment", value: "TOP_UP_WITH_ADJUSTMENT" },
   ];
 
   return (

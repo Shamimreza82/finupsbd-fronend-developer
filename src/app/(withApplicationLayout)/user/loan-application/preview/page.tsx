@@ -25,9 +25,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import type { PropertyDetailValues } from "../schemas/employment-info-schema";
 import type { GuarantorSectionValues } from "../schemas/guarantor-info-schema";
-import { toast } from "sonner";
 
 export default function PreviewPage() {
   const router = useRouter();
@@ -48,10 +48,6 @@ export default function PreviewPage() {
     formData.loanRequest &&
     formData.documentInfo &&
     formData.guarantorInfo;
-
-
-
-
 
   const handleSubmit = async () => {
     if (!isFormComplete) {
@@ -481,7 +477,13 @@ export default function PreviewPage() {
                     <p className="text-sm font-medium">
                       Started Practice Since
                     </p>
-                    <p className="text-sm">{info.startedPracticeSince}</p>
+                    <p className="text-sm">
+                      {typeof info.startedPracticeSince === "string"
+                        ? info.startedPracticeSince
+                        : info.startedPracticeSince
+                          ? info.startedPracticeSince.toLocaleDateString()
+                          : ""}
+                    </p>
                   </div>
                 )}
                 {info.tin && (
