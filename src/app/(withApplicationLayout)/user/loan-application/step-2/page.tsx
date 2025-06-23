@@ -79,11 +79,11 @@ export default function ResidentialInfoPage() {
     value: d.name,
   }));
   const ownershipStatusOptions: SelectOption[] = [
-    { label: "Owned", value: "owned" },
-    { label: "Rented", value: "rented" },
-    { label: "Family Owned", value: "familyOwned" },
-    { label: "Company Provided", value: "companyProvided" },
-  ];
+  { label: "Owned", value: "OWNED" },
+  { label: "Rented", value: "RENTED" },
+  { label: "Family Owned", value: "FAMILY_OWNED" },
+  { label: "Company Provided", value: "COMPANY_PROVIDED" },
+];
 
   const watchPresentDivision = form.watch("presentDivision");
   const watchPresentDistrict = form.watch("presentDistrict");

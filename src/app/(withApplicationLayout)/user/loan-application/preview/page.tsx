@@ -60,17 +60,17 @@ export default function PreviewPage() {
     try {
       setAllStepsToNonDraft();
       const result = await submitApplication(formData as AppFormData);
+      console.log("Submission result:", result);
       if (result.success) {
-        setIsFormSubmitted(true);
-        setSubmittedData(formData as AppFormData);
+        toast.success(result.message || "Application create successfully")
+        // setIsFormSubmitted(true);
+        // setSubmittedData(formData as AppFormData);
+
         // router.push(`/user/loan-application/success?id=${result.applicationId}`,
         // );
       } else {
-        console.error("Error submitting application:", result.error);
-        setError(
-          result.error ||
-            "Failed to submit application. Please try again later.",
-        );
+        console.error("Error submitting application:", result);
+        toast.error(result.message || "Faild to create data")
       }
     } catch (err) {
       console.error("Error submitting application:", err);

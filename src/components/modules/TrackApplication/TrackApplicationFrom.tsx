@@ -37,7 +37,7 @@ export default function TrackApplicationForm() {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
+    console.log({data});
     setIsLoading(true);
     const res = await applicationTracking(data);
     setIsLoading(false);
@@ -120,76 +120,4 @@ export default function TrackApplicationForm() {
     </div>
   );
 }
-
-
-
-
-
-
-
-// 'use client';
-// import { Card } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { CheckCircle2, Clock, Home } from "lucide-react";
-// import Link from "next/link";
-
-// export default function TrackApplication() {
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-//       <Card className="w-full max-w-2xl p-6">
-//         {/* Breadcrumb */}
-//         <div className="flex items-center text-sm text-gray-600 mb-6">
-//           <Link href="/" className="flex items-center hover:text-blue-600">
-//             <Home className="h-4 w-4 mr-1" />
-//             Home
-//           </Link>
-//           <span className="mx-2">/</span>
-//           <span className="text-gray-900">Track Application</span>
-//         </div>
-
-//         {/* Title */}
-//         <h1 className="text-2xl font-bold text-gray-900 mb-2">Track Application</h1>
-//         <p className="text-gray-600 mb-8">Your Loan Application is under review</p>
-
-//         {/* Status Timeline */}
-//         <div className="relative pl-6">
-//           {/* Timeline line */}
-//           <div className="absolute left-7 top-4 w-0.5 h-[calc(100%-50px)] bg-gray-200"></div>
-
-//           {/* Submitted Step */}
-//           <div className="relative flex items-center gap-4 mb-8">
-//             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-//               <CheckCircle2 className="w-5 h-5 text-green-600" />
-//             </div>
-//             <div>
-//               <h3 className="font-semibold text-gray-900">Submitted</h3>
-//               <p className="text-sm text-gray-500">Application received</p>
-//               <p className="text-xs text-gray-400 mt-1">2023-08-15 14:30</p>
-//             </div>
-//           </div>
-
-//           {/* Approval Step */}
-//           <div className="relative flex items-center gap-4">
-//             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-//               <Clock className="w-5 h-5 text-blue-600" />
-//             </div>
-//             <div>
-//               <h3 className="font-semibold text-gray-900">Approval/Rejection</h3>
-//               <p className="text-sm text-gray-500">Under review</p>
-//               <p className="text-xs text-gray-400 mt-1">Estimated completion: 2023-08-20</p>
-//             </div>
-//           </div>
-//         </div>
-
-//         <div className="mt-8">
-//           <Button asChild>
-//             <Link href="/" className="gap-2">
-//               Back to Home
-//             </Link>
-//           </Button>
-//         </div>
-//       </Card>
-//     </div>
-//   );
-// }
 

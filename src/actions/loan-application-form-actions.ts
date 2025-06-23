@@ -2,6 +2,7 @@
 
 import type { FormData } from "@/context/loan-application-form-context";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 // Your backend API URL and token
 const NEXT_PUBLIC_BASE_API = process.env.NEXT_PUBLIC_BASE_API;
@@ -15,72 +16,76 @@ if (!NEXT_PUBLIC_BASE_API) {
 
 export async function submitApplication(data: FormData) {
 
-  const { documentInfo, draftMode, ...textData} = data
-
-
-  const fileData = data.documentInfo ?? {};
-  const filesArray = Object.entries(fileData)
-  .filter(([_, file]) => file) // skip null/undefined
-  .map(([key, file]) => ({
-    field: key,
-    ...(typeof file === "object" && file !== null ? file : {}),
-  })) as Array<{ field: string; name: string; type: string; dataUrl: string }>;
-
-
-
-// function base64ToFile(dataUrl: string, filename: string, type: string): File {
-//   const base64 = dataUrl.split(',')[1];
-//   const binary = atob(base64);
-//   const bytes = new Uint8Array(binary.length);
-//   for (let i = 0; i < binary.length; i++) {
-//     bytes[i] = binary.charCodeAt(i);
-//   }
-//   return new File([bytes], filename, { type });
-// }
-
-// filesArray.forEach(({ field, name, type, dataUrl }) => {
-//   if (!dataUrl) return; // skip incomplete files
-//   const file = base64ToFile(dataUrl, name, type);
-//   console.log(file)
-//   // formData.append("files", file); // field = 'additionalDocuments'
-// });
-
-
-const formData = new FormData();
-
-formData.append("data", JSON.stringify(data))
+  const { documentInfo, draftMode, ...textData } = data
+  const formData = new FormData();
 
   
+      const fileData = data.documentInfo ?? {};
+      const filesArray = Object.entries(fileData)
+      .filter(([_, file]) => file) // skip null/undefined
+      .map(([key, file]) => ({
+        field: key,
+        ...(typeof file === "object" && file !== null ? file : {}),
+      })) as Array<{ field: string; name: string; type: string; dataUrl: string }>;
+
+
+    function base64ToFile(dataUrl: string, filename: string, type: string): File {
+      const base64 = dataUrl.split(',')[1];
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new File([bytes], filename, { type });
+    }
+
+  filesArray.forEach(({ field, name, type, dataUrl }) => {
+    if (!dataUrl) return; // skip incomplete files
+    const file = base64ToFile(dataUrl, name, type);
+    console.log(file)
+    formData.append("files", file); // field = 'additionalDocuments'
+  });
+
+
+
+
+
+  formData.append("data", JSON.stringify(textData))
+
+
 
   try {
     if (!NEXT_PUBLIC_BASE_API) {
       throw new Error("Backend API URL is not configured");
     }
-  
+
+    const token = (await cookies()).get("accessToken")?.value;
+
+    if (!token) {
+      throw new Error("No authentication token found in cookies");
+    }
+
     const response = await fetch(`${NEXT_PUBLIC_BASE_API}/application/create-application`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify(formData),
+      body: formData,
     });
+
+    console.log(response)
+
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error("API Error Response:", errorData);
-      throw new Error(
-        errorData.message ||
-          `Failed to submit application: ${response.status} ${response.statusText}`,
-      );
+      return errorData
     }
 
     const result = await response.json();
 
-    revalidatePath("/loan-application");
-    return {
-      success: true,
-      applicationId: result.applicationId || result.id || "APP-" + Date.now(),
-    };
+     return result
+
   } catch (error) {
     console.error("Error submitting application:", error);
     return {
