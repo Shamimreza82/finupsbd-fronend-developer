@@ -48,12 +48,8 @@ const incomeDetailsSchema = z
 // Base employment schema with all possible fields
 const employmentInfoBaseSchema = z
   .object({
-    // employmentStatus: z.enum(["SALARIED", "BUSINESS_OWNER", "SELF_EMPLOYED"], {
-    //   required_error: "Please select your employment status.",
-    // }),
-
-    employmentStatus: z.string().min(1, {
-      message: "Please select your employment status.",
+    employmentStatus: z.enum(["SALARIED", "BUSINESS_OWNER", "SELF_EMPLOYED"], {
+      required_error: "Please select your employment status.",
     }),
     // Salaried fields
     // jobTitle: z.string().optional(),

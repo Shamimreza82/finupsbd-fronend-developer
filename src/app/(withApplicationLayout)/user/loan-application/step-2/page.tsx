@@ -140,11 +140,6 @@ export default function ResidentialInfoPage() {
       }
 
       if (savedData.permanentDivision && !savedData.isPermanentSameAsPresent) {
-        console.log(
-          "savedData.isPermanentSameAsPresent",
-          !savedData.isPermanentSameAsPresent,
-          savedData.permanentDivision,
-        );
         const permanentDistricts = populateDistricts(
           savedData.permanentDivision,
         );

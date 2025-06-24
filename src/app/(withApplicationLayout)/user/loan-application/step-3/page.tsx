@@ -7,6 +7,7 @@ import {
   SelectInput,
   TextAreaInput,
   TextInput,
+  type SelectOption,
 } from "@/components/loan-application/form-inputs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -49,7 +50,7 @@ export default function EmploymentInfoPage() {
     resolver: zodResolver(employmentInfoSchema),
     mode: "onTouched",
     defaultValues: {
-      employmentStatus: "",
+      employmentStatus: undefined,
       designation: "",
       department: "",
       employeeId: "",
@@ -114,7 +115,6 @@ export default function EmploymentInfoPage() {
   const watchOtherIncome = form.watch("otherIncome");
 
   useEffect(() => {
-    console.log("Before Setting:", watchEmploymentStatus);
     setEmploymentStatus(watchEmploymentStatus);
     console.log("After Setting:", watchEmploymentStatus);
   }, [watchEmploymentStatus]);
@@ -189,7 +189,12 @@ export default function EmploymentInfoPage() {
     if (formData.employmentInfo) {
       setEmploymentStatus(formData.employmentInfo.employmentStatus);
       const savedProperties = formData.employmentInfo.properties || [];
-      form.reset({ ...formData.employmentInfo, properties: savedProperties });
+      // form.reset({ ...formData.employmentInfo, properties: savedProperties });
+      setTimeout(() => {
+        if (formData.employmentInfo) {
+          form.reset(formData.employmentInfo);
+        }
+      }, 0);
       setHasPreviousOrganization(
         "hasPreviousOrganization" in formData.employmentInfo
           ? (formData.employmentInfo as any).hasPreviousOrganization || false
@@ -239,32 +244,35 @@ export default function EmploymentInfoPage() {
     }
   };
 
-  const employmentStatusOptions = [
+  const employmentStatusOptions: SelectOption[] = [
     { label: "Salaried", value: "SALARIED" },
     { label: "Business Owner", value: "BUSINESS_OWNER" },
     { label: "Self Employed", value: "SELF_EMPLOYED" },
   ];
-  const employmentTypeOptions = [
+  const employmentTypeOptions: SelectOption[] = [
     { label: "Permanent", value: "PERMANENT" },
     { label: "Contractual", value: "CONTRACTUAL" },
     { label: "Parttime", value: "PARTTIME" },
     { label: "Probation", value: "PROBATION" },
   ];
-  const businessOwnerOptions = [
+  const businessOwnerOptions: SelectOption[] = [
     { label: "Proprietorship", value: "PROPRIETORSHIP" },
     { label: "Partnership", value: "PARTNERSHIP" },
     { label: "Public Limited Company", value: "PUBLIC_LIMITED_COMPANY" },
   ];
-  const businessTypeOptions = [
+  const businessTypeOptions: SelectOption[] = [
     { label: "Retail", value: "RETAIL" },
     { label: "Wholesale", value: "WHOLESALE" },
     { label: "Manufacturing", value: "MANUFACTURING" },
   ];
-  const tradeLicenseExperienceOptions = Array.from({ length: 10 }, (_, i) => ({
-    label: `${i + 1} Year${i === 0 ? "" : "s"}`,
-    value: (i + 1).toString(),
-  }));
-  const propertyTypeOptions = [
+  const tradeLicenseExperienceOptions: SelectOption[] = Array.from(
+    { length: 10 },
+    (_, i) => ({
+      label: `${i + 1} Year${i === 0 ? "" : "s"}`,
+      value: (i + 1).toString(),
+    }),
+  );
+  const propertyTypeOptions: SelectOption[] = [
     { label: "Residential", value: "RESIDENTIAL" },
     { label: "Commercial", value: "COMMERCIAL" },
     { label: "Land", value: "LAND" },
@@ -273,7 +281,7 @@ export default function EmploymentInfoPage() {
     { label: "Other", value: "OTHER" },
   ];
 
-  const selfEmploymentTypes = [
+  const selfEmploymentTypes: SelectOption[] = [
     { label: "Doctor", value: "DOCTOR" },
     { label: "Engineer", value: "ENGINEER" },
     { label: "Architect", value: "ARCHITECT" },

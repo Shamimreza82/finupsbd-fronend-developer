@@ -7,6 +7,7 @@ import {
 import {
   SelectInput,
   TextInput,
+  type SelectOption,
 } from "@/components/loan-application/form-inputs";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,20 +26,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-
 export default function LoanRequestPage() {
   const router = useRouter();
-  const { formData, updateFormData, isStepEditable } = useFormContext();
-  const [loanRequest, setLoanRequest] = useState<TLoanRequest>()
-  const [loading, setLoading] = useState(true)
-
-
-
-
-
-
-  console.log(parseFloat(loanRequest?.amount ?? "0").toString())
-
+  const { formData, updateFormData, isStepEditable, isDataLoaded } =
+    useFormContext();
+  const [loanRequest, setLoanRequest] = useState<TLoanRequest>();
+  const [loading, setLoading] = useState(true);
 
   // Initialize form with react-hook-form
   const form = useForm<LoanRequestValues>({
@@ -52,18 +45,30 @@ export default function LoanRequestPage() {
   });
 
   // Load saved data if available
+  // useEffect(() => {
+  //   if (!isDataLoaded) return;
+  //   if (formData.loanRequest) {
+  //     form.reset(formData.loanRequest);
+  //   }
+  // }, [formData.loanRequest, form]);
+
   useEffect(() => {
+    if (!isDataLoaded) return;
     if (formData.loanRequest) {
-      form.reset(formData.loanRequest);
+      setTimeout(() => {
+        if (formData.loanRequest) {
+          form.reset(formData.loanRequest);
+        }
+      }, 0);
     }
-  }, [formData.loanRequest, form]);
+  }, [isDataLoaded, formData.loanRequest, form]);
 
   // Redirect if step is not editable
   useEffect(() => {
     if (!isStepEditable("loanRequest")) {
       router.push("/user/loan-application/preview");
     }
-  }, [isStepEditable, router]);
+  }, [isDataLoaded, isStepEditable, router]);
 
   // Handle form submission
   function onSubmit(data: LoanRequestValues) {
@@ -71,15 +76,8 @@ export default function LoanRequestPage() {
     router.push("/user/loan-application/step-6");
   }
 
-
-
-
-
-
-
-
   // Loan tenure options
-  const tenureOptions = [
+  const tenureOptions: SelectOption[] = [
     { label: "12 Months", value: 12 },
     { label: "24 Months", value: 24 },
     { label: "36 Months", value: 36 },
@@ -89,7 +87,7 @@ export default function LoanRequestPage() {
   ];
 
   // EMI start date options
-  const emiStartDateOptions = [
+  const emiStartDateOptions: SelectOption[] = [
     { label: "5th", value: 5 },
     { label: "10th", value: 10 },
     { label: "15th", value: 15 },
@@ -123,7 +121,7 @@ export default function LoanRequestPage() {
                 }}
               />
 
-              <SelectInput 
+              <SelectInput
                 form={form}
                 name="loanTenure"
                 label="Preferred Loan Tenure (years)"

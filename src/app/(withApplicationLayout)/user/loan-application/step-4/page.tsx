@@ -21,7 +21,7 @@ import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { useFormContext as useAppFormContext } from "@/context/loan-application-form-context";
+import { useFormContext } from "@/context/loan-application-form-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -36,7 +36,7 @@ import { bankLists } from "@/_data/bank_name";
 export default function LoanInfoPage() {
   const router = useRouter();
   const { formData, updateFormData, isStepEditable, isDataLoaded } =
-    useAppFormContext();
+    useFormContext();
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoanInfoValues>({
