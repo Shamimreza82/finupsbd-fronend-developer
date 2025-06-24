@@ -108,7 +108,7 @@ export default function LoanApplicationLayout({
             </aside>
             <div className="flex-1">
               <FormProgress />
-              {isLoading ? children : <div>Form Loading.....</div>}
+              {children}
             </div>
           </div>
         </div>
