@@ -186,9 +186,7 @@ export default function EmploymentInfoPage() {
   ]);
 
   useEffect(() => {
-    console.log("FormData=>", formData.employmentInfo);
     if (formData.employmentInfo) {
-      console.log(formData.employmentInfo.employmentStatus);
       setEmploymentStatus(formData.employmentInfo.employmentStatus);
       const savedProperties = formData.employmentInfo.properties || [];
       form.reset({ ...formData.employmentInfo, properties: savedProperties });

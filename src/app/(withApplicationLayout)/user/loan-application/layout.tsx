@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { FormProgress } from "@/components/loan-application/form-progress";
 import { SidebarNav } from "@/components/loan-application/sidebar-nav";
@@ -17,7 +17,6 @@ import {
   User,
 } from "lucide-react"; // Added ShieldCheck
 import type React from "react";
-
 
 const sidebarNavItems = [
   {
@@ -70,7 +69,6 @@ const sidebarNavItems = [
   },
 ];
 
-
 interface LoanApplicationLayoutProps {
   children: React.ReactNode;
 }
@@ -78,10 +76,9 @@ interface LoanApplicationLayoutProps {
 export default function LoanApplicationLayout({
   children,
 }: LoanApplicationLayoutProps) {
+  const { loanRequest, isLoading } = useLoanRequestData();
 
-const {loanRequest, isLoading} = useLoanRequestData()
-
-console.log(isLoading)
+  console.log(isLoading);
 
   return (
     <FormProvider>
@@ -111,9 +108,7 @@ console.log(isLoading)
             </aside>
             <div className="flex-1">
               <FormProgress />
-             {
-              !isLoading ? children :  <div>Form Loading.....</div>
-             }
+              {isLoading ? children : <div>Form Loading.....</div>}
             </div>
           </div>
         </div>

@@ -1,8 +1,8 @@
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
-const MotionLink = motion(Link)
+const MotionLink = motion(Link);
 
 export default function BackHomeLink() {
   return (
@@ -19,12 +19,12 @@ export default function BackHomeLink() {
       transition={{ duration: 0.3 }}
     >
       <motion.span
-        className="flex-shrink-0 w-5 h-5 mr-2 text-gray-700 group-hover:text-green-600"
+        className="mr-2 h-5 w-5 flex-shrink-0 text-gray-700 group-hover:text-green-600"
         whileHover={{ x: -2 }}
-        transition={{ type: 'spring', stiffness: 300 }}
+        transition={{ type: "spring", stiffness: 300 }}
         aria-hidden="true"
       >
-        <ArrowLeft className="w-full h-full" />
+        <ArrowLeft className="h-full w-full" />
       </motion.span>
 
       <span className="relative">
@@ -36,5 +36,5 @@ export default function BackHomeLink() {
         />
       </span>
     </MotionLink>
-  )
+  );
 }
