@@ -79,11 +79,11 @@ export default function ResidentialInfoPage() {
     value: d.name,
   }));
   const ownershipStatusOptions: SelectOption[] = [
-  { label: "Owned", value: "OWNED" },
-  { label: "Rented", value: "RENTED" },
-  { label: "Family Owned", value: "FAMILY_OWNED" },
-  { label: "Company Provided", value: "COMPANY_PROVIDED" },
-];
+    { label: "Owned", value: "OWNED" },
+    { label: "Rented", value: "RENTED" },
+    { label: "Family Owned", value: "FAMILY_OWNED" },
+    { label: "Company Provided", value: "COMPANY_PROVIDED" },
+  ];
 
   const watchPresentDivision = form.watch("presentDivision");
   const watchPresentDistrict = form.watch("presentDistrict");
@@ -126,7 +126,7 @@ export default function ResidentialInfoPage() {
     if (!isDataLoaded) return;
 
     if (formData.residentialInfo) {
-      const savedData = formData.residentialInfo;
+      const savedData = formData?.residentialInfo;
 
       // First, populate all the dropdown options based on saved data
       if (savedData.presentDivision) {
@@ -140,6 +140,11 @@ export default function ResidentialInfoPage() {
       }
 
       if (savedData.permanentDivision && !savedData.isPermanentSameAsPresent) {
+        console.log(
+          "savedData.isPermanentSameAsPresent",
+          !savedData.isPermanentSameAsPresent,
+          savedData.permanentDivision,
+        );
         const permanentDistricts = populateDistricts(
           savedData.permanentDivision,
         );
@@ -292,17 +297,38 @@ export default function ResidentialInfoPage() {
       setPermanentFilteredThanas(presentFilteredThanas);
     } else {
       // Clear permanent address fields
-      form.setValue("permanentAddress", "");
-      form.setValue("permanentDivision", "");
-      form.setValue("permanentDistrict", "");
-      form.setValue("permanentThana", "");
-      form.setValue("permanentPostalCode", "");
-      form.setValue("permanentLengthOfStay", "");
-      form.setValue("permanentOwnershipStatus", "");
+      form.setValue(
+        "permanentAddress",
+        formData.residentialInfo?.permanentAddress || "",
+      );
+      form.setValue(
+        "permanentDivision",
+        formData.residentialInfo?.permanentDivision || "",
+      );
+      form.setValue(
+        "permanentDistrict",
+        formData.residentialInfo?.permanentDistrict || "",
+      );
+      form.setValue(
+        "permanentThana",
+        formData.residentialInfo?.permanentThana || "",
+      );
+      form.setValue(
+        "permanentPostalCode",
+        formData.residentialInfo?.permanentPostalCode || "",
+      );
+      form.setValue(
+        "permanentLengthOfStay",
+        formData.residentialInfo?.permanentLengthOfStay || "",
+      );
+      form.setValue(
+        "permanentOwnershipStatus",
+        formData.residentialInfo?.permanentOwnershipStatus || "",
+      );
 
       // Clear permanent dropdown options
-      setPermanentFilteredDistricts([]);
-      setPermanentFilteredThanas([]);
+      // setPermanentFilteredDistricts([]);
+      // setPermanentFilteredThanas([]);
     }
   }, [
     watchIsPermanentSameAsPresent,

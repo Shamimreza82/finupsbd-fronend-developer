@@ -1,5 +1,6 @@
 "use client";
 
+import BackHomeLink from "@/components/small-component/BackHomeLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { loginUser } from "@/services/AuthService";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -23,7 +24,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { loginValidationSchema } from "./loginValidation";
 import logo from "/public/logo.png";
-import BackHomeLink from "@/components/small-component/BackHomeLink";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -41,8 +41,6 @@ export default function LoginForm() {
     },
   });
 
-
-
   async function onSubmit(data: z.infer<typeof loginValidationSchema>) {
     setIsLoading(true);
 
@@ -54,7 +52,6 @@ export default function LoginForm() {
         router.push(redirectPath);
       } else {
         toast.error(result?.message);
-
       }
     } catch (error: any) {
       toast.error("Login failed. Please try again later.");
@@ -63,14 +60,8 @@ export default function LoginForm() {
     }
   }
 
-
-
-
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
-      <div className=" -ml-96">
-        <BackHomeLink />
-      </div>
       <div className="flex">
         <div className="mb-8">
           <Image src={logo} alt="Logo" className="mx-auto mb-4 w-full" />
@@ -85,14 +76,15 @@ export default function LoginForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
               <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-black">Email Address</FormLabel>
+                      <FormLabel className="text-black">
+                        Email Address
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="email"
@@ -145,13 +137,13 @@ export default function LoginForm() {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="accent-primary text-black"
+                    className="text-black accent-primary"
                   />
                   <span className="text-black">Remember me</span>
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="underline hover:text-primary text-black"
+                  className="text-black underline hover:text-primary"
                 >
                   Forgot password?
                 </Link>
@@ -166,7 +158,10 @@ export default function LoginForm() {
           </Form>
           <div className="mt-4 text-center text-sm text-black">
             Don't have an account?{" "}
-            <Link href="/register" className="underline hover:text-primary text-green-500">
+            <Link
+              href="/register"
+              className="text-green-500 underline hover:text-primary"
+            >
               Register
             </Link>
           </div>
@@ -193,6 +188,9 @@ export default function LoginForm() {
           </div> */}
         </CardContent>
       </Card>
+      <div className="mt-14">
+        <BackHomeLink />
+      </div>
     </div>
   );
 }
