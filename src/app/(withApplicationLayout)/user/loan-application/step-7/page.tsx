@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { useFormContext } from "@/context/loan-application-form-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   guarantorInfoSchema,
@@ -24,8 +24,6 @@ export default function Step7Page() {
   const router = useRouter();
   const { formData, updateFormData, isFormSubmitted, isStepEditable } =
     useFormContext();
-  const [showPersonalGuarantor, setShowPersonalGuarantor] = useState(true);
-  const [showBusinessGuarantor, setShowBusinessGuarantor] = useState(false);
 
   const form = useForm<GuarantorInfoValues>({
     resolver: zodResolver(guarantorInfoSchema),

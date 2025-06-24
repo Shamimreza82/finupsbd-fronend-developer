@@ -211,8 +211,7 @@ export const SelectInput = ({
                   shouldDirty: true,
                 });
               } else {
-                form.setValue(name, "", {
-                  // or null, depending on your schema
+                form.setValue(name, undefined, {
                   shouldValidate: true,
                   shouldDirty: true,
                 });
