@@ -31,6 +31,7 @@ import {
   loanInfoSchema,
   type LoanInfoValues,
 } from "../schemas/loan-info-schema";
+import { bankLists } from "@/_data/bank_name";
 
 export default function LoanInfoPage() {
   const router = useRouter();
@@ -182,10 +183,14 @@ export default function LoanInfoPage() {
     { label: "SME Loan", value: "SME_LOAN" },
     { label: "Other Loan", value: "OTHER_LOAN" },
   ];
-  const bankLists: SelectOption[] = Array.from({ length: 10 }, (_, i) => ({
-    label: `Bank ${i + 1}`,
-    value: `bank_${i + 1}`,
-  }));
+
+
+  // const bankLists: SelectOption[] = Array.from({ length: 10 }, (_, i) => ({
+  //   label: `Bank ${i + 1}`,
+  //   value: `bank_${i + 1}`,
+  // }));
+
+
   const adjustmentPlans: SelectOption[] = [
     { label: "Own Source", value: "OWN_SOURCE" },
     { label: "Take Over", value: "TAKE_OVER" },

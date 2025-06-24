@@ -31,9 +31,12 @@ export function getInitials(name: string): string {
     .toUpperCase();
 }
 
+
 export const formatBDT = (amount: number) => {
   return new Intl.NumberFormat("en-IN").format(amount);
 };
+
+
 
 export function calculateAge(dob: Date): number {
   const today = new Date();
@@ -49,6 +52,8 @@ export function calculateAge(dob: Date): number {
   }
   return age;
 }
+
+
 
 export function cleanFormData<T extends Record<string, any>>(
   data: T,
@@ -84,3 +89,61 @@ export function cleanFormData<T extends Record<string, any>>(
 
 // const emiValue = calculateEMI({ principal: amount, months: periodInMonths, annualInterestRate });
 // console.log(`The EMI is: ${emiValue.toFixed(2)}`);
+
+
+
+
+///-----------------------------------------------------------------------------
+
+
+export function formatEnums(loanType: string) {
+  return loanType
+    .toLowerCase()
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+// Example usage:
+// console.log(formatLoanType("PERSONAL_LOAN")); // Output: "Personal Loan"
+
+///-----------------------------------------------------------------------------
+
+///-----------------------------------------------------------------------------
+
+
+export function formatToBDTCurrency(input: string | number): string {
+  const number = typeof input === "string" ? parseFloat(input.replace(/,/g, "")) : input;
+
+  if (isNaN(number)) return "Invalid amount";
+
+  return new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(number) + " BDT";
+}
+
+// Example usage:
+// formatToBDTCurrency(2000000);         // "20,00,000.00 BDT"
+// formatToBDTCurrency("200000");        // "2,00,000.00 BDT"
+// formatToBDTCurrency("200000.5");      // "2,00,000.50 BDT"
+// formatToBDTCurrency("2000000.00");    // "20,00,000.00 BDT"
+// formatToBDTCurrency("invalid input"); // "Invalid amount"
+
+// ///-----------------------------------------------------------------------------
+
+///-----------------------------------------------------------------------------
+
+
+export function formatDateString(dobString: string): string {
+  const dob = new Date(dobString);
+  return dob.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+// console.log(formatDate("2025-06-12T00:00:00.000Z"));
+// // Output: "June 12, 2025"
+
+// ///-----------------------------------------------------------------------------

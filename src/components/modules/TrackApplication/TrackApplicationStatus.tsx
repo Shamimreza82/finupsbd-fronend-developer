@@ -10,6 +10,7 @@ import { ArrowRight, CheckCircle, Clock, FileText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ApplicationStatusData } from "./TrackingApplicationTypes";
+import { formatDateString, formatEnums, formatToBDTCurrency } from "@/utils";
 
 export default function TrackApplicationStatus({
   applicationStatusData,
@@ -33,10 +34,11 @@ export default function TrackApplicationStatus({
   };
 
   const currentStep = getStatusStep(applicationStatusData.status);
+  console.log(applicationStatusData)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className=" bg-gray-50 ">
+      <div className="container mx-auto px-4 py-8 ">
         {/* Breadcrumb */}
         <nav className="mb-6 flex flex-wrap items-center text-sm text-gray-500">
           <Link href="/" className="hover:text-gray-700">
@@ -65,7 +67,7 @@ export default function TrackApplicationStatus({
             <CardContent>
               <div className="mb-8">
                 <h3 className="mb-8 text-center text-base md:text-lg font-semibold">
-                  Your Loan Application is{" "}
+                  Your Application is{" "}
                   {applicationStatusData.status === "SUBMITTED"
                     ? "under review"
                     : applicationStatusData.status
@@ -168,43 +170,65 @@ export default function TrackApplicationStatus({
               <div className="mt-8 space-y-6">
                 <div>
                   <h3 className="mb-4 text-base md:text-lg font-semibold">
-                    Loan Details
+                  Requested Loan Details
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-gray-500">Loan Type</p>
                       <p className="font-medium">
-                        {applicationStatusData.loanRequest.loanType}
+                        {formatEnums(applicationStatusData?.EligibleLoanOffer?.loanType)}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Loan Amount</p>
                       <p className="font-medium">
-                        {applicationStatusData.loanRequest.loanAmount}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Purpose</p>
-                      <p className="font-medium">
-                        {applicationStatusData.loanRequest.purpose}
+                        {formatToBDTCurrency(applicationStatusData.loanRequest.loanAmount)}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Tenure</p>
                       <p className="font-medium">
-                        {applicationStatusData.loanRequest.tenure} months
+                        {applicationStatusData.loanRequest.loanTenure} months
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Application Details */}
+              <div className="mt-8 space-y-6">
+                <div>
+                  <h3 className="mb-4 text-base md:text-lg font-semibold">
+                   Eligible for Loan
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500">Bank name</p>
+                      <p className="font-medium">
+                        {applicationStatusData?.EligibleLoanOffer?.bankName}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">EMI Start Date</p>
+                      <p className="text-sm text-gray-500">Eligble Loan Amount</p>
                       <p className="font-medium">
-                        {applicationStatusData.loanRequest.emiStartDate}
+                        {formatToBDTCurrency(applicationStatusData?.EligibleLoanOffer?.eligibleLoan)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Repayment Method</p>
+                      <p className="text-sm text-gray-500">Tenure</p>
                       <p className="font-medium">
-                        {applicationStatusData.loanRequest.repaymentPreferences}
+                        {applicationStatusData.EligibleLoanOffer?.periodMonths} months
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">InterestRate</p>
+                      <p className="font-medium">
+                        {applicationStatusData.EligibleLoanOffer?.interestRate} %
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">ProcessingFee</p>
+                      <p className="font-medium">
+                        {applicationStatusData.EligibleLoanOffer?.processingFee} %
                       </p>
                     </div>
                   </div>
@@ -258,7 +282,7 @@ export default function TrackApplicationStatus({
                 <div>
                   <p className="text-gray-500">Date of Birth</p>
                   <p className="font-medium">
-                    {applicationStatusData?.user?.profile?.dateOfBirth}
+                    {formatDateString(applicationStatusData?.user?.profile?.dateOfBirth)}
                   </p>
                 </div>
                 <div>

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { EligibilityData } from "../eligibility/EligibilityTypes";
+import { useRouter } from "next/navigation";
 
 type CompareModalProps = {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function CompareModal({
   onClose,
   compareData,
 }: CompareModalProps) {
+  const router = useRouter()
   if (!isOpen) return null;
 
   // Define which fields you want to show as rows
@@ -31,8 +33,20 @@ export default function CompareModal({
 
   console.log(compareData.dynamicData);
 
-  const handelApplication = (bankData: any) => {
-    console.log(bankData);
+  const handelApplication = (data: any) => {
+  console.log(data);
+    const loanRequest = {
+      bankName: data?.bankName,
+      bankImage: data?.coverImage,
+      loanType: data?.loanType,
+      eligibleLoan: data?.eligibleLoan,
+      periodMonths: data?.periodMonths,
+      amount: data?.amount,
+      interestRate: data?.interestRate,
+      processingFee: data?.processingFee
+    }
+    localStorage.setItem("loanRequest", JSON.stringify(loanRequest))
+    router.push(`/user/loan-application`);
   };
 
   return (
