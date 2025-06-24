@@ -3,7 +3,6 @@
 import React, { useState, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { date, z } from "zod"
 import { Camera, Loader2, Upload, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -44,7 +43,7 @@ const relations = [
     "Other",
 ]
 
-export default function PersonalGuarantorForm({ applicationId, id }: { applicationId: string, id: string }) {
+export default function BusinessGuarantorForm({ applicationId, id }: { applicationId: string, id: string }) {
 
 
 
@@ -204,7 +203,7 @@ export default function PersonalGuarantorForm({ applicationId, id }: { applicati
         console.log(formData)
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/application/applicant-guarator-info-personal?id=${id}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/application/applicant-guarator-info-business?id=${id}`, {
                 method: "POST",
                 body: formData
             })
@@ -235,7 +234,7 @@ export default function PersonalGuarantorForm({ applicationId, id }: { applicati
     return (
         <Card className="w-full max-w-4xl mx-auto">
             <CardHeader>
-                <CardTitle className="text-xl font-semibold text-blue-600">Personal Guarantor</CardTitle>
+                <CardTitle className="text-xl font-semibold text-blue-600">Business Guarantor</CardTitle>
             </CardHeader>
             <CardContent>
                 <Form {...form}>

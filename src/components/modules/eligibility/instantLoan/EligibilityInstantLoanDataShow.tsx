@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { EligibilityData } from "../EligibilityTypes";
 import icon_success from "/public/icon-success.svg";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 
 type PageProps = {
@@ -17,10 +19,11 @@ type PageProps = {
 };
 
 
-function EligibilityInstantLoanDataShow({ submissionData, onSendData}: PageProps) {
+function EligibilityInstantLoanDataShow({ submissionData, onSendData }: PageProps) {
   const [showConfetti, setShowConfetti] = useState(true);
   const [tenure, setTenure] = useState<number>(1);  //TODO: In future, you can set a default value or fetch it from props or context
- 
+  const router = useRouter()
+
 
 
 
@@ -34,6 +37,27 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData}: PageProps
       onSendData(queryData);
     }
   }, [tenure]);
+
+
+  const handelApplication = (data: EligibilityData) => {
+
+    const periodMonths = Number(data.expectedLoanTenure)
+    const eligibleLoan = String(data.eligibleLoan)
+    const interestRate = String(data.interestRate)
+    console.log(eligibleLoan)
+    const loanRequest = {
+      bankName: data?.bankName,
+      bankImage: data?.coverImage,
+      loanType: data?.loanType,
+      eligibleLoan: eligibleLoan,
+      periodMonths: periodMonths,
+      amount: data?.amount,
+      interestRate: interestRate,
+      processingFee: data?.processingFee
+    }
+    localStorage.setItem("loanRequest", JSON.stringify(loanRequest))
+    router.push(`/user/loan-application`);
+  };
 
 
 
@@ -149,6 +173,9 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData}: PageProps
                     BDT {formatBDT(data.eligibleLoan)}/-
                   </p>
                 </div>
+                <Button onClick={() => handelApplication(data)}>
+                  Applay
+                </Button>
               </div>
             </div>
 

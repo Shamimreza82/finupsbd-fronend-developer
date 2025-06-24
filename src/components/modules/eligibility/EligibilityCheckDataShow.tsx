@@ -127,7 +127,6 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
   const handelApplication = (data: EligibilityData) => {
     console.log(data);
     const loanRequest = {
-      id: data?.id,
       bankName: data?.bankName,
       bankImage: data?.coverImage,
       loanType: data?.loanType,

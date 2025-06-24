@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import type { PropertyDetailValues } from "../schemas/employment-info-schema";
 import type { GuarantorSectionValues } from "../schemas/guarantor-info-schema";
 import { useLoanRequestData } from "@/hooks/useLoanRequestData";
+import SuccessModal from "@/components/loan-application/success-modal";
 
 export default function PreviewPage() {
   const router = useRouter();
@@ -40,7 +41,10 @@ export default function PreviewPage() {
   } = useFormContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const {isLoading, loanRequest} = useLoanRequestData()
+  const { loanRequest } = useLoanRequestData()
+  const [modalOpen, setModalOpen] = useState(false);
+  const [trackingNumber, setTrackingNumber] = useState("")
+
 
   const isFormComplete =
     formData.personalInfo &&
@@ -71,11 +75,12 @@ export default function PreviewPage() {
       console.log("Submission result:", result);
       if (result.success) {
         toast.success(result.message || "Application create successfully");
+        setModalOpen(true)
+        setTrackingNumber(result?.data?.applicationId)
         // setIsFormSubmitted(true);
         // setSubmittedData(formData as AppFormData);
-
-        // router.push(`/user/loan-application/success?id=${result.applicationId}`,
-        // );
+        return
+        
       } else {
         console.error("Error submitting application:", result);
         toast.error(result.message || "Faild to create data");
@@ -919,6 +924,8 @@ export default function PreviewPage() {
     );
   };
 
+
+
   return (
     <div className="space-y-6">
       {error && (
@@ -1061,6 +1068,10 @@ export default function PreviewPage() {
           </Button>
         </CardFooter>
       </Card>
+      <SuccessModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(true)}
+        trackingNumber={trackingNumber} />
     </div>
   );
 }
