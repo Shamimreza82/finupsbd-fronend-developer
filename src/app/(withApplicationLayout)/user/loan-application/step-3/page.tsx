@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { CheckboxInput } from "@/components/loan-application/checkbox-input";
