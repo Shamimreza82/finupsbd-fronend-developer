@@ -79,7 +79,6 @@ export default function PreviewPage() {
         setTrackingNumber(result?.data?.applicationId)
         // setIsFormSubmitted(true);
         // setSubmittedData(formData as AppFormData);
-        return
         
       } else {
         console.error("Error submitting application:", result);

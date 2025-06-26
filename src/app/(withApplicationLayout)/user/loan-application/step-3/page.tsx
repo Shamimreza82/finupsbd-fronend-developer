@@ -83,7 +83,7 @@ export default function EmploymentInfoPage() {
       otherIncome: "",
       sourceOfOtherIncome: "",
       totalIncome: "",
-      professionType: "",
+      professionType: undefined,
       otherProfession: "",
       // New self-employed fields
       professionalTitle: "",
