@@ -10,7 +10,7 @@ export interface ApplicationStatusData {
   status: ApplicationStatus;
   adminNotes: string | null;
   applicationId: string;
-  EligibleLoanOffer: ExistingLoanUser;
+  eligibleLoanOffer: ExistingLoanUser;
   loanRequest: LoanRequest;
   user: User;
 }

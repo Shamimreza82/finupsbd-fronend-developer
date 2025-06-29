@@ -70,7 +70,7 @@ export default function TrackApplicationStatus({
                   Your Application is{" "}
                   {applicationStatusData.status === "SUBMITTED"
                     ? "under review"
-                    : applicationStatusData.status
+                    : applicationStatusData?.status
                         .toLowerCase()
                         .replace("_", " ")}
                 </h3>
@@ -176,7 +176,7 @@ export default function TrackApplicationStatus({
                     <div>
                       <p className="text-sm text-gray-500">Loan Type</p>
                       <p className="font-medium">
-                        {formatEnums(applicationStatusData?.EligibleLoanOffer?.loanType)}
+                        {formatEnums(applicationStatusData?.eligibleLoanOffer?.loanType)}
                       </p>
                     </div>
                     <div>
@@ -204,31 +204,31 @@ export default function TrackApplicationStatus({
                     <div>
                       <p className="text-sm text-gray-500">Bank name</p>
                       <p className="font-medium">
-                        {applicationStatusData?.EligibleLoanOffer?.bankName}
+                        {applicationStatusData?.eligibleLoanOffer?.bankName}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Eligble Loan Amount</p>
                       <p className="font-medium">
-                        {formatToBDTCurrency(applicationStatusData?.EligibleLoanOffer?.eligibleLoan)}
+                        {formatToBDTCurrency(applicationStatusData?.eligibleLoanOffer?.eligibleLoan)}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Tenure</p>
                       <p className="font-medium">
-                        {applicationStatusData.EligibleLoanOffer?.periodMonths} months
+                        {applicationStatusData.eligibleLoanOffer?.periodMonths} months
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">InterestRate</p>
                       <p className="font-medium">
-                        {applicationStatusData.EligibleLoanOffer?.interestRate} %
+                        {applicationStatusData.eligibleLoanOffer?.interestRate} %
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">ProcessingFee</p>
                       <p className="font-medium">
-                        {applicationStatusData.EligibleLoanOffer?.processingFee} %
+                        {applicationStatusData.eligibleLoanOffer?.processingFee} %
                       </p>
                     </div>
                   </div>

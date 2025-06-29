@@ -22,6 +22,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import Image from "next/image"
 import { toast } from "sonner"
 import { GuarantorFormData, guarantorSchema} from "./schema"
+import { useRouter } from "next/navigation"
 
 
 
@@ -52,6 +53,7 @@ export default function PersonalGuarantorForm({ applicationId, id }: { applicati
     const [nidFrontPreview, setNidFrontPreview] = useState<string | null>(null)
     const [nidBackPreview, setNidBackPreview] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
 
     // Each supporting document is kept as { file, preview }
     const [supportingDocs, setSupportingDocs] = useState<{ file: File; preview: string }[]>([])
@@ -213,6 +215,8 @@ export default function PersonalGuarantorForm({ applicationId, id }: { applicati
                 console.log(result)
                 toast.success(result.message || "guarantor form update successfully")
                 setIsLoading(false)
+                router.push("/")
+
             } else {
                 toast.error("Server error please try again!")
                 setIsLoading(false)
