@@ -74,19 +74,19 @@ export default function BusinessGuarantorForm({ applicationId, id }: { applicati
 
     const form = useForm<GuarantorFormData>({
         resolver: zodResolver(guarantorSchema),
-        defaultValues: {
-            fullName: "Shamim Reza",
-            fatherOrHusbandName: "Shadsfdsfdsf",
-            motherName: "sdfdsfdsfdsf",
-            nationality: "Bangladeshi",
-            nationalIdNumber: "46632541414",
-            mobileNumber: "+8801910479167",
-            emailAddress: "shamimrezaone@gmail.com",
-            relationWithApplicant: "Brother",
-            presentAddress: "sfdsfsdfsdf",
-            permanentAddress: "dsfsdfsdfsdf",
-            workAddress: "dsfdsfsdfsdf",
-        },
+        // defaultValues: {
+        //     fullName: "Shamim Reza",
+        //     fatherOrHusbandName: "Shadsfdsfdsf",
+        //     motherName: "sdfdsfdsfdsf",
+        //     nationality: "Bangladeshi",
+        //     nationalIdNumber: "46632541414",
+        //     mobileNumber: "+8801910479167",
+        //     emailAddress: "shamimrezaone@gmail.com",
+        //     relationWithApplicant: "Brother",
+        //     presentAddress: "sfdsfsdfsdf",
+        //     permanentAddress: "dsfsdfsdfsdf",
+        //     workAddress: "dsfdsfsdfsdf",
+        // },
     })
 
     // Helper for single-file fields
