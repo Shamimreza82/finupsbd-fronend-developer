@@ -1,6 +1,7 @@
 "use client";
 
 import { submitApplication } from "@/actions/loan-application-form-actions";
+import SuccessModal from "@/components/loan-application/success-modal";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import {
   useFormContext,
   type FormData as AppFormData,
 } from "@/context/loan-application-form-context"; // Updated import path
+import { useLoanRequestData } from "@/hooks/useLoanRequestData";
 import {
   AlertCircle,
   FileText,
@@ -28,8 +30,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import type { PropertyDetailValues } from "../schemas/employment-info-schema";
 import type { GuarantorSectionValues } from "../schemas/guarantor-info-schema";
-import { useLoanRequestData } from "@/hooks/useLoanRequestData";
-import SuccessModal from "@/components/loan-application/success-modal";
 
 export default function PreviewPage() {
   const router = useRouter();
@@ -38,13 +38,13 @@ export default function PreviewPage() {
     setIsFormSubmitted,
     setSubmittedData,
     setAllStepsToNonDraft,
+    resetForm,
   } = useFormContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { loanRequest } = useLoanRequestData()
+  const { loanRequest } = useLoanRequestData();
   const [modalOpen, setModalOpen] = useState(false);
-  const [trackingNumber, setTrackingNumber] = useState("")
-
+  const [trackingNumber, setTrackingNumber] = useState("");
 
   const isFormComplete =
     formData.personalInfo &&
@@ -67,19 +67,24 @@ export default function PreviewPage() {
       setAllStepsToNonDraft();
 
       if (!loanRequest) {
-        toast.error("Loan request data is missing. Please complete the loan request step.");
+        toast.error(
+          "Loan request data is missing. Please complete the loan request step.",
+        );
         setIsSubmitting(false);
         return;
       }
-      const result = await submitApplication(formData as AppFormData, loanRequest);
+      const result = await submitApplication(
+        formData as AppFormData,
+        loanRequest,
+      );
       console.log("Submission result:", result);
       if (result.success) {
         toast.success(result.message || "Application create successfully");
-        setModalOpen(true)
-        setTrackingNumber(result?.data?.applicationId)
+        setModalOpen(true);
+        setTrackingNumber(result?.data?.applicationId);
         // setIsFormSubmitted(true);
         // setSubmittedData(formData as AppFormData);
-        
+        resetForm();
       } else {
         console.error("Error submitting application:", result);
         toast.error(result.message || "Faild to create data");
@@ -923,8 +928,6 @@ export default function PreviewPage() {
     );
   };
 
-
-
   return (
     <div className="space-y-6">
       {error && (
@@ -1070,7 +1073,8 @@ export default function PreviewPage() {
       <SuccessModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(true)}
-        trackingNumber={trackingNumber} />
+        trackingNumber={trackingNumber}
+      />
     </div>
   );
 }
