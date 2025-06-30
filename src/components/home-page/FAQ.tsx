@@ -14,27 +14,27 @@ import { Button } from "../ui/button";
 const accordion_data = [
   {
     id: 1,
-    title: "Is FinsUp BD free to use?",
+    title: "Do I have to pay to use FinupsBD?",
     description:
-      "Yes, our platform is completely free for users to check their credit scores, compare products, and apply online",
+      "Nope—our entire platform is 100% free for you. We partner with banks and insurers who may pay us a small commission when you successfully apply, but that never changes the rates or perks you see.",
   },
   {
     id: 2,
-    title: "How do I check my credit score?",
+    title: "Is my personal information safe with FinupsBD?",
     description:
-      "Yes, our platform is completely free for users to check their credit scores, compare products, and apply online",
+      "Absolutely. We use bank-level encryption and strict data-protection standards so your details stay locked down. Think of us as the digital vault for your finance info.",
   },
   {
     id: 3,
-    title: "Is my data secure with FinsUp BD?",
+    title: "What if I don’t meet a lender’s requirements?",
     description:
-      "Yes, our platform is completely free for users to check their credit scores, compare products, and apply online",
+      "No worries. Our instant qualification checker only shows you products you’re most likely to qualify for. If you do get turned down, we’ll point you toward other options—maybe a different tenure, a smaller amount, or an Islamic-finance alternative.",
   },
   {
     id: 6,
-    title: "Can I track my loan application status?",
+    title: "Can I apply for more than one product at the same time?",
     description:
-      "Yes, our platform is completely free for users to check their credit scores, compare products, and apply online",
+      "Yes! You can submit multiple applications—just remember that each one may require its own documents. We’ll walk you through every step, so you never feel lost in the paperwork.",
   },
   {
     id: 5,

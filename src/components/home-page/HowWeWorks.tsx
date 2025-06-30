@@ -21,21 +21,21 @@ interface AccordionData {
 const accordionData: AccordionData[] = [
   {
     id: "1",
-    title: "Check Your Credit Score for Free",
+    title: "Get your coffee and sign up",
     description:
-      "Sign up and get instant access to your credit score and insights on improving it.",
+      "You can sign up for free with your email address or phone number. There are no hidden fees. Your personal dashboard will be open in less than a minute.",
   },
   {
     id: "2",
-    title: "Compare the Best Financial Products",
+    title: "Swipe Through Smart Matches",
     description:
-      "Sign up and get instant access to your credit score and insights on improving it.",
+      "Tell us how much money you make and what kind of job you have. Our instant qualification checker will show you the loans, credit cards, and insurance plans you are most likely to get. Choose the lowest rate, the fastest payout, or halal options—whatever works best for you.",
   },
   {
     id: "3",
     title: "Apply and Track Your Applications",
     description:
-      "Sign up and get instant access to your credit score and insights on improving it.",
+      'Pick the deal you like best, upload the documents you need right from your phone, and then click <a href="/register" class="font-semibold text-primary">Apply</a>. We talk to the lender back and forth, and we send you live status updates by SMS, email, or your FinupsBD dashboard.',
   },
 ];
 
@@ -50,8 +50,13 @@ const HowWeWorks = () => {
               How It Works
             </SectionBadge>
             <SectionTitle className="lg:text-[40px] lg:leading-[48px]">
-              Simplifying Your Financial Decisions in 3 Easy Steps
+              Three Quick Steps to Finance in a Coffee Break
             </SectionTitle>
+            <p className="mt-4 text-sm">
+              Don't waste time on paperwork marathons. You can find, qualify
+              for, and apply for the right financial product with FinupsBD in
+              the time it takes to drink your latte.
+            </p>
           </div>
           <div>
             <Accordion
@@ -73,7 +78,7 @@ const HowWeWorks = () => {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="accordion-content">
-                    {description}
+                    <div dangerouslySetInnerHTML={{ __html: description }} />
                   </AccordionContent>
                 </AccordionItem>
               ))}
@@ -83,10 +88,10 @@ const HowWeWorks = () => {
 
         {/* Right Column (Image) */}
         <div className="flex-1 rounded-2xl bg-[#F9FAFB] py-12">
-          <Image 
-            src={sitelayot} 
-            alt="Site Layout" 
-            className="mx-auto object-cover" 
+          <Image
+            src={sitelayot}
+            alt="Site Layout"
+            className="mx-auto object-cover"
           />
         </div>
       </div>
