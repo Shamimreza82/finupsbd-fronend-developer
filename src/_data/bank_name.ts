@@ -39,5 +39,15 @@ export const bankLists = [
   { label: "South Bangla Agriculture And Commerce Bank Limited", value: "SOUTH_BANGLA_AGRICULTURE_AND_COMMERCE_BANK_LIMITED" },
   { label: "Trust Bank Plc", value: "TRUST_BANK_PLC" },
   { label: "United Commercial Bank Plc", value: "UNITED_COMMERCIAL_BANK_PLC" },
-  { label: "Uttara Bank Plc", value: "UTTARA_BANK_PLC" }
+  { label: "Uttara Bank Plc", value: "UTTARA_BANK_PLC" },
+  { label: "Standard Bank Limited", value: "STANDARD_BANK_LIMITED" },
+  { label: "Exim Bank PLC", value: "EXIM_BANK_PLC" },
+  { label: "Islami Bank Bangladesh PLC", value: "ISLAMI_BANK_BANGLADESH_PLC" },
+  { label: "Al‑Arafah Islami Bank PLC", value: "AL_ARAFAH_ISLAMI_BANK_PLC" },
+  { label: "First Security Islami Bank PLC", value: "FIRST_SECURITY_ISLAMI_BANK_PLC" },
+  { label: "ICB Islamic Bank PLC", value: "ICB_ISLAMIC_BANK_PLC" },
+  { label: "Social Islami Bank PLC", value: "SOCIAL_ISLAMI_BANK_PLC" },
+  { label: "Global Islami Bank PLC", value: "GLOBAL_ISLAMI_BANK_PLC" },
+  { label: "Union Bank PLC", value: "UNION_BANK_PLC" },
+  { label: "Padma Bank PLC", value: "PADMA_BANK_PLC" },
 ];

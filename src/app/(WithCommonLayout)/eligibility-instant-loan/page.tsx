@@ -45,32 +45,27 @@ const InastantLoanPage = () => {
 
 
   if (isLoading) {
-    console.log("Loading//////")
     return <LoadingComponent />;
   }
-
 
   function handleStartEligibilityCheck(): void {
     window.location.href = "/";
   }
 
-
-  console.log({submissionData})
-
   return (
-    <div> {submissionData ? (<EligibilityInstantLoanDataShow submissionData={submissionData}  onSendData={handleQueryData}/>) : (
-        <div className="flex h-screen flex-col items-center justify-center py-8">
-          <p className="mb-4 text-lg font-semibold text-gray-700">
-           You are not eligibility for instant loan
-          </p>
-          <Button
-            variant="default"
-            onClick={() => handleStartEligibilityCheck()}
-          >
-            Start Eligibility Check
-          </Button>
-        </div>
-      )}
+    <div> {submissionData ? (<EligibilityInstantLoanDataShow submissionData={submissionData} onSendData={handleQueryData} isLoading={isLoading} />) : (
+      <div className="flex h-screen flex-col items-center justify-center py-8">
+        <p className="mb-4 text-lg font-semibold text-gray-700">
+          You are not eligibility for instant loan
+        </p>
+        <Button
+          variant="default"
+          onClick={() => handleStartEligibilityCheck()}
+        >
+          Start Eligibility Check
+        </Button>
+      </div>
+    )}
     </div>
   );
 };
