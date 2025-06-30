@@ -180,9 +180,11 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
                       BDT {formatBDT(data.eligibleLoan)}/-
                     </p>
                   </div>
-                  <Button onClick={() => handelApplication(data)}>
-                    Applay
-                  </Button>
+                  <div className="flex justify-end mt-3">
+                    <Button onClick={() => handelApplication(data)}>
+                      Apply
+                    </Button>
+                  </div>
                 </div>
               </div>
 
