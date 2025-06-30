@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { useFormContext } from "@/context/loan-application-form-context";
-import { TLoanRequest } from "@/hooks/useLoanRequestData";
+import { TLoanRequest, useLoanRequestData } from "@/hooks/useLoanRequestData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -32,7 +32,9 @@ export default function LoanRequestPage() {
     useFormContext();
   const [loanRequest, setLoanRequest] = useState<TLoanRequest>();
   const [loading, setLoading] = useState(true);
+  const { loanRequest: loanRequstData } = useLoanRequestData()
 
+  console.log(loanRequstData)
   // Initialize form with react-hook-form
   const form = useForm<LoanRequestValues>({
     resolver: zodResolver(loanRequestSchema),
@@ -86,6 +88,12 @@ export default function LoanRequestPage() {
     { label: "72 Months", value: 72 },
   ];
 
+  const tenureOptionsForInstantLoan: SelectOption[] = [
+    { label: "1 Months", value: 1 },
+    { label: "2 Months", value: 2 },
+    { label: "3 Months", value: 3 },
+  ];
+
   // EMI start date options
   const emiStartDateOptions: SelectOption[] = [
     { label: "5th", value: 5 },
@@ -107,7 +115,7 @@ export default function LoanRequestPage() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <TextInput
+            {/* <TextInput
                 form={form}
                 name="loanAmount"
                 label="Loan Amount Requested (BDT)"
@@ -119,13 +127,35 @@ export default function LoanRequestPage() {
                   const value = e.target.value.replace(/\D/g, "");
                   form.setValue("loanAmount", value, { shouldValidate: true });
                 }}
-              />
+              /> */}
+
+              <TextInput
+                form={form}
+                name="loanAmount"
+                label="Loan Amount Requested (BDT)"
+                placeholder="Enter loan amount"
+                type="number"
+                required
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  const numericValue = Number(value);
+
+                  if (numericValue <= Number(loanRequstData?.eligibleLoan)) {
+                    form.setValue("loanAmount", value, { shouldValidate: true });
+                  } else {
+                    form.setError("loanAmount", {
+                      type: "manual",
+                      message: `You cannot request more than BDT ${loanRequstData?.eligibleLoan}`,
+                    });
+                  }
+                }}
+              /> 
 
               <SelectInput
                 form={form}
                 name="loanTenure"
                 label="Preferred Loan Tenure (years)"
-                options={tenureOptions}
+                options={loanRequstData?.loanType === "INSTANT_LOAN" ? tenureOptionsForInstantLoan : tenureOptions}
                 required
               />
 
