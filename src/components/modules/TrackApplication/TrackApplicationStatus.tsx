@@ -6,11 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatDateString, formatEnums, formatToBDTCurrency } from "@/utils";
 import { ArrowRight, CheckCircle, Clock, FileText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ApplicationStatusData } from "./TrackingApplicationTypes";
-import { formatDateString, formatEnums, formatToBDTCurrency } from "@/utils";
 
 export default function TrackApplicationStatus({
   applicationStatusData,
@@ -34,11 +34,11 @@ export default function TrackApplicationStatus({
   };
 
   const currentStep = getStatusStep(applicationStatusData.status);
-  console.log(applicationStatusData)
+  console.log(applicationStatusData);
 
   return (
-    <div className=" bg-gray-50 ">
-      <div className="container mx-auto px-4 py-8 ">
+    <div className="bg-gray-50">
+      <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6 flex flex-wrap items-center text-sm text-gray-500">
           <Link href="/" className="hover:text-gray-700">
@@ -66,7 +66,7 @@ export default function TrackApplicationStatus({
             </CardHeader>
             <CardContent>
               <div className="mb-8">
-                <h3 className="mb-8 text-center text-base md:text-lg font-semibold">
+                <h3 className="mb-8 text-center text-base font-semibold md:text-lg">
                   Your Application is{" "}
                   {applicationStatusData.status === "SUBMITTED"
                     ? "under review"
@@ -88,7 +88,7 @@ export default function TrackApplicationStatus({
                   {/* Status Steps */}
                   <div className="relative flex flex-col gap-8 sm:flex-row sm:justify-between">
                     {/* Step 1 */}
-                    <div className="flex flex-col items-center min-w-[70px]">
+                    <div className="flex min-w-[70px] flex-col items-center">
                       <div
                         className={`z-10 flex h-10 w-10 items-center justify-center rounded-full ${
                           currentStep >= 1
@@ -102,11 +102,13 @@ export default function TrackApplicationStatus({
                           <FileText className="h-5 w-5" />
                         )}
                       </div>
-                      <span className="mt-2 text-sm font-medium">Submitted</span>
+                      <span className="mt-2 text-sm font-medium">
+                        Submitted
+                      </span>
                     </div>
 
                     {/* Step 2 */}
-                    <div className="flex flex-col items-center min-w-[70px]">
+                    <div className="flex min-w-[70px] flex-col items-center">
                       <div
                         className={`z-10 flex h-10 w-10 items-center justify-center rounded-full ${
                           currentStep >= 2
@@ -120,11 +122,13 @@ export default function TrackApplicationStatus({
                           <Clock className="h-5 w-5" />
                         )}
                       </div>
-                      <span className="mt-2 text-sm font-medium">In Process</span>
+                      <span className="mt-2 text-sm font-medium">
+                        In Process
+                      </span>
                     </div>
 
                     {/* Step 3 */}
-                    <div className="flex flex-col items-center min-w-[70px]">
+                    <div className="flex min-w-[70px] flex-col items-center">
                       <div
                         className={`z-10 flex h-10 w-10 items-center justify-center rounded-full ${
                           currentStep >= 3
@@ -142,7 +146,7 @@ export default function TrackApplicationStatus({
                     </div>
 
                     {/* Step 4 */}
-                    <div className="flex flex-col items-center min-w-[70px]">
+                    <div className="flex min-w-[70px] flex-col items-center">
                       <div
                         className={`z-10 flex h-10 w-10 items-center justify-center rounded-full ${
                           currentStep >= 4
@@ -169,20 +173,24 @@ export default function TrackApplicationStatus({
               {/* Application Details */}
               <div className="mt-8 space-y-6">
                 <div>
-                  <h3 className="mb-4 text-base md:text-lg font-semibold">
-                  Requested Loan Details
+                  <h3 className="mb-4 text-base font-semibold md:text-lg">
+                    Requested Loan Details
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <p className="text-sm text-gray-500">Loan Type</p>
                       <p className="font-medium">
-                        {formatEnums(applicationStatusData?.eligibleLoanOffer?.loanType)}
+                        {formatEnums(
+                          applicationStatusData?.eligibleLoanOffer?.loanType,
+                        )}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Loan Amount</p>
                       <p className="font-medium">
-                        {formatToBDTCurrency(applicationStatusData.loanRequest.loanAmount)}
+                        {formatToBDTCurrency(
+                          applicationStatusData.loanRequest.loanAmount,
+                        )}
                       </p>
                     </div>
                     <div>
@@ -197,10 +205,10 @@ export default function TrackApplicationStatus({
               {/* Application Details */}
               <div className="mt-8 space-y-6">
                 <div>
-                  <h3 className="mb-4 text-base md:text-lg font-semibold">
-                   Eligible for Loan
+                  <h3 className="mb-4 text-base font-semibold md:text-lg">
+                    Eligible for Loan
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <p className="text-sm text-gray-500">Bank name</p>
                       <p className="font-medium">
@@ -208,27 +216,35 @@ export default function TrackApplicationStatus({
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Eligble Loan Amount</p>
+                      <p className="text-sm text-gray-500">
+                        Eligble Loan Amount
+                      </p>
                       <p className="font-medium">
-                        {formatToBDTCurrency(applicationStatusData?.eligibleLoanOffer?.eligibleLoan)}
+                        {formatToBDTCurrency(
+                          applicationStatusData?.eligibleLoanOffer
+                            ?.eligibleLoan,
+                        )}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Tenure</p>
                       <p className="font-medium">
-                        {applicationStatusData.eligibleLoanOffer?.periodMonths} months
+                        {applicationStatusData.eligibleLoanOffer?.periodMonths}{" "}
+                        months
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">InterestRate</p>
                       <p className="font-medium">
-                        {applicationStatusData.eligibleLoanOffer?.interestRate} %
+                        {applicationStatusData.eligibleLoanOffer?.interestRate}{" "}
+                        %
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">ProcessingFee</p>
                       <p className="font-medium">
-                        {applicationStatusData.eligibleLoanOffer?.processingFee} %
+                        {applicationStatusData.eligibleLoanOffer?.processingFee}{" "}
+                        %
                       </p>
                     </div>
                   </div>
@@ -256,10 +272,10 @@ export default function TrackApplicationStatus({
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-center">
+                <h3 className="text-center text-base font-semibold md:text-lg">
                   {applicationStatusData?.user?.profile?.nameAsNid}
                 </h3>
-                <p className="text-sm text-gray-500 text-center">
+                <p className="text-center text-sm text-gray-500">
                   ID: {applicationStatusData?.user?.userId}
                 </p>
               </div>
@@ -282,7 +298,9 @@ export default function TrackApplicationStatus({
                 <div>
                   <p className="text-gray-500">Date of Birth</p>
                   <p className="font-medium">
-                    {formatDateString(applicationStatusData?.user?.profile?.dateOfBirth)}
+                    {formatDateString(
+                      applicationStatusData?.user?.profile?.dateOfBirth,
+                    )}
                   </p>
                 </div>
                 <div>
