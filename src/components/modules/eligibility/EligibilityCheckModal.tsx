@@ -45,26 +45,26 @@ function EligibilityCheckModal({
 
   const form = useForm<FullFormSchema>({
     resolver: zodResolver(fullFormSchema),
-    defaultValues: {
-      gender: "MALE",
-      dateOfBirth: new Date("January 01, 1985"),
-      profession: "SALARIED",
-      jobLocation: "DHAKA",
-      tradeLicenseAge: 1,
-      monthlyIncome: 30000,
-      sharePortion: 0,
-      haveAnyLoan: "NO",
-      haveAnyCreditCard: "NO",
-      cardLimitBDT: 0,
-      haveAnyRentalIncome: "NO",
-      rentalIncome: 0,
-      name: "reza",
-      email: "reza@gmail.com",
-      phone: "01910479167",
-    },
+    // defaultValues: {
+    //   gender: "",
+    //   dateOfBirth: new Date(""),
+    //   profession: "",
+    //   jobLocation: "",
+    //   tradeLicenseAge: ,
+    //   monthlyIncome: ,
+    //   sharePortion: 0,
+    //   haveAnyLoan: "NO",
+    //   haveAnyCreditCard: "NO",
+    //   cardLimitBDT: 0,
+    //   haveAnyRentalIncome: "NO",
+    //   rentalIncome: 0,
+    //   name: "reza",
+    //   email: "reza@gmail.com",
+    //   phone: "01910479167",
+    // },
     mode: "onTouched",
   });
-
+  
   const steps = [
     <StepOne key="step1" form={form} loanType={loanType} />,
     <StepTwo key="step2" form={form} />,
@@ -112,7 +112,7 @@ function EligibilityCheckModal({
   const onSubmit = (data: FullFormSchema) => {
     let formatedData: Partial<FullFormSchema> = { ...data };
 
-    if (data.profession !== "BUSINESS_OWNER" && data.profession !== "SELF_EMPLOYED" ) {
+    if (data.profession !== "BUSINESS_OWNER" && data.profession !== "SELF_EMPLOYED") {
       delete formatedData.businessOwnerType;
       delete formatedData.businessType;
       delete formatedData.sharePortion;
