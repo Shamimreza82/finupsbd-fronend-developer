@@ -78,7 +78,11 @@ const HowWeWorks = () => {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="accordion-content">
-                    <div dangerouslySetInnerHTML={{ __html: description }} />
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: description.toString(),
+                      }}
+                    />
                   </AccordionContent>
                 </AccordionItem>
               ))}

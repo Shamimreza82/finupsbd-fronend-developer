@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCompare } from "@/context/CompareContext";
+import { useDebounce } from "@/hooks/useDebounce";
 import { formatBDT } from "@/utils";
 import { Heart, RotateCcw } from "lucide-react";
 import Image from "next/image";
@@ -18,7 +19,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { banks } from "./EligibilityConostant";
 import { EligibilityData, TEligibilityCheckDataShow } from "./EligibilityTypes";
-import debounce from 'lodash/debounce';
 
 // Format number to BDT format
 
@@ -33,6 +33,7 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
   const [sortKey, setSortKey] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
   const [amount, setLoanAmount] = useState(100000);
+  const debounceAmount = useDebounce(amount, 500); // Assuming you have a debounce hook, replace this with the actual hook
   const [interestRate, setProfitRate] = useState(12);
   const [searchTerm, setSelectedBanks] = useState<string[]>([]);
   const [wishlist, setWishlist] = useState<number[]>([]);
@@ -42,15 +43,12 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const router = useRouter();
 
-  console.log(wishlist)
-
-
-
+  console.log(wishlist);
 
   // Send filter/query data to parent
   useEffect(() => {
     const queryData = {
-      amount,
+      amount: debounceAmount,
       interestRate,
       searchTerm,
       sortOrder,
@@ -58,15 +56,7 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
       sortKey,
     };
     onSendData(queryData);
-  }, [interestRate, searchTerm, sortOrder, sortKey, page, amount]);
-
-
-
-
-
-
-
-
+  }, [interestRate, searchTerm, sortOrder, sortKey, page, debounceAmount]);
 
   // Toggle wishlist
   const handleWishlist = (id: number) => {
@@ -74,8 +64,6 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
-
-
 
   // Toggle compare selection (limit to 3 items)
   const handleCompare = (id: number) => {
@@ -92,8 +80,6 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
       }
     });
   };
-
-
 
   // Open compare modal if at least 2 items are selected
   const navigateToCompare = () => {
@@ -114,15 +100,10 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
     setIsCompareModalOpen(true);
   };
 
-
-
   const handleSort = (key: string, order: string) => {
     setSortKey(key);
     setSortOrder(order);
   };
-
-
-
 
   const handelApplication = (data: EligibilityData) => {
     console.log(data);
@@ -134,13 +115,11 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
       periodMonths: data?.periodMonths,
       amount: data?.amount,
       interestRate: data?.interestRate,
-      processingFee: data?.processingFee
-    }
-    localStorage.setItem("loanRequest", JSON.stringify(loanRequest))
+      processingFee: data?.processingFee,
+    };
+    localStorage.setItem("loanRequest", JSON.stringify(loanRequest));
     router.push(`/user/loan-application`);
   };
-
-
 
   const totalPages = Math.ceil(pagination.totalLoans / pagination.pageSize);
 
@@ -174,9 +153,7 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
                 <h3 className="mb-4 text-base font-medium text-tertiary-dark">
                   Loan Amount
                 </h3>
-                <div className="text-tertiary-primay flex justify-between text-sm font-semibold">
-                  <p>BDT 5,00,000</p>
-                </div>
+
                 <Slider
                   value={[amount]}
                   onValueChange={(value) => setLoanAmount(value[0])}
@@ -253,40 +230,44 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
             <div className="flex flex-wrap gap-2 rounded-lg border border-[#B4B7D0]/30 bg-white p-2 shadow-md lg:gap-4">
               <Button
                 variant="outline"
-                className={`cursor-pointer border-none shadow-none ${sortKey === "interestRate" && sortOrder === "asc"
-                  ? "!border-transparent bg-[#E7FDE2] text-primary"
-                  : "hover:bg-[#E7FDE2] hover:text-primary"
-                  }`}
+                className={`cursor-pointer border-none shadow-none ${
+                  sortKey === "interestRate" && sortOrder === "asc"
+                    ? "!border-transparent bg-[#E7FDE2] text-primary"
+                    : "hover:bg-[#E7FDE2] hover:text-primary"
+                }`}
                 onClick={() => handleSort("interestRate", "asc")}
               >
                 Lowest Interest Rate
               </Button>
               <Button
                 variant="outline"
-                className={`cursor-pointer border-none shadow-none ${sortKey === "interestRate" && sortOrder === "desc"
-                  ? "border-transparent bg-[#E7FDE2] text-primary"
-                  : "hover:bg-[#E7FDE2] hover:text-primary"
-                  }`}
+                className={`cursor-pointer border-none shadow-none ${
+                  sortKey === "interestRate" && sortOrder === "desc"
+                    ? "border-transparent bg-[#E7FDE2] text-primary"
+                    : "hover:bg-[#E7FDE2] hover:text-primary"
+                }`}
                 onClick={() => handleSort("interestRate", "desc")}
               >
                 Highest Interest Rate
               </Button>
               <Button
                 variant="outline"
-                className={`cursor-pointer border-none shadow-none ${sortKey === "eligibleLoan" && sortOrder === "desc"
-                  ? "border-transparent bg-[#E7FDE2] text-primary"
-                  : "hover:bg-[#E7FDE2] hover:text-primary"
-                  }`}
+                className={`cursor-pointer border-none shadow-none ${
+                  sortKey === "eligibleLoan" && sortOrder === "desc"
+                    ? "border-transparent bg-[#E7FDE2] text-primary"
+                    : "hover:bg-[#E7FDE2] hover:text-primary"
+                }`}
                 onClick={() => handleSort("eligibleLoan", "desc")}
               >
                 Highest Loan Amount
               </Button>
               <Button
                 variant="outline"
-                className={`cursor-pointer border-none shadow-none ${sortKey === "eligibleLoan" && sortOrder === "asc"
-                  ? "border-transparent bg-[#E7FDE2] text-primary"
-                  : "hover:bg-[#E7FDE2] hover:text-primary"
-                  }`}
+                className={`cursor-pointer border-none shadow-none ${
+                  sortKey === "eligibleLoan" && sortOrder === "asc"
+                    ? "border-transparent bg-[#E7FDE2] text-primary"
+                    : "hover:bg-[#E7FDE2] hover:text-primary"
+                }`}
                 onClick={() => handleSort("eligibleLoan", "asc")}
               >
                 Lowest Loan Amount
@@ -543,10 +524,11 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
                         <Button
                           variant="outline"
                           onClick={() => handleCompare(Number(index))}
-                          className={`w-full border-primary text-primary hover:bg-primary hover:text-white ${compareList.includes(index)
-                            ? "bg-primary text-white"
-                            : ""
-                            }`}
+                          className={`w-full border-primary text-primary hover:bg-primary hover:text-white ${
+                            compareList.includes(index)
+                              ? "bg-primary text-white"
+                              : ""
+                          }`}
                         >
                           {compareList.includes(index)
                             ? "Selected"

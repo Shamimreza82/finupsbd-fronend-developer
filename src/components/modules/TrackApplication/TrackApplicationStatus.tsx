@@ -38,7 +38,7 @@ export default function TrackApplicationStatus({
 
   return (
     <div className="bg-gray-50">
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6 flex flex-wrap items-center text-sm text-gray-500">
           <Link href="/" className="hover:text-gray-700">

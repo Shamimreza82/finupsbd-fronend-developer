@@ -1,52 +1,50 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { cleanFormData, formatBDT } from "@/utils";
+import { useDebounce } from "@/hooks/useDebounce";
+import { formatBDT } from "@/utils";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { EligibilityData } from "../EligibilityTypes";
 import icon_success from "/public/icon-success.svg";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import LoaderCommon from "@/components/loading/LoaderCommon";
-
 
 type PageProps = {
   submissionData: EligibilityData[]; // Ensure submissionData is an array of EligibilityData
   onSendData: (data: any) => void;
-  isLoading: boolean
+  isLoading: boolean;
 };
 
-
-function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading }: PageProps) {
+function EligibilityInstantLoanDataShow({
+  submissionData,
+  onSendData,
+  isLoading,
+}: PageProps) {
   const [showConfetti, setShowConfetti] = useState(true);
-  const [tenure, setTenure] = useState<number>(1);  //TODO: In future, you can set a default value or fetch it from props or context
-  const router = useRouter()
-
-
-
-
+  const [tenure, setTenure] = useState<number>(1);
+  const debounceTenure = useDebounce<number>(tenure, 500);
+  const [message, setMessage] = useState<boolean>(false);
+  const router = useRouter();
 
   const queryData = {
-    tenure: tenure,
+    tenure: debounceTenure,
   };
 
   useEffect(() => {
-    if (tenure) {
+    if (debounceTenure) {
       onSendData(queryData);
     }
-  }, [tenure]);
-
+  }, [debounceTenure]);
 
   const handelApplication = (data: EligibilityData) => {
-
-    const periodMonths = Number(data.expectedLoanTenure)
-    const eligibleLoan = String(data.eligibleLoan)
-    const interestRate = String(data.interestRate)
-    console.log(eligibleLoan)
+    const periodMonths = Number(data.expectedLoanTenure);
+    const eligibleLoan = String(data.eligibleLoan);
+    const interestRate = String(data.interestRate);
+    console.log(eligibleLoan);
     const loanRequest = {
       bankName: data?.bankName,
       bankImage: data?.coverImage,
@@ -55,14 +53,11 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
       periodMonths: periodMonths,
       amount: data?.amount,
       interestRate: interestRate,
-      processingFee: data?.processingFee
-    }
-    localStorage.setItem("loanRequest", JSON.stringify(loanRequest))
+      processingFee: data?.processingFee,
+    };
+    localStorage.setItem("loanRequest", JSON.stringify(loanRequest));
     router.push(`/user/loan-application`);
   };
-
-
-
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -71,23 +66,26 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
     return () => clearTimeout(timer);
   }, []);
 
-
   if (!submissionData) {
-    console.log("A;;;;")
-
+    console.log("A;;;;");
   }
-
-
 
   return (
     <>
       {submissionData.map((data: EligibilityData) => (
-        <div key={data.id} className="mx-auto my-14 max-w-5xl rounded-lg bg-white p-8 shadow-[0_2px_15px_rgba(0,0,0,0.1)]">
+        <div
+          key={data.id}
+          className="mx-auto my-14 max-w-5xl rounded-lg bg-white p-8 shadow-[0_2px_15px_rgba(0,0,0,0.1)]"
+        >
           {showConfetti && <Confetti />}
-          <div >
+          <div>
             {/* Congratulations Message */}
-            <div className="mb-12 text-center" >
-              <Image src={icon_success} alt="Icon" className="mx-auto mb-8 w-24" />
+            <div className="mb-12 text-center">
+              <Image
+                src={icon_success}
+                alt="Icon"
+                className="mx-auto mb-8 w-24"
+              />
               <h1 className="mb-2 text-2xl font-semibold">
                 Congratulations! You're Eligible for an Instant Loan
               </h1>
@@ -100,7 +98,9 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
             <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
               <div>
                 <div className="mb-2 flex justify-between">
-                  <span className="text-sm font-medium">Tenure (in Months)</span>
+                  <span className="text-sm font-medium">
+                    Tenure (in Months)
+                  </span>
                   <span className="text-sm font-medium">{tenure} Months</span>
                 </div>
                 <Slider
@@ -108,7 +108,13 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
                   min={1}
                   max={3}
                   step={1}
-                  onValueChange={(value) => setTenure(value[0])}
+                  onValueChange={(value) => {
+                    setTenure(value[0]);
+                    if (Number(value[0]) < 3) setMessage(false);
+                    setTimeout(() => {
+                      setMessage(false);
+                    }, 3000);
+                  }}
                   className="mb-2"
                 />
                 <Input
@@ -117,11 +123,20 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
                   onChange={(e) => {
                     const value = e.target.value.replace(/[^0-9]/g, "");
                     if (value) setTenure(Number.parseInt(value));
+                    if (Number(value) >= 3) setMessage(true);
+                    setTimeout(() => {
+                      setMessage(false);
+                    }, 3000);
                   }}
                 />
+                {message && (
+                  <p className="mt-2 text-sm text-red-500">
+                    Tenure must be at least 3 months.
+                  </p>
+                )}
               </div>
             </div>
-            <div >
+            <div>
               {/* Loan Details */}
               <div className="mb-8 rounded-lg border p-4">
                 <div className="mb-4 flex items-center justify-between">
@@ -143,7 +158,9 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                   <div>
                     <p className="text-sm text-gray-600">Amount:</p>
-                    <p className="font-medium">BDT {formatBDT(data.amount)}/-</p>
+                    <p className="font-medium">
+                      BDT {formatBDT(data.amount)}/-
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Interest Rate:</p>
@@ -151,7 +168,9 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Period (Months):</p>
-                    <p className="font-medium">{data.expectedLoanTenure} Months</p>
+                    <p className="font-medium">
+                      {data.expectedLoanTenure} Months
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Monthly EMI:</p>
@@ -180,7 +199,7 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
                       BDT {formatBDT(data.eligibleLoan)}/-
                     </p>
                   </div>
-                  <div className="flex justify-end mt-3">
+                  <div className="mt-3 flex justify-end">
                     <Button onClick={() => handelApplication(data)}>
                       Apply
                     </Button>
@@ -234,7 +253,8 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
                   </li>
                   <li>
                     <strong>Age Requirement:</strong> Minimum{" "}
-                    {data?.eligibility?.ageRequirement} years to Maximum 65 yeears
+                    {data?.eligibility?.ageRequirement} years to Maximum 65
+                    yeears
                   </li>
                 </ul>
               </div>
@@ -269,9 +289,8 @@ function EligibilityInstantLoanDataShow({ submissionData, onSendData, isLoading 
               </div>
             </div>
           </div>
-        </div >
+        </div>
       ))}
-
     </>
   );
 }

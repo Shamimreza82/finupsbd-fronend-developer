@@ -47,7 +47,7 @@ function EligibilityNavigation() {
   }, [loanType]);
 
   return (
-    <div className="container-md relative z-10 p-6">
+    <div className="container-sm relative z-10 p-6">
       {/* Outer container */}
       <div className="flex items-center justify-center">
         <Tabs defaultValue="loans" className="w-full">
@@ -97,7 +97,7 @@ function EligibilityNavigation() {
                 <RadioGroup
                   value={loanType}
                   onValueChange={setLoanType} // track changes
-                  className="gird mb-4 mt-2 flex-none grid-cols-2 gap-6 lg:flex lg:flex-row lg:items-center"
+                  className="gird mb-4 mt-2 flex-none grid-cols-2 justify-center gap-6 lg:flex lg:flex-row lg:items-center"
                 >
                   {loanTypes?.map((type) => (
                     <div
@@ -110,52 +110,20 @@ function EligibilityNavigation() {
                       </Label>
                     </div>
                   ))}
-
-                  {/* <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="PEOSONAL_LOAN" value="PERSONAL_LOAN" />
-                    <Label className="cursor-pointer" htmlFor="PEOSONAL_LOAN">
-                      Personal Loan
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="INSTANT_LOAN" value="INSTANT_LOAN" />
-                    <Label className="cursor-pointer" htmlFor="INSTANT_LOAN">
-                      Instant Loan
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="HOME_LOAN" value="HOME_LOAN" />
-                    <Label className="cursor-pointer" htmlFor="HOME_LOAN">
-                      Home Loan
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="CAR_LOAN" value="CAR_LOAN" />
-                    <Label className="cursor-pointer" htmlFor="CAR_LOAN">
-                      Car Loan
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="SME_LOAN" value="SME_LOAN" />
-                    <Label className="cursor-pointer" htmlFor="SME_LOAN">
-                      SME Loan
-                    </Label>
-                  </div> */}
                 </RadioGroup>
 
                 {/* Action buttons */}
-                <div className="flex w-full flex-col gap-4 lg:flex-row">
-                  <Button
+                <div className="flex w-full flex-col justify-center gap-4 lg:flex-row">
+                  {/* <Button
                     variant="default"
                     className="h-12 w-full lg:w-1/2"
                     onClick={handleCompareLoan}
                   >
                     Compare Loan
                     <MoveUpRight size={28} strokeWidth={2.5} />
-                  </Button>
+                  </Button> */}
                   <Button
-                    variant="outline"
-                    className="h-12 w-full lg:w-1/2"
+                    className="h-12 w-full lg:w-1/3"
                     onClick={handleCheckEligibility}
                   >
                     Check Eligibility
@@ -172,7 +140,7 @@ function EligibilityNavigation() {
                 <RadioGroup
                   value={loanType}
                   onValueChange={setLoanType} // track changes
-                  className="gird mb-4 mt-2 flex-none grid-cols-2 gap-6 lg:flex lg:flex-row lg:items-center"
+                  className="gird mb-4 mt-2 flex-none grid-cols-2 justify-center gap-6 lg:flex lg:flex-row lg:items-center"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem id="PEOSONAL_LOAN" value="CREDIT_CARDS" />
@@ -189,18 +157,17 @@ function EligibilityNavigation() {
                 </RadioGroup>
 
                 {/* Action buttons */}
-                <div className="flex w-full flex-col gap-4 lg:flex-row">
-                  <Button
+                <div className="flex w-full flex-col justify-center gap-4 lg:flex-row">
+                  {/* <Button
                     variant="default"
                     className="h-12 w-full lg:w-1/2"
                     onClick={handleCompareLoan}
                   >
                     Compare Loan
                     <MoveUpRight size={28} strokeWidth={2.5} />
-                  </Button>
+                  </Button> */}
                   <Button
-                    variant="outline"
-                    className="h-12 w-full lg:w-1/2"
+                    className="h-12 w-full lg:w-1/3"
                     onClick={handleCheckEligibility}
                   >
                     Check Eligibility
