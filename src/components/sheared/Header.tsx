@@ -6,6 +6,32 @@ import MenuItems from "./Navbar/MenuItems";
 import MobileHeader from "./Navbar/Mobile/MobileHeader";
 import ProfileMenu from "./Navbar/ProfileMenu";
 import SiteLogo from "./SiteLogo";
+import { NotificationDropdown, NotificationType } from "./NotificationDropdown";
+
+
+// Import NotificationType from NotificationDropdown or its type definition
+
+const mockNotifications = [
+  {
+    id: "1",
+    title: "Loan Approved!",
+    message: "Your loan for BDT 1,00,000 has been approved.",
+    type: "SUCCESS" as NotificationType,
+    actionUrl: "/loans/12345",
+    isRead: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "2",
+    title: "System Maintenance",
+    message: "Downtime scheduled for Sunday, 2-4AM.",
+    type: "INFO" as NotificationType,
+    
+    isRead: true,
+    createdAt: new Date().toISOString(),
+  },
+];
+
 
 const Header = ({ hasSidebar = true }) => {
   return (
@@ -30,6 +56,9 @@ const Header = ({ hasSidebar = true }) => {
                 </div>
                 <div className="w-4/12">
                   <div className="flex items-center justify-center gap-4">
+                    <NotificationDropdown
+                      notifications={mockNotifications}
+                    />
                     <Link href="/track-application/track-application-public" className="!text-xl">
                       <Button variant="outline" className="h-10">
                         <Globe className="h-14 w-14 text-6xl" />
