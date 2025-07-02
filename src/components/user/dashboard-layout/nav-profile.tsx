@@ -38,7 +38,7 @@ export function NavProfile({
                   href={item.url}
                   className={`flex items-center space-x-2 rounded-md p-2 transition ${
                     isActive
-                      ? "border-l-4 border-primary bg-[#E7FDE2] text-primary"
+                      ? "border-primary bg-[#E7FDE2] text-primary"
                       : "hover:bg-[#E7FDE2]"
                   }`}
                 >

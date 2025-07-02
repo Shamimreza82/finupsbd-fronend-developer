@@ -27,7 +27,7 @@ const mockNotifications = [
     message: "Downtime scheduled for Sunday, 2-4AM.",
     type: "INFO" as NotificationType,
     
-    isRead: true,
+    isRead: false,
     createdAt: new Date().toISOString(),
   },
 ];

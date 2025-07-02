@@ -4,6 +4,9 @@ import { AlignJustify } from "lucide-react";
 import SiteLogo from "../../SiteLogo";
 import MobileMenuContent from "./MobileMenuContent";
 import UserLogin from "./UserLogin";
+
+
+
 const MobileHeader = () => {
   return (
     <div className="flex items-center justify-between gap-4 px-2">

@@ -50,7 +50,7 @@ export default function DemoStatus() {
         </div>
       </div>
 
-      <ApplicationStatus status={status} message={messages[status]} />
+      {/* <ApplicationStatus status={status} message={messages[status]} /> */}
     </div>
   )
 }
