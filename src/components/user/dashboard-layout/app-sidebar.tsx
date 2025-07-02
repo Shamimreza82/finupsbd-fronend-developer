@@ -21,7 +21,7 @@ import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <div className="z-50">
+    <div className="z-50 bg-slate-100">
       <Sidebar
         className="w-72 bg-white shadow-lg transition-all dark:bg-gray-900"
         collapsible="icon"

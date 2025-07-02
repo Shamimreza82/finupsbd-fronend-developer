@@ -1,67 +1,66 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { format } from "date-fns"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
-import * as z from "zod"
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { format } from "date-fns";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import * as z from "zod";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from "@/components/ui/form"
-import { updateUserProfile, userInfo } from "@/services/UserData"
-import { Award } from "lucide-react"
-import { useUserInfo } from "@/hooks/useUserInfo"
-import { userProfileSchema } from "./userProfileValidation"
-import { useRouter } from "next/navigation"
+  FormMessage,
+} from "@/components/ui/form";
+import { updateUserProfile } from "@/services/UserData";
+import { useUserInfo } from "@/hooks/useUserInfo";
+import { userProfileSchema } from "./userProfileValidation";
+import { useRouter } from "next/navigation";
 
-
-type UserProfileFormValues = z.infer<typeof userProfileSchema>
+type UserProfileFormValues = z.infer<typeof userProfileSchema>;
 
 export default function UserProfileUpdateForm() {
-  const { user } = useUserInfo()
-  const [profileImage, setProfileImage] = useState<string | null>(null)
-  const [image, setImage] = useState<FileList | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-
-
+  const { user } = useUserInfo();
+  const [profileImage, setProfileImage] = useState<string | null>(
+    user?.profile?.avatar || null
+  );
+  const [image, setImage] = useState<FileList | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   // Initialize the form with proper default values
   const form = useForm<UserProfileFormValues>({
     resolver: zodResolver(userProfileSchema),
-    // defaultValues: {
-    //     nameAsNid: user?.name || "",
-    //     nationalIdNumber: "",
-    //     gender: undefined,
-    //     dateOfBirth: undefined,
-    //     address: "",
-    //     city: "",
-    //   },
-  })
+    defaultValues: {
+      nameAsNid: user?.profile?.nameAsNid || "",
+      nationalIdNumber: user?.profile?.nationalIdNumber || "",
+      gender: user?.profile?.gender || undefined,
+      dateOfBirth: user?.profile?.dateOfBirth
+        ? new Date(user.profile.dateOfBirth)
+        : undefined,
+      address: user?.profile?.address || "",
+      city: user?.profile?.city || undefined,
+    },
+  });
 
   async function onSubmit(data: UserProfileFormValues) {
     try {
-      setIsLoading(true)
-      console.log("Form data submitted:", data)
+      setIsLoading(true);
 
       const formData = new FormData();
       formData.append("data", JSON.stringify(data));
@@ -70,46 +69,41 @@ export default function UserProfileUpdateForm() {
         formData.append("file", image[0]);
       }
 
-      const response = await updateUserProfile(formData)
-
-      console.log(response, "response")
-
-
+      const response = await updateUserProfile(formData);
 
       if (!response.success) {
-        throw new Error("Failed to update profile")
+        throw new Error("Failed to update profile");
       }
 
-      toast.success("Profile updated successfully")
-      router.push('/user/profile')
+      toast.success("Profile updated successfully");
+      router.push("/user/profile");
     } catch (error) {
-      toast.error("Something went wrong. Please try again.")
-      console.error(error)
+      toast.error("Something went wrong. Please try again.");
+      console.error(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files)
-      const reader = new FileReader()
+      setImage(e.target.files);
+      const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          setProfileImage(event.target.result as string)
+          setProfileImage(event.target.result as string);
         }
-      }
-      reader.readAsDataURL(e.target.files[0])
+      };
+      reader.readAsDataURL(e.target.files[0]);
     }
-  }
-
+  };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-sm">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-300">
               {profileImage ? (
                 <Image
                   src={profileImage}
@@ -128,11 +122,13 @@ export default function UserProfileUpdateForm() {
                 />
               )}
             </div>
-            <label htmlFor="profile-upload" className="cursor-pointer">
-              <div className="mt-1">
-                <p className="text-sm text-muted-foreground text-red-500">Upload Profile Photo</p>
-                <p className="text-xs text-muted-foreground">Min 600×600, PNG or JPEG</p>
-              </div>
+            <label htmlFor="profile-upload" className="cursor-pointer block mt-2">
+              <p className="text-sm text-primary font-medium hover:underline">
+                Upload Profile Photo
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Min 600×600, PNG or JPEG
+              </p>
               <input
                 id="profile-upload"
                 type="file"
@@ -142,13 +138,11 @@ export default function UserProfileUpdateForm() {
               />
             </label>
           </div>
-          {/* <Button size="sm" variant="outline" className="mt-2 md:mt-0">
-            Update
-          </Button> */}
         </div>
-        <div className="inline-flex gap-3">
-          <Link href="/user/setting/update-email-mobile">
-            <Button variant="outline" className="mt-4 md:mt-0">
+
+        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+          <Link href="/user/setting/update-email-mobile" className="w-full md:w-auto">
+            <Button variant="outline" className="w-full md:w-auto">
               Update Email / Phone Number
             </Button>
           </Link>
@@ -160,13 +154,14 @@ export default function UserProfileUpdateForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
-              defaultValue={user?.profile?.nameAsNid}
               name="nameAsNid"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
                     Full Name <span className="text-red-500">*</span>
-                    <span className="text-muted-foreground text-xs ml-1">(as per National ID)</span>
+                    <span className="text-muted-foreground text-xs ml-1">
+                      (as per National ID)
+                    </span>
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your full name" {...field} />
@@ -182,7 +177,8 @@ export default function UserProfileUpdateForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    National ID Number (NID) <span className="text-red-500">*</span>
+                    National ID Number (NID){" "}
+                    <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your NID number" {...field} />
@@ -200,7 +196,10 @@ export default function UserProfileUpdateForm() {
                   <FormLabel>
                     Gender <span className="text-red-500">*</span>
                   </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select" />
@@ -228,9 +227,15 @@ export default function UserProfileUpdateForm() {
                   <FormControl>
                     <Input
                       type="date"
-                      value={field.value ? format(field.value, 'yyyy-MM-dd') : ''}
+                      value={
+                        field.value
+                          ? format(field.value, "yyyy-MM-dd")
+                          : ""
+                      }
                       onChange={(e) => {
-                        const date = e.target.value ? new Date(e.target.value) : undefined;
+                        const date = e.target.value
+                          ? new Date(e.target.value)
+                          : undefined;
                         field.onChange(date);
                       }}
                       className="w-full"
@@ -268,7 +273,10 @@ export default function UserProfileUpdateForm() {
                 <FormLabel>
                   City <span className="text-red-500">*</span>
                 </FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
@@ -307,5 +315,5 @@ export default function UserProfileUpdateForm() {
         </form>
       </Form>
     </div>
-  )
+  );
 }
