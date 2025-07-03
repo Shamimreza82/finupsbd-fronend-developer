@@ -1,13 +1,9 @@
 "use client";
 
-<<<<<<< HEAD
-import { ChevronRight, Frame, SaveIcon, type LucideIcon } from "lucide-react";
-=======
 import {
   ChevronRight,
   type LucideIcon,
 } from "lucide-react";
->>>>>>> 52734057f1074537168509e14e290c589697f063
 import { usePathname } from "next/navigation";
 
 import {

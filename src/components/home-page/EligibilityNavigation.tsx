@@ -40,7 +40,6 @@ function EligibilityNavigation() {
   }
 
   useEffect(() => {
-    console.log("Loan Type:", loanType);
     if (loanType !== "") {
       setError(false);
     }

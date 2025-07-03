@@ -24,20 +24,22 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { loginValidationSchema } from "./loginValidation";
 import logo from "/public/logo.png";
+import { useUser } from "@/context/UserContext";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const searchParams = useSearchParams();
+  const { refetchUser } = useUser()
   const redirectPath = searchParams.get("redirectPath") || "/";
   const router = useRouter();
 
   const form = useForm<z.infer<typeof loginValidationSchema>>({
     resolver: zodResolver(loginValidationSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "shamimrezabd47@gmail.com",
+      password: "123456",
     },
   });
 
@@ -49,6 +51,7 @@ export default function LoginForm() {
       const result = await loginUser({ ...data, rememberMe });
       if (result.success) {
         toast.success("Login successfuly");
+        await refetchUser();
         router.push(redirectPath);
       } else {
         toast.error(result?.message);
@@ -157,10 +160,10 @@ export default function LoginForm() {
             </form>
           </Form>
           <div className="mt-4 text-center text-sm text-black">
-            Don't have an account?{" "}
+            Don’t have an account?{" "}
             <Link
-              href="/register"
-              className="text-green-500 underline hover:text-primary"
+              href={`/register?redirectPath=${encodeURIComponent(redirectPath)}`}
+              className="text-green-500 underline"
             >
               Register
             </Link>

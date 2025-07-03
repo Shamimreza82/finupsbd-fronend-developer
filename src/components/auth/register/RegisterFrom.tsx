@@ -19,7 +19,7 @@ import {
 import { registerUser } from "@/services/AuthService";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -30,15 +30,17 @@ export default function RegisterForm() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirectPath") || "/";
 
   const form = useForm<z.infer<typeof registerValidationSchema>>({
     resolver: zodResolver(registerValidationSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: "",
+      name: "shamim",
+      email: "shamimrezabd47@gmail.com",
+      phone: "01531297879",
+      password: "123456",
+      confirmPassword: "123456",
     },
   });
 
@@ -61,7 +63,7 @@ export default function RegisterForm() {
 
       if (result.success) {
         toast.success("Cheack your email and and verify!")
-        router.push(`/otp-verification?email=${result?.data?.email}`);
+        router.push(`/otp-verification?email=${result?.data?.email}&redirectPath=${redirectPath}`);
       }
     } catch (error: any) {
       console.log(error)

@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 import { otpVerification } from "@/services/AuthService"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function OTPVerificationForm({ email }: { email: string }) {
     const [otp, setOtp] = useState("")
@@ -20,6 +20,8 @@ export default function OTPVerificationForm({ email }: { email: string }) {
     const [timeLeft, setTimeLeft] = useState(60)
     const [canResend, setCanResend] = useState(false)
     const router = useRouter()
+    const searchParams = useSearchParams();
+    const redirectPath = searchParams.get("redirectPath") || "/";
 
 
 
@@ -53,7 +55,7 @@ export default function OTPVerificationForm({ email }: { email: string }) {
             if (response.success) {
                 setSuccess(true)
                 toast.success("User verify successfully please Login")
-                router.push("/login")
+                router.push(redirectPath);
             } else {
                 const data = await response.json()
                 toast.error("Invalid OTP. Please try again.")
@@ -69,7 +71,7 @@ export default function OTPVerificationForm({ email }: { email: string }) {
 
     const handleResend = async () => {
         setIsResending(true)
-        setError("")
+
 
         try {
             // Replace this with your actual resend API call
@@ -77,22 +79,15 @@ export default function OTPVerificationForm({ email }: { email: string }) {
             console.log(email, otp)
 
             const response = await otpVerification(email, otp)
-            //   const response = await fetch("/api/resend-otp", {
-            //     method: "POST",
-            //     headers: {
-            //       "Content-Type": "application/json",
-            //     },
-            //   })
-
-            if (response.ok) {
+            if (response.success) {
                 setTimeLeft(60)
                 setCanResend(false)
                 setOtp("")
             } else {
-                setError("Failed to resend OTP. Please try again.")
+                toast.error("Failed to resend OTP. Please try again.")
             }
         } catch (err) {
-            setError("Failed to resend OTP. Please try again")
+            toast.error("Failed to resend OTP. Please try again")
         } finally {
             setIsResending(false)
         }

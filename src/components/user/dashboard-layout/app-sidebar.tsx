@@ -1,9 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
-import { Frame, PieChart, Settings2, SquareTerminal } from "lucide-react";
-=======
->>>>>>> 52734057f1074537168509e14e290c589697f063
 import * as React from "react";
 
 import SiteLogo from "@/components/sheared/SiteLogo";
@@ -21,69 +17,6 @@ import { NavItems } from "./nav-items";
 import { NavUser } from "./nav-user";
 
 // Sample data with teams, main navigation and projects.
-<<<<<<< HEAD
-const data = {
-  navMain: [
-    {
-      title: "Application",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: false,
-      items: [
-        {
-          title: "Loan Application",
-          url: "/user/loan-application",
-        },
-        {
-          title: "My Application",
-          url: "/user/my-application/my-application-loan",
-        },
-        {
-          title: "Application Status",
-          url: "/user/my-application/application-status",
-        },
-        {
-          title: "Cards",
-          url: "#",
-        },
-        {
-          title: "Bima/Insurance",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/user/setting",
-      icon: Settings2,
-      items: [
-        {
-          title: "Change Password",
-          url: "/user/setting/update-password",
-        },
-        {
-          title: "Update Email/Mobile",
-          url: "/user/setting/update-email-mobile",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Profile",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Saved Products",
-      url: "#",
-      icon: PieChart,
-    },
-  ],
-};
-=======
-
->>>>>>> 52734057f1074537168509e14e290c589697f063
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
