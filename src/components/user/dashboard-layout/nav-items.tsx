@@ -1,13 +1,9 @@
 "use client";
 
-<<<<<<< HEAD
-import { ChevronRight, Frame, SaveIcon, type LucideIcon } from "lucide-react";
-=======
 import {
   ChevronRight,
   type LucideIcon,
 } from "lucide-react";
->>>>>>> 52734057f1074537168509e14e290c589697f063
 import { usePathname } from "next/navigation";
 
 import {
@@ -15,7 +11,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -26,12 +21,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-
 import Link from "next/link";
-import { NavProfile } from "./nav-profile";
-import { navList } from "./dashboard-navlist";
 
-export function NavMain({
+export function NavItems({
   items,
 }: {
   items: {
@@ -48,11 +40,9 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="text-xs font-semibold uppercase text-gray-500">
-        My Profile
+      <SidebarGroupLabel className="text-xs border-t py-4 font-semibold uppercase text-gray-500">
+        My Items
       </SidebarGroupLabel>
-      <NavProfile projects={navList.profile} />
-
       <SidebarMenu>
         {items.map((item) => {
           const isActive =
@@ -69,17 +59,21 @@ export function NavMain({
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton
                     tooltip={item.title}
-                    className={`mb-3 flex items-center justify-between gap-2 rounded-md px-3 py-3 transition-all duration-300 
+                    className={`
+                      mb-3 flex items-center justify-between gap-2 rounded-md px-3 py-3 transition-all duration-300
                       ${isActive
                         ? "border-l-4 border-primary bg-[#E7FDE2] text-primary"
-                        : "hover:bg-slate-200 hover:scale-[1.02] hover:text-primary"
-                      }`}
+                        : "hover:bg-slate-100 hover:text-primary hover:scale-[1.02]"
+                      }
+                    `}
                   >
                     <div className="flex items-center gap-2">
                       {item.icon && (
                         <item.icon
                           className={`h-5 w-5 transition-colors duration-300 ${
-                            isActive ? "text-primary" : "text-gray-600 group-hover/collapsible:text-primary"
+                            isActive
+                              ? "text-primary"
+                              : "text-gray-600 group-hover/collapsible:text-primary"
                           }`}
                         />
                       )}
@@ -88,8 +82,9 @@ export function NavMain({
                       </span>
                     </div>
                     <ChevronRight
-                      className={`ml-auto h-4 w-4 shrink-0 transform transition-transform duration-300
-                        group-data-[state=open]/collapsible:rotate-90 
+                      className={`
+                        ml-auto h-4 w-4 shrink-0 transform transition-transform duration-300
+                        group-data-[state=open]/collapsible:rotate-90
                         ${isActive ? "text-primary" : "text-gray-500 group-hover/collapsible:text-primary"}
                       `}
                     />
@@ -107,11 +102,13 @@ export function NavMain({
                           <SidebarMenuSubButton asChild>
                             <Link
                               href={subItem.url}
-                              className={`block rounded-md px-4 py-3 text-sm font-medium transition-all duration-300
+                              className={`
+                                block rounded-md px-4 py-3 text-sm font-medium transition-all duration-300
                                 ${isSubActive
                                   ? "bg-[#E7FDE2] text-primary"
                                   : "hover:bg-slate-200 hover:scale-[1.02] hover:text-primary"
-                                }`}
+                                }
+                              `}
                             >
                               {subItem.title}
                             </Link>

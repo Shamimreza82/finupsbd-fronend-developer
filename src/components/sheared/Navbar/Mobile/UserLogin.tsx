@@ -6,9 +6,14 @@ import { useUser } from "@/context/UserContext";
 import { LogIn, User } from "lucide-react";
 import Link from "next/link";
 import MobileUserProfileMenu from "./UserProfileMenu";
+import { useEffect } from "react";
 
 const UserLogin = () => {
+
   const { user, setIsLoading } = useUser();
+
+
+  
 
   return (
     <>

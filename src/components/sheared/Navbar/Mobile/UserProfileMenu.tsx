@@ -1,3 +1,5 @@
+'use client'
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +11,7 @@ import {
 import { protechedRoute } from "@/contants";
 import { logout } from "@/services/AuthService";
 import { TUser } from "@/types/user";
-import { Heart, LogOut, Settings,  User,  User2 } from "lucide-react";
+import { Heart, LogOut, Settings, User, User2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -18,11 +20,17 @@ import { TbChecklist } from "react-icons/tb";
 
 
 const MobileUserProfileMenu = ({ user, setIsLoading }: { user: TUser; setIsLoading: (isLoading: boolean) => void }) => {
+
   const pathname = usePathname();
   const router = useRouter();
+
+  console.log(user)
+
   useEffect(() => {
     setIsLoading(true);
   }, [setIsLoading]);
+
+
 
   const handleLogOut = () => {
     logout();
@@ -31,6 +39,9 @@ const MobileUserProfileMenu = ({ user, setIsLoading }: { user: TUser; setIsLoadi
       router.push("/");
     }
   };
+
+
+
   return (
     <div>
       <SheetContent side="left" className="w-80 py-6">
@@ -39,8 +50,8 @@ const MobileUserProfileMenu = ({ user, setIsLoading }: { user: TUser; setIsLoadi
           <SheetDescription></SheetDescription>
         </SheetHeader>
         <div className="mb-3 flex items-center gap-2">
-          <Avatar className="">
-            <AvatarImage src={user?.avater} alt="User Image" />
+          <Avatar>
+            <AvatarImage src={user.avater} alt="User Image" />
             <AvatarFallback className="bg-primary">
               <User className="text-white" />
             </AvatarFallback>

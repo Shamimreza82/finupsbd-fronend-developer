@@ -1,18 +1,27 @@
 "use client";
 
+<<<<<<< HEAD
 import { Frame, PieChart, Settings2, SquareTerminal } from "lucide-react";
+=======
+>>>>>>> 52734057f1074537168509e14e290c589697f063
 import * as React from "react";
 
 import SiteLogo from "@/components/sheared/SiteLogo";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavMain } from "@/components/user/dashboard-layout/nav-main";
+import Link from "next/link";
+import { navList } from "./dashboard-navlist";
+import { NavItems } from "./nav-items";
+import { NavUser } from "./nav-user";
 
 // Sample data with teams, main navigation and projects.
+<<<<<<< HEAD
 const data = {
   navMain: [
     {
@@ -72,10 +81,13 @@ const data = {
     },
   ],
 };
+=======
+
+>>>>>>> 52734057f1074537168509e14e290c589697f063
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <div className="z-50">
+    <div className="z-50 bg-slate-100">
       <Sidebar
         className="w-72 bg-white shadow-lg transition-all dark:bg-gray-900"
         collapsible="icon"
@@ -83,54 +95,58 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       >
         {/* Header */}
         <SidebarHeader className="border-b border-gray-200 p-4 dark:border-gray-700">
-          <SiteLogo className="w-52" />
+          <SiteLogo className="w-36" />
+
         </SidebarHeader>
 
         {/* Main Content */}
         <SidebarContent className="flex-1 overflow-y-auto">
-          {/* Teams Section */}
-          {/* {data.teams && (
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase">
-                Teams
+          {/* Profile*/}
+          <NavMain items={navList.navMain} />
+          {/* my items*/}
+          <NavItems items={navList.myItems} />
+
+          {/* Seetings */}
+          {navList.others && (
+            <div className="mt-4 border-t border-gray-200 px-4 py-3 dark:border-gray-700">
+              <h3 className="text-xs font-semibold uppercase text-gray-500">
+                Settings
               </h3>
               <div className="mt-2 space-y-1">
-                {data.teams.map((team, index) => (
-                  <div
+                {navList.settings.map((settings, index) => (
+                  <Link
                     key={index}
-                    className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                    href={settings.url}
+                    className="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    <team.logo className="w-5 h-5 text-gray-500" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {team.name}
+                    <settings.icon className="h-5 w-5 text-gray-500" />
+                    <span className="text-sm text-black dark:text-gray-300">
+                      {settings.name}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
-          )} */}
+          )}
 
-          {/* Navigation Section */}
-          <NavMain items={data.navMain} />
-
-          {/* Projects Section */}
-          {data.projects && (
+          {/* Others */}
+          {navList.others && (
             <div className="mt-4 border-t border-gray-200 px-4 py-3 dark:border-gray-700">
               <h3 className="text-xs font-semibold uppercase text-gray-500">
-                Projects
+                Others
               </h3>
               <div className="mt-2 space-y-1">
-                {data.projects.map((project, index) => (
-                  <a
+                {navList.others.map((project, index) => (
+                  <Link
                     key={index}
                     href={project.url}
                     className="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
                     <project.icon className="h-5 w-5 text-gray-500" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                    <span className="text-sm text-black dark:text-gray-300">
                       {project.name}
                     </span>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -138,9 +154,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarContent>
 
         {/* Footer */}
-        {/* <SidebarFooter className="border-t border-gray-200 p-4 dark:border-gray-700">
+        <SidebarFooter className="border-t border-gray-200 p-4 dark:border-gray-700">
           <NavUser />
-        </SidebarFooter> */}
+        </SidebarFooter>
         <SidebarRail />
       </Sidebar>
     </div>

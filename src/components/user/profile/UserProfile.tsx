@@ -18,7 +18,7 @@ import {
   Shield,
   User,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +38,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatDate } from "@/lib/utils";
-import { userInfo } from "@/services/UserData";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useUserInfo } from "@/hooks/useUserInfo";
@@ -55,9 +54,7 @@ interface ProfileField {
 export default function UserProfile() {
   const [hideSensitiveInfo, setHideSensitiveInfo] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const {user, isloading, error, setError, setisLoading}  = useUserInfo()
-
-
+  const { user, isloading, error } = useUserInfo();
 
   const copyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
@@ -67,9 +64,6 @@ export default function UserProfile() {
       setCopiedField(null);
     }, 2000);
   };
-
-
-
 
   const toggleSensitiveInfo = () => {
     setHideSensitiveInfo(!hideSensitiveInfo);
@@ -148,11 +142,11 @@ export default function UserProfile() {
   ];
 
   return (
-    <Card className="relative mx-auto w-full max-w-2xl border-muted/40 shadow-md">
+    <Card className="relative mx-auto w-full max-w-3xl border-muted/30 shadow-sm rounded-xl">
       <CardHeader className="relative rounded-t-xl pb-4">
-        <div className="flex items-start justify-between">
-          <div className="flex gap-4">
-            <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:gap-4 gap-2 items-center sm:items-start">
+            <Avatar className="h-24 w-24 border-2 border-primary/20 shadow-sm">
               <AvatarImage
                 src={user?.profile?.avatar || ""}
                 alt="Profile picture"
@@ -164,17 +158,21 @@ export default function UserProfile() {
                   .join("") || "U"}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <div className="flex gap-2">
-                <h2 className="text-xl font-semibold">{user?.name}</h2>
-                <Badge
-                  variant="outline"
-                  className="border-primary/20 text-xs font-normal text-primary"
-                >
-                  {user?.role}
-                </Badge>
+            <div className="text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                <h2 className="text-xl font-semibold truncate">{user?.name}</h2>
+                {user?.role && (
+                  <Badge
+                    variant="outline"
+                    className="border-primary/20 text-xs font-normal text-primary"
+                  >
+                    {user?.role}
+                  </Badge>
+                )}
               </div>
-              <p className="text-sm text-muted-foreground">{user?.email}</p>
+              <p className="text-sm text-muted-foreground break-all">
+                {user?.email}
+              </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 Member since{" "}
                 {new Date().toLocaleDateString("en-US", {
@@ -184,9 +182,13 @@ export default function UserProfile() {
               </p>
             </div>
           </div>
-          <div className="flex flex-col gap-2 text-right">
-            <Link href="/user/update-profile">
-              <Button variant="outline" size="sm" className="gap-2">
+          <div className="flex flex-col gap-2 sm:items-end items-start w-full sm:w-auto">
+            <Link href="/user/update-profile" className="w-full sm:w-auto">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 w-full sm:w-auto"
+              >
                 <Pencil className="h-4 w-4" />
                 Edit Profile
               </Button>
@@ -194,7 +196,7 @@ export default function UserProfile() {
             <Button
               variant="ghost"
               size="sm"
-              className="gap-1 px-0 text-sm hover:bg-white hover:text-primary"
+              className="gap-1 px-0 text-sm hover:bg-transparent hover:text-primary w-full sm:w-auto"
               onClick={toggleSensitiveInfo}
             >
               {hideSensitiveInfo ? (
@@ -215,77 +217,75 @@ export default function UserProfile() {
 
       <Separator />
 
-      <CardContent className="pt-6">
-        <div className="space-y-5">
-          {profileFields.map((field) => (
-            <div
-              key={field.label}
-              className="group flex items-center justify-between pb-2"
-            >
-              <div className="flex items-center gap-2">
-                <field.icon className="h-4 w-4 text-green-950" />
-                <span className="text-sm">{field.label}:</span>
-                {field.verified && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Shield className="h-3 w-3 text-green-500" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">Verified</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">
-                  {field.sensitive && hideSensitiveInfo
-                    ? "••••••••••••"
-                    : field.value || "Not provided"}
-                </span>
-
-                {field.copyable && field.value && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 !text-primary"
-                          onClick={() =>
-                            copyToClipboard(field.value as string, field.label)
-                          }
-                        >
-                          {copiedField === field.label ? (
-                            <Check className="h-3 w-3 text-green-950" />
-                          ) : (
-                            <Copy className="h-3 w-3 text-green-950" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">
-                          {copiedField === field.label
-                            ? "Copied!"
-                            : "Copy to clipboard"}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </div>
+      <CardContent className="pt-6 space-y-6">
+        {profileFields.map((field) => (
+          <div
+            key={field.label}
+            className="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 pb-3 border-b border-muted/20 last:border-b-0"
+          >
+            <div className="flex items-center gap-2">
+              <field.icon className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium">{field.label}</span>
+              {field.verified && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Shield className="h-3 w-3 text-green-500" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Verified</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
-          ))}
-        </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+              <span className="text-sm font-medium truncate">
+                {field.sensitive && hideSensitiveInfo
+                  ? "••••••••••••"
+                  : field.value || "Not provided"}
+              </span>
+
+              {field.copyable && field.value && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 !text-primary"
+                        onClick={() =>
+                          copyToClipboard(field.value as string, field.label)
+                        }
+                      >
+                        {copiedField === field.label ? (
+                          <Check className="h-3 w-3 text-green-600" />
+                        ) : (
+                          <Copy className="h-3 w-3 text-green-600" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">
+                        {copiedField === field.label
+                          ? "Copied!"
+                          : "Copy to clipboard"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
+          </div>
+        ))}
       </CardContent>
 
-      <CardFooter className="flex justify-between border-t pt-4 text-xs text-muted-foreground">
+      <CardFooter className="flex flex-col sm:flex-row sm:justify-between gap-2 border-t pt-4 text-xs text-muted-foreground">
         <span className="text-sm">
           Last updated: {new Date().toLocaleDateString()}
         </span>
-        <Button variant="link" size="lg" className="h-auto p-0 text-sm">
+        <Button variant="link" size="sm" className="p-0 text-sm">
           Request Data Update
         </Button>
       </CardFooter>
@@ -309,17 +309,15 @@ function ProfileSkeleton() {
         </div>
       </CardHeader>
       <Separator />
-      <CardContent className="pt-6">
-        <div className="space-y-5">
-          {Array(8)
-            .fill(0)
-            .map((_, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <Skeleton className="h-4 w-40" />
-                <Skeleton className="h-4 w-32" />
-              </div>
-            ))}
-        </div>
+      <CardContent className="pt-6 space-y-5">
+        {Array(8)
+          .fill(0)
+          .map((_, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          ))}
       </CardContent>
     </Card>
   );
