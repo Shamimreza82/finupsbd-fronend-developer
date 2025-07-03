@@ -1,9 +1,6 @@
 "use client";
 
-<<<<<<< HEAD
 import { Frame, PieChart, Settings2, SquareTerminal } from "lucide-react";
-=======
->>>>>>> 52734057f1074537168509e14e290c589697f063
 import * as React from "react";
 
 import SiteLogo from "@/components/sheared/SiteLogo";
@@ -21,7 +18,6 @@ import { NavItems } from "./nav-items";
 import { NavUser } from "./nav-user";
 
 // Sample data with teams, main navigation and projects.
-<<<<<<< HEAD
 const data = {
   navMain: [
     {
@@ -81,9 +77,6 @@ const data = {
     },
   ],
 };
-=======
-
->>>>>>> 52734057f1074537168509e14e290c589697f063
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -96,7 +89,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* Header */}
         <SidebarHeader className="border-b border-gray-200 p-4 dark:border-gray-700">
           <SiteLogo className="w-36" />
-
         </SidebarHeader>
 
         {/* Main Content */}

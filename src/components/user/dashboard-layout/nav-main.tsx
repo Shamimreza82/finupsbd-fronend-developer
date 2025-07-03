@@ -1,13 +1,6 @@
 "use client";
 
-<<<<<<< HEAD
-import { ChevronRight, Frame, SaveIcon, type LucideIcon } from "lucide-react";
-=======
-import {
-  ChevronRight,
-  type LucideIcon,
-} from "lucide-react";
->>>>>>> 52734057f1074537168509e14e290c589697f063
+import { ChevronRight, type LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import {
@@ -28,8 +21,8 @@ import {
 } from "@/components/ui/sidebar";
 
 import Link from "next/link";
-import { NavProfile } from "./nav-profile";
 import { navList } from "./dashboard-navlist";
+import { NavProfile } from "./nav-profile";
 
 export function NavMain({
   items,
@@ -69,36 +62,31 @@ export function NavMain({
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton
                     tooltip={item.title}
-                    className={`mb-3 flex items-center justify-between gap-2 rounded-md px-3 py-3 transition-all duration-300 
-                      ${isActive
+                    className={`mb-3 flex items-center justify-between gap-2 rounded-md px-3 py-3 transition-all duration-300 ${
+                      isActive
                         ? "border-l-4 border-primary bg-[#E7FDE2] text-primary"
-                        : "hover:bg-slate-200 hover:scale-[1.02] hover:text-primary"
-                      }`}
+                        : "hover:scale-[1.02] hover:bg-slate-200 hover:text-primary"
+                    }`}
                   >
                     <div className="flex items-center gap-2">
                       {item.icon && (
                         <item.icon
                           className={`h-5 w-5 transition-colors duration-300 ${
-                            isActive ? "text-primary" : "text-gray-600 group-hover/collapsible:text-primary"
+                            isActive
+                              ? "text-primary"
+                              : "text-gray-600 group-hover/collapsible:text-primary"
                           }`}
                         />
                       )}
-                      <span className="text-sm font-medium">
-                        {item.title}
-                      </span>
+                      <span className="text-sm font-medium">{item.title}</span>
                     </div>
                     <ChevronRight
-                      className={`ml-auto h-4 w-4 shrink-0 transform transition-transform duration-300
-                        group-data-[state=open]/collapsible:rotate-90 
-                        ${isActive ? "text-primary" : "text-gray-500 group-hover/collapsible:text-primary"}
-                      `}
+                      className={`ml-auto h-4 w-4 shrink-0 transform transition-transform duration-300 group-data-[state=open]/collapsible:rotate-90 ${isActive ? "text-primary" : "text-gray-500 group-hover/collapsible:text-primary"} `}
                     />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
 
-                <CollapsibleContent
-                  className="overflow-hidden transition-all duration-300 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp"
-                >
+                <CollapsibleContent className="data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden transition-all duration-300">
                   <SidebarMenuSub className="border-none">
                     {item.items?.map((subItem) => {
                       const isSubActive = pathname === subItem.url;
@@ -107,11 +95,11 @@ export function NavMain({
                           <SidebarMenuSubButton asChild>
                             <Link
                               href={subItem.url}
-                              className={`block rounded-md px-4 py-3 text-sm font-medium transition-all duration-300
-                                ${isSubActive
+                              className={`block rounded-md px-4 py-3 text-sm font-medium transition-all duration-300 ${
+                                isSubActive
                                   ? "bg-[#E7FDE2] text-primary"
-                                  : "hover:bg-slate-200 hover:scale-[1.02] hover:text-primary"
-                                }`}
+                                  : "hover:scale-[1.02] hover:bg-slate-200 hover:text-primary"
+                              }`}
                             >
                               {subItem.title}
                             </Link>
