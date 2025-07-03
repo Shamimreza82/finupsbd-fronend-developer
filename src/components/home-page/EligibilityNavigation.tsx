@@ -13,6 +13,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import EligibilityCheckModal from "../modules/eligibility/EligibilityCheckModal";
 import { loanTypes } from "../modules/eligibility/form-steps/form-data-oprions";
+import { CommingSoon } from "../comming-Soon/CommingSoon";
+
 
 function EligibilityNavigation() {
   // Track the selected loan type
@@ -20,6 +22,7 @@ function EligibilityNavigation() {
   const [openEligibility, setOpenEligibility] = useState(false);
   const [error, setError] = useState(false);
   const router = useRouter();
+  const [open, setOpen] = useState(false)
 
   // Send data to backend (Compare Loan)
   async function handleCompareLoan() {
@@ -30,14 +33,33 @@ function EligibilityNavigation() {
     router.push(`/eligibility?loanType=${loanType}&compare=true`);
   }
 
+
+
   // Send data to backend (Check Eligibility)
   async function handleCheckEligibility() {
     if (loanType == "") {
       setError(true);
       return toast.error("Select any loan");
     }
+    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "CREDIT_CARDS" || loanType == "DEBIT_CARDS" || loanType == "PREPAID_CARDS") {
+      return setOpen(true)
+    }
     setOpenEligibility(true);
   }
+
+  useEffect(() => {
+    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "CREDIT_CARDS" || loanType == "DEBIT_CARDS" || loanType == "PREPAID_CARDS") {
+      setOpen(true)
+    }
+
+    return () => {
+      setOpen(false)
+    }
+
+  }, [loanType])
+
+
+
 
   useEffect(() => {
     if (loanType !== "") {
@@ -166,24 +188,26 @@ function EligibilityNavigation() {
                     <MoveUpRight size={28} strokeWidth={2.5} />
                   </Button> */}
                   <Button
-                    className="h-12 w-full lg:w-1/3"
+                    disabled={loanType === "HOME_LOAN"}
+                    className="h-12 w-full lg:w-1/3 flex items-center justify-center gap-2"
                     onClick={handleCheckEligibility}
                   >
                     Check Eligibility
-                    <MoveUpRight size={28} strokeWidth={2.5} />
+                    <MoveUpRight size={20} strokeWidth={2} />
                   </Button>
                 </div>
               </div>
             </TabsContent>
-            <TabsContent value="insurance">
+            <TabsContent className="flex justify-center items-center" value="insurance">
               <div>Comming Soon.........</div>
             </TabsContent>
-            <TabsContent value="investment">
+            <TabsContent className="flex justify-center items-center" value="investment">
               <div>Comming Soon.........</div>
             </TabsContent>
           </div>
         </Tabs>
       </div>
+      <CommingSoon open={open} onOpenChange={setOpen} />
       <EligibilityCheckModal
         open={openEligibility}
         onOpenChange={setOpenEligibility} // pass setState so the modal can close itself

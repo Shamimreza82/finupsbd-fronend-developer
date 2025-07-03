@@ -244,7 +244,7 @@ function EligibilityCheckModal({
         {step !== 3 && (
           <DialogHeader>
             <DialogTitle className="mb-2 text-center">
-              Find the best Personal Loan for you
+              Find the best Loan for you
             </DialogTitle>
 
             <DialogDescription className="text-center text-sm text-tertiary-primary">
