@@ -56,9 +56,9 @@ const Header = ({ hasSidebar = true }) => {
                 </div>
                 <div className="w-4/12">
                   <div className="flex items-center justify-center gap-4">
-                    <NotificationDropdown
+                    {/* <NotificationDropdown
                       notifications={mockNotifications}
-                    />
+                    /> */}
                     <Link href="/track-application/track-application-public" className="!text-xl">
                       <Button variant="outline" className="h-10">
                         <Globe className="h-14 w-14 text-6xl" />
