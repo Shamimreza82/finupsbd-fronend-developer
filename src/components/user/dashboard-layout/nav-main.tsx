@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Frame, PieChart, SaveIcon, type LucideIcon } from "lucide-react";
+import { ChevronRight, Frame, SaveIcon, type LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import {

@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  AudioWaveform,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
+import { Frame, PieChart, Settings2, SquareTerminal } from "lucide-react";
 import * as React from "react";
 
 import SiteLogo from "@/components/sheared/SiteLogo";
@@ -22,23 +14,6 @@ import { NavMain } from "@/components/user/dashboard-layout/nav-main";
 
 // Sample data with teams, main navigation and projects.
 const data = {
-  teams: [
-    {
-      name: "Finups BD",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
       title: "Application",

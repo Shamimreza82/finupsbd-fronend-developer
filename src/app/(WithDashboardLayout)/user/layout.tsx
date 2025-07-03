@@ -1,4 +1,3 @@
-import Header from "@/components/sheared/Header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/user/dashboard-layout/app-sidebar";
 import React from "react";
@@ -10,7 +9,6 @@ export default function UserLayout({
 }) {
   return (
     <div>
-      {/* <Header /> */}
       <div>
         <SidebarProvider>
           <AppSidebar />
