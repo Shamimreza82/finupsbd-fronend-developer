@@ -36,11 +36,11 @@ export default function RegisterForm() {
   const form = useForm<z.infer<typeof registerValidationSchema>>({
     resolver: zodResolver(registerValidationSchema),
     defaultValues: {
-      name: "shamim",
-      email: "shamimrezabd47@gmail.com",
-      phone: "01531297879",
-      password: "123456",
-      confirmPassword: "123456",
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
