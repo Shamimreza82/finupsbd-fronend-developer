@@ -1,6 +1,9 @@
 "use server";
 
+import { FiltersType } from "@/components/modules/eligibility/cards/EligibilityCardsDataShow";
+
 export const eligibilityCheckData = async (payload: any, queryData: any) => {
+
 
   try {
     const res = await fetch(
@@ -15,6 +18,7 @@ export const eligibilityCheckData = async (payload: any, queryData: any) => {
 
     const jsonData = await res.json();
 
+
     return jsonData;
 
   } catch (error) {
@@ -22,7 +26,7 @@ export const eligibilityCheckData = async (payload: any, queryData: any) => {
     return {
       success: false,
       message:
-      error instanceof Error ? error.message : "An unknown error occurred",
+        error instanceof Error ? error.message : "An unknown error occurred",
       error: error,
     };
   }

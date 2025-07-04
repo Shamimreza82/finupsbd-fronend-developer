@@ -41,14 +41,14 @@ function EligibilityNavigation() {
       setError(true);
       return toast.error("Select any loan");
     }
-    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "CREDIT_CARDS" || loanType == "DEBIT_CARDS" || loanType == "PREPAID_CARDS") {
+    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "DEBIT_CARD" || loanType == "PREPAID_CARD") {
       return setOpen(true)
     }
     setOpenEligibility(true);
   }
 
   useEffect(() => {
-    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "CREDIT_CARDS" || loanType == "DEBIT_CARDS" || loanType == "PREPAID_CARDS") {
+    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "DEBIT_CARD" || loanType == "PREPAID_CARD") {
       setOpen(true)
     }
 
@@ -164,15 +164,15 @@ function EligibilityNavigation() {
                   className="gird mb-4 mt-2 flex-none grid-cols-2 justify-center gap-6 lg:flex lg:flex-row lg:items-center"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="PEOSONAL_LOAN" value="CREDIT_CARDS" />
+                    <RadioGroupItem id="PEOSONAL_LOAN" value="CREDIT_CARD" />
                     <Label htmlFor="PEOSONAL_LOAN">Credit Card</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="HOME_LOAN" value="DEBIT_CARDS" />
+                    <RadioGroupItem id="HOME_LOAN" value="DEBIT_CARD" />
                     <Label htmlFor="HOME_LOAN">Debit Cards</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="CAR_LOAN" value="PREPAID_CARDS" />
+                    <RadioGroupItem id="CAR_LOAN" value="PREPAID_CARD" />
                     <Label htmlFor="CAR_LOAN">Prepaid Cards</Label>
                   </div>
                 </RadioGroup>
