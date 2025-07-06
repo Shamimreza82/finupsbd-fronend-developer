@@ -655,7 +655,7 @@ export default function EmploymentInfoPage() {
                       label="Type of Property"
                       options={propertyTypeOptions}
                       placeholder="Select property type"
-                      // `required` prop removed as per previous request
+                    // `required` prop removed as per previous request
                     />
                     <TextInput
                       form={form}
@@ -663,7 +663,7 @@ export default function EmploymentInfoPage() {
                       label="Approximate Value (in BDT)"
                       placeholder="Enter property value"
                       type="number"
-                      // `required` prop removed as per previous request
+                    // `required` prop removed as per previous request
                     />
                   </div>
                 </div>
