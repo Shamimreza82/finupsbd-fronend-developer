@@ -13,6 +13,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import EligibilityCheckModal from "../modules/eligibility/EligibilityCheckModal";
 import { loanTypes } from "../modules/eligibility/form-steps/form-data-oprions";
+import { CommingSoon } from "../comming-Soon/CommingSoon";
+
 
 function EligibilityNavigation() {
   // Track the selected loan type
@@ -20,6 +22,7 @@ function EligibilityNavigation() {
   const [openEligibility, setOpenEligibility] = useState(false);
   const [error, setError] = useState(false);
   const router = useRouter();
+  const [open, setOpen] = useState(false)
 
   // Send data to backend (Compare Loan)
   async function handleCompareLoan() {
@@ -30,17 +33,35 @@ function EligibilityNavigation() {
     router.push(`/eligibility?loanType=${loanType}&compare=true`);
   }
 
+
+
   // Send data to backend (Check Eligibility)
   async function handleCheckEligibility() {
     if (loanType == "") {
       setError(true);
       return toast.error("Select any loan");
     }
+    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "DEBIT_CARD" || loanType == "PREPAID_CARD") {
+      return setOpen(true)
+    }
     setOpenEligibility(true);
   }
 
   useEffect(() => {
-    console.log("Loan Type:", loanType);
+    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "DEBIT_CARD" || loanType == "PREPAID_CARD") {
+      setOpen(true)
+    }
+
+    return () => {
+      setOpen(false)
+    }
+
+  }, [loanType])
+
+
+
+
+  useEffect(() => {
     if (loanType !== "") {
       setError(false);
     }
@@ -143,15 +164,15 @@ function EligibilityNavigation() {
                   className="gird mb-4 mt-2 flex-none grid-cols-2 justify-center gap-6 lg:flex lg:flex-row lg:items-center"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="PEOSONAL_LOAN" value="CREDIT_CARDS" />
+                    <RadioGroupItem id="PEOSONAL_LOAN" value="CREDIT_CARD" />
                     <Label htmlFor="PEOSONAL_LOAN">Credit Card</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="HOME_LOAN" value="DEBIT_CARDS" />
+                    <RadioGroupItem id="HOME_LOAN" value="DEBIT_CARD" />
                     <Label htmlFor="HOME_LOAN">Debit Cards</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem id="CAR_LOAN" value="PREPAID_CARDS" />
+                    <RadioGroupItem id="CAR_LOAN" value="PREPAID_CARD" />
                     <Label htmlFor="CAR_LOAN">Prepaid Cards</Label>
                   </div>
                 </RadioGroup>
@@ -167,24 +188,26 @@ function EligibilityNavigation() {
                     <MoveUpRight size={28} strokeWidth={2.5} />
                   </Button> */}
                   <Button
-                    className="h-12 w-full lg:w-1/3"
+                    disabled={loanType === "HOME_LOAN"}
+                    className="h-12 w-full lg:w-1/3 flex items-center justify-center gap-2"
                     onClick={handleCheckEligibility}
                   >
                     Check Eligibility
-                    <MoveUpRight size={28} strokeWidth={2.5} />
+                    <MoveUpRight size={20} strokeWidth={2} />
                   </Button>
                 </div>
               </div>
             </TabsContent>
-            <TabsContent value="insurance">
+            <TabsContent className="flex justify-center items-center" value="insurance">
               <div>Comming Soon.........</div>
             </TabsContent>
-            <TabsContent value="investment">
+            <TabsContent className="flex justify-center items-center" value="investment">
               <div>Comming Soon.........</div>
             </TabsContent>
           </div>
         </Tabs>
       </div>
+      <CommingSoon open={open} onOpenChange={setOpen} />
       <EligibilityCheckModal
         open={openEligibility}
         onOpenChange={setOpenEligibility} // pass setState so the modal can close itself

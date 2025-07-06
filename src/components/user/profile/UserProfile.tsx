@@ -54,7 +54,7 @@ interface ProfileField {
 export default function UserProfile() {
   const [hideSensitiveInfo, setHideSensitiveInfo] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const { user, isloading, error } = useUserInfo();
+  const { user, isLoading, error } = useUserInfo();
 
   const copyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
@@ -69,7 +69,7 @@ export default function UserProfile() {
     setHideSensitiveInfo(!hideSensitiveInfo);
   };
 
-  if (isloading) {
+  if (isLoading) {
     return <ProfileSkeleton />;
   }
 

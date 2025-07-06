@@ -23,26 +23,25 @@ import { useUser } from "@/context/UserContext";
 import { logout } from "@/services/AuthService";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const ProfileMenu = () => {
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, setIsLoading } = useUser();
+  const { user, refetchUser } = useUser();
 
-  useEffect(() => {
-    setIsLoading(true);
-  }, [setIsLoading]);
 
-  const handleLogOut = () => {
-    logout();
-    setIsLoading(true);
+  const handleLogOut = async () => {
+    await logout();
+    await refetchUser()
     if (protechedRoute.some((route) => pathname.match(route))) {
       router.push("/");
     }
   };
+
+
   return (
     <div>
       {user ? (

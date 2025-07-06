@@ -56,15 +56,12 @@ export const userInfo = async () => {
       headers: {
         "Authorization": `Bearer ${token}`
       },
+      cache: "no-store"
+
     });
 
     console.log("Response Status:", res.status);
 
-    // if (!res.ok) {
-    //   const errorData = await res.json().catch(() => null);
-    //   console.error("API Error Response:", errorData);
-    //   throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
-    // }
 
     return await res.json();
   } catch (error) {
@@ -73,7 +70,7 @@ export const userInfo = async () => {
       success: false,
       message: error instanceof Error ? error.message : "An unknown error occurred",
       error,
-  };
+    };
   }
 }
 

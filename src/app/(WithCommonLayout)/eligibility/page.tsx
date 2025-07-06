@@ -43,6 +43,8 @@ const EligibilityPage = () => {
     setQueryData(data);
   };
 
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {

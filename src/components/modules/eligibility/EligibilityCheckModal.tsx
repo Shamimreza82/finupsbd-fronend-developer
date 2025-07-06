@@ -64,7 +64,7 @@ function EligibilityCheckModal({
     // },
     mode: "onTouched",
   });
-  
+
   const steps = [
     <StepOne key="step1" form={form} loanType={loanType} />,
     <StepTwo key="step2" form={form} />,
@@ -147,16 +147,23 @@ function EligibilityCheckModal({
       loanType,
     };
 
-    sessionStorage.setItem("eligibilityData", JSON.stringify(eligibilityData));
+    sessionStorage.setItem("eligibilityData", JSON.stringify(eligibilityData))
 
-    console.log("Submitted data:", eligibilityData);
-    // alert("Submitted! Check console.");
+
 
     if (loanType === "INSTANT_LOAN") {
       router.push("/eligibility-instant-loan");
-    } else {
+    } else if (loanType === "CREDIT_CARD") {
+      router.push("/eligibility-cards");
+    }
+    else {
       router.push("/eligibility");
     }
+
+    // if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "CREDIT_CARDS" || loanType == "DEBIT_CARDS" || loanType == "PREPAID_CARDS") {
+    //   setOpen(true)
+    // }
+
   };
 
   const renderStepIndicator = () => {
@@ -244,7 +251,7 @@ function EligibilityCheckModal({
         {step !== 3 && (
           <DialogHeader>
             <DialogTitle className="mb-2 text-center">
-              Find the best Personal Loan for you
+              Find the best {loanType} Loan for you
             </DialogTitle>
 
             <DialogDescription className="text-center text-sm text-tertiary-primary">

@@ -1,7 +1,7 @@
 "use client";
 
 import LoadingComponent from "@/components/loading/LoadingComponent";
-import EligibilityInstantLoanDataShow from "@/components/modules/eligibility/instantLoan/EligibilityInstantLoanDataShow";
+import EligibilityCardDataShow, { FiltersType } from "@/components/modules/eligibility/cards/EligibilityCardsDataShow";
 import { Button } from "@/components/ui/button";
 import { eligibilityCheckData } from "@/services/eligibilityCheck";
 import { useEffect, useState } from "react";
@@ -14,25 +14,41 @@ export interface QueryDataProps {
 
 
 
-const InastantLoanPage = () => {
+const CardsPage = () => {
   const [submissionData, setSubmissionData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [queryData, setQueryData] = useState<{ tenure: number }>();
+  const [queryDataBody, setQueryDataBody] = useState<FiltersType>()
 
   const handleQueryData = (data: QueryDataProps) => {
     setQueryData(data);
   };
 
 
-  useEffect(() => {
+  console.log(submissionData)
 
+  const handleQueryDataBody = (data: FiltersType) => {
+    setQueryDataBody(data);
+  };
+
+
+
+
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const data = sessionStorage.getItem("eligibilityData");
-        if (data && queryData) {
-          const parsedData = JSON.parse(data);
-          const result = await eligibilityCheckData(parsedData, queryData);
-          setSubmissionData(result?.data);
+        if (data) {
+          const payload = JSON.parse(data);
+          console.log({payload})
+          const result = await eligibilityCheckData(payload, queryData);
+
+          if (result.success) {
+            setSubmissionData(result?.data);
+          } else {
+            console.log(result)
+          }
         }
       } catch (error) {
         console.error("Error parsing eligibility data:", error);
@@ -41,7 +57,7 @@ const InastantLoanPage = () => {
       }
     };
     fetchData();
-  }, [queryData]);
+  }, [queryData, queryDataBody]);
 
 
 
@@ -54,7 +70,7 @@ const InastantLoanPage = () => {
   }
 
   return (
-    <div> {submissionData ? (<EligibilityInstantLoanDataShow submissionData={submissionData} onSendData={handleQueryData} isLoading={isLoading} />) : (
+    <div> {submissionData ? (< EligibilityCardDataShow handleQueryDataBody={handleQueryDataBody} submissionData={submissionData}  />) : (
       <div className="flex h-screen flex-col items-center justify-center py-8">
         <p className="mb-4 text-lg font-semibold text-gray-700">
           You are not eligibility for instant loan
@@ -71,4 +87,4 @@ const InastantLoanPage = () => {
   );
 };
 
-export default InastantLoanPage;
+export default CardsPage;
