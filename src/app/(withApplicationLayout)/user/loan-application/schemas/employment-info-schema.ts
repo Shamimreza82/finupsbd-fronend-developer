@@ -62,7 +62,7 @@ const employmentInfoBaseSchema = z
     dateOfJoining: z.coerce.date({
       required_error: "Date of Joining is required",
       invalid_type_error: "Date of Joining must be a valid date",
-    }),
+    }).optional(),
     organizationName: z.string().optional(),
     organizationAddress: z.string().optional(),
     serviceYears: z
@@ -84,7 +84,6 @@ const employmentInfoBaseSchema = z
       .max(11, {
         message: "Phone number not more than 11 digit.",
       })
-      .regex(/^(\+880\s?|0)1[3-9]\d{2}-?\d{6}$/, "Invalid phone number.")
       .optional(),
     hasPreviousOrganization: z.boolean().default(false),
     previousOrganizationName: z.string().optional(),
@@ -125,7 +124,7 @@ const employmentInfoBaseSchema = z
     startedPracticeSince: z.coerce.date({
       required_error: "Started practice since is required",
       invalid_type_error: "Started practice since must be a valid date",
-    }),
+    }).optional(),
     tin: z.string().regex(/^\d*$/, "Must be a number if provided").optional(),
     websitePortfolioLink: z.string().optional(),
     professionalRegistrationNumber: z.string().optional(),

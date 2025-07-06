@@ -73,7 +73,7 @@ const CardsPage = () => {
     <div> {submissionData ? (< EligibilityCardDataShow handleQueryDataBody={handleQueryDataBody} submissionData={submissionData}  />) : (
       <div className="flex h-screen flex-col items-center justify-center py-8">
         <p className="mb-4 text-lg font-semibold text-gray-700">
-          You are not eligibility for instant loan
+          You are not eligibility for Cards
         </p>
         <Button
           variant="default"

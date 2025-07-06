@@ -84,9 +84,9 @@ export default function PreviewPage() {
         setTrackingNumber(result?.data?.applicationId);
         // setIsFormSubmitted(true);
         // setSubmittedData(formData as AppFormData);
-        localStorage.removeItem("loanApplicationForm");
-        localStorage.removeItem("loanApplicationDocuments");
-        localStorage.removeItem("loanRequest");
+        // localStorage.removeItem("loanApplicationForm");
+        // localStorage.removeItem("loanApplicationDocuments");
+        // localStorage.removeItem("loanRequest");
       } else {
         console.error("Error submitting application:", result);
         toast.error(result.message || "Faild to create data");
