@@ -4,7 +4,7 @@ import { TUser } from "./types/user";
 
 // Define allowed routes
 const authRoutes = ["/login", "/register"];
-const publicRoutes = ["/", "/about", "/contact"];
+const publicRoutes = ["/", "/about-us", "/contact-us", "/finups-islamic"];
 
 const roleBasedPrivateRoutes: Record<TUser["role"], RegExp[]> = {
   USER: [/^\/user/],
@@ -13,14 +13,8 @@ const roleBasedPrivateRoutes: Record<TUser["role"], RegExp[]> = {
 };
 
 export async function middleware(request: NextRequest) {
-<<<<<<< HEAD
   const { pathname } = request.nextUrl;
   console.log("Middleware executing - Path:", pathname);
-=======
-  
-  const { pathname } = request.nextUrl
-  console.log("Middleware executing - Path:", pathname)
->>>>>>> 41e0ff656022370f328806079ae2b2c93eb2052a
 
   // Fetch user information
   const userInfo = await getCurrentUser();

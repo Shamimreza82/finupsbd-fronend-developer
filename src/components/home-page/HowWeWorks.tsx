@@ -29,7 +29,7 @@ const accordionData: AccordionData[] = [
     id: "2",
     title: "Swipe Through Smart Matches",
     description:
-      "Tell us how much money you make and what kind of job you have. Our instant qualification checker will show you the loans, credit cards, and insurance plans you are most likely to get. Choose the lowest rate, the fastest payout, or halal options—whatever works best for you.",
+      "Tell us how much money you make and what kind of job you have. Our instant qualification checker will show you the loans, credit cards, and insurance plans you are most likely to get. Choose the lowest rate, the fastest payout, or halal options, whatever works best for you.",
   },
   {
     id: "3",
