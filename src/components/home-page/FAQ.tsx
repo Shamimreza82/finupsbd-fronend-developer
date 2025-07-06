@@ -28,13 +28,13 @@ const accordion_data = [
     id: 3,
     title: "What if I don’t meet a lender’s requirements?",
     description:
-      "No worries. Our instant qualification checker only shows you products you’re most likely to qualify for. If you do get turned down, we’ll point you toward other options—maybe a different tenure, a smaller amount, or an Islamic-finance alternative.",
+      "No worries. Our instant qualification checker only shows you products you’re most likely to qualify for. If you do get turned down, we’ll point you toward other options, maybe a different tenure, a smaller amount, or an Islamic-finance alternative.",
   },
   {
     id: 6,
     title: "Can I apply for more than one product at the same time?",
     description:
-      "Yes! You can submit multiple applications—just remember that each one may require its own documents. We’ll walk you through every step, so you never feel lost in the paperwork.",
+      "Yes! You can submit multiple applications, just remember that each one may require its own documents. We’ll walk you through every step, so you never feel lost in the paperwork.",
   },
   {
     id: 5,

@@ -1,9 +1,9 @@
+import { TooltipProvider } from "@/components/ui/tooltip";
 import Providers from "@/providers/Providers";
 import { Inter } from "next/font/google";
 import React from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Finupsbd",
+  title: "FinupsBD",
   description:
-    "Brief info about FinsUp BD and its mission to empower financial decisions in Bangladesh",
+    "Brief info about FinsupsBD and its mission to empower financial decisions in Bangladesh",
 };
 
 export default function RootLayout({
@@ -27,9 +27,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${inter.variable} antialiased`}>
           <Toaster position="top-center" richColors />
-          <TooltipProvider>
-            {children}
-          </TooltipProvider>
+          <TooltipProvider>{children}</TooltipProvider>
         </body>
       </html>
     </Providers>

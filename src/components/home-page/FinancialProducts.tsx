@@ -17,7 +17,7 @@ export default function FinancialProducts() {
   const products = [
     {
       id: 1,
-      title: "Agrim Finups (Instant Loan)",
+      title: "Finups Agrim (Instant Loan)",
       description:
         "Do you need cash today? In as little as 24 hours, salaried professionals can receive up to ৳20,000 through our flagship instant loan. Clear fees, adjustable payback terms, and bank or MFS disbursements.",
       icon: productIcon0,
@@ -69,7 +69,7 @@ export default function FinancialProducts() {
 
     {
       id: 8,
-      title: " Islamic Finups",
+      title: "Finups Islamic",
       description:
         "Searching for financing that complies with Shariah? Examine halal credit cards, financing solutions, and Takaful plans that adhere to Islamic law no riba, no compromise. ",
       icon: productIcon7,
