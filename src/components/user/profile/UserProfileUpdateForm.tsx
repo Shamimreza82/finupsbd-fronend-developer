@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -31,50 +31,63 @@ import { updateUserProfile } from "@/services/UserData";
 import { useUserInfo } from "@/hooks/useUserInfo";
 import { userProfileSchema } from "./userProfileValidation";
 import { useRouter } from "next/navigation";
+import ProfileSkeleton from "@/components/loading/ProfileSkeleton";
 
 type UserProfileFormValues = z.infer<typeof userProfileSchema>;
 
 export default function UserProfileUpdateForm() {
-  const { user } = useUserInfo();
-  const [profileImage, setProfileImage] = useState<string | null>(
-    user?.profile?.avatar || null
-  );
+  const { user, isLoading: profileLoading } = useUserInfo();
+  const [profileImage, setProfileImage] = useState<string | null>(user?.profile?.avatar || null);
   const [image, setImage] = useState<FileList | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // Initialize the form with proper default values
   const form = useForm<UserProfileFormValues>({
     resolver: zodResolver(userProfileSchema),
     defaultValues: {
-      nameAsNid: user?.profile?.nameAsNid || "",
-      nationalIdNumber: user?.profile?.nationalIdNumber || "",
-      gender: user?.profile?.gender || undefined,
-      dateOfBirth: user?.profile?.dateOfBirth
-        ? new Date(user.profile.dateOfBirth)
-        : undefined,
-      address: user?.profile?.address || "",
-      city: user?.profile?.city || undefined,
+      nameAsNid: "",
+      nationalIdNumber: "",
+      gender: undefined,
+      dateOfBirth: undefined,
+      address: "",
+      city: undefined,
     },
   });
+
+  useEffect(() => {
+    if (user?.profile) {
+      form.reset({
+        nameAsNid: user.profile.nameAsNid || "",
+        nationalIdNumber: user.profile.nationalIdNumber || "",
+        gender: user.profile.gender || undefined,
+        dateOfBirth: user.profile.dateOfBirth ? new Date(user.profile.dateOfBirth) : undefined,
+        address: user.profile.address || "",
+        city: user.profile.city || undefined,
+      });
+      setProfileImage(user.profile.avatar || null);
+    }
+  }, [user?.profile]);
+
+  useEffect(() => {
+    const errorKeys = Object.keys(form.formState.errors);
+    if (errorKeys.length > 0) {
+      const firstErrorField = document.querySelector(`[name="${errorKeys[0]}"]`);
+      if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [form.formState.errors]);
 
   async function onSubmit(data: UserProfileFormValues) {
     try {
       setIsLoading(true);
-
       const formData = new FormData();
       formData.append("data", JSON.stringify(data));
-
       if (image && image.length > 0) {
         formData.append("file", image[0]);
       }
-
       const response = await updateUserProfile(formData);
-
-      if (!response.success) {
-        throw new Error("Failed to update profile");
-      }
-
+      if (!response.success) throw new Error("Failed to update profile");
       toast.success("Profile updated successfully");
       router.push("/user/profile");
     } catch (error) {
@@ -90,58 +103,60 @@ export default function UserProfileUpdateForm() {
       setImage(e.target.files);
       const reader = new FileReader();
       reader.onload = (event) => {
-        if (event.target?.result) {
-          setProfileImage(event.target.result as string);
-        }
+        if (event.target?.result) setProfileImage(event.target.result as string);
       };
       reader.readAsDataURL(e.target.files[0]);
     }
   };
 
+  if (profileLoading) {
+    return <ProfileSkeleton />;
+  }
+
+
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-sm">
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md transition-all duration-300">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-300">
-              {profileImage ? (
-                <Image
-                  src={profileImage}
-                  alt="Profile"
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <Image
-                  src="/placeholder.svg"
-                  alt="Profile"
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
-            <label htmlFor="profile-upload" className="cursor-pointer block mt-2">
-              <p className="text-sm text-primary font-medium hover:underline">
-                Upload Profile Photo
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Min 600×600, PNG or JPEG
-              </p>
-              <input
-                id="profile-upload"
-                type="file"
-                accept="image/png, image/jpeg"
-                className="hidden"
-                onChange={handleImageChange}
-              />
+        <div className="relative">
+          <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border border-gray-300 relative">
+            {profileImage ? (
+              <Image src={profileImage} alt="Profile" width={120} height={120} className="w-full h-full object-cover" />
+            ) : (
+              <Image src="/placeholder.svg" alt="Profile" width={120} height={120} className="w-full h-full object-cover" />
+            )}
+            {profileImage && (
+              <button
+                type="button"
+                onClick={() => {
+                  setProfileImage(null);
+                  setImage(null);
+                }}
+                className="absolute top-0 right-0 bg-white rounded-full p-1 text-xs"
+              >
+                ✖
+              </button>
+            )}
+          </div>
+          <div className="mt-4">
+            <input
+              id="profile-upload"
+              type="file"
+              accept="image/png, image/jpeg"
+              className="hidden"
+              onChange={handleImageChange}
+              aria-label="Upload profile image"
+            />
+            <label
+              htmlFor="profile-upload"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary rounded-md shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer transition"
+            >
+              📸 Change Profile Photo
             </label>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-          <Link href="/user/setting/update-email-mobile" className="w-full md:w-auto">
+        <div className="w-full md:w-auto">
+          <Link href="/user/setting/update-email-mobile">
             <Button variant="outline" className="w-full md:w-auto">
               Update Email / Phone Number
             </Button>
@@ -152,163 +167,94 @@ export default function UserProfileUpdateForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="nameAsNid"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Full Name <span className="text-red-500">*</span>
-                    <span className="text-muted-foreground text-xs ml-1">
-                      (as per National ID)
-                    </span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your full name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="nationalIdNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    National ID Number (NID){" "}
-                    <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your NID number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Gender <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="MALE">Male</SelectItem>
-                      <SelectItem value="FEMALE">Female</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dateOfBirth"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Date of Birth <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      value={
-                        field.value
-                          ? format(field.value, "yyyy-MM-dd")
-                          : ""
-                      }
-                      onChange={(e) => {
-                        const date = e.target.value
-                          ? new Date(e.target.value)
-                          : undefined;
-                        field.onChange(date);
-                      }}
-                      className="w-full"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
+            <FormField name="nameAsNid" control={form.control} render={({ field }) => (
               <FormItem>
-                <FormLabel>Address</FormLabel>
+                <FormLabel>Full Name <span className="text-red-500">*</span></FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Enter your address"
-                    className="min-h-[100px]"
-                    {...field}
-                  />
+                  <Input {...field} placeholder="Enter full name as per NID" className="rounded-lg shadow-sm" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+            )} />
 
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="max-w-xs">
-                <FormLabel>
-                  City <span className="text-red-500">*</span>
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+            <FormField name="nationalIdNumber" control={form.control} render={({ field }) => (
+              <FormItem>
+                <FormLabel>NID Number <span className="text-red-500">*</span></FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter your NID number" className="rounded-lg shadow-sm" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField name="gender" control={form.control} render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gender <span className="text-red-500">*</span></FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="dhaka">Dhaka</SelectItem>
-                    <SelectItem value="gazipur">Gazipur</SelectItem>
-                    <SelectItem value="chittagong">Chittagong</SelectItem>
-                    <SelectItem value="khulna">Khulna</SelectItem>
-                    <SelectItem value="rajshahi">Rajshahi</SelectItem>
-                    <SelectItem value="sylhet">Sylhet</SelectItem>
+                    <SelectItem value="MALE">Male</SelectItem>
+                    <SelectItem value="FEMALE">Female</SelectItem>
+                    <SelectItem value="OTHER">Other</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+            )} />
+
+            <FormField name="dateOfBirth" control={form.control} render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date of Birth <span className="text-red-500">*</span></FormLabel>
+                <FormControl>
+                  <Input
+                    type="date"
+                    value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                    onChange={(e) => field.onChange(new Date(e.target.value))}
+                    className="rounded-lg shadow-sm"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+          </div>
+
+          <FormField name="address" control={form.control} render={({ field }) => (
+            <FormItem>
+              <FormLabel>Address</FormLabel>
+              <FormControl>
+                <Textarea {...field} placeholder="Enter your address" className="rounded-lg min-h-[100px] shadow-sm" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+
+          <FormField name="city" control={form.control} render={({ field }) => (
+            <FormItem className="max-w-xs">
+              <FormLabel>City <span className="text-red-500">*</span></FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="dhaka">Dhaka</SelectItem>
+                  <SelectItem value="gazipur">Gazipur</SelectItem>
+                  <SelectItem value="chittagong">Chittagong</SelectItem>
+                  <SelectItem value="khulna">Khulna</SelectItem>
+                  <SelectItem value="rajshahi">Rajshahi</SelectItem>
+                  <SelectItem value="sylhet">Sylhet</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )} />
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => form.reset()}
-            >
+            <Button type="button" variant="outline" onClick={() => form.reset()}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              className="bg-green-600 hover:bg-green-700"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={isLoading}>
               {isLoading ? "Saving..." : "Save Changes"}
             </Button>
           </div>

@@ -16,69 +16,15 @@ import Link from "next/link";
 import { navList } from "./dashboard-navlist";
 import { NavItems } from "./nav-items";
 import { NavUser } from "./nav-user";
+import { usePathname } from "next/navigation";
 
-// Sample data with teams, main navigation and projects.
-const data = {
-  navMain: [
-    {
-      title: "Application",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: false,
-      items: [
-        {
-          title: "Loan Application",
-          url: "/user/loan-application",
-        },
-        {
-          title: "My Application",
-          url: "/user/my-application/my-application-loan",
-        },
-        {
-          title: "Application Status",
-          url: "/user/my-application/application-status",
-        },
-        {
-          title: "Cards",
-          url: "#",
-        },
-        {
-          title: "Bima/Insurance",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/user/setting",
-      icon: Settings2,
-      items: [
-        {
-          title: "Change Password",
-          url: "/user/setting/update-password",
-        },
-        {
-          title: "Update Email/Mobile",
-          url: "/user/setting/update-email-mobile",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Profile",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Saved Products",
-      url: "#",
-      icon: PieChart,
-    },
-  ],
-};
+
+
+
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
   return (
     <div className="z-50 bg-slate-100">
       <Sidebar
@@ -99,24 +45,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavItems items={navList.myItems} />
 
           {/* Seetings */}
-          {navList.others && (
+          {navList.settings && (
             <div className="mt-4 border-t border-gray-200 px-4 py-3 dark:border-gray-700">
               <h3 className="text-xs font-semibold uppercase text-gray-500">
                 Settings
               </h3>
               <div className="mt-2 space-y-1">
-                {navList.settings.map((settings, index) => (
-                  <Link
-                    key={index}
-                    href={settings.url}
-                    className="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    <settings.icon className="h-5 w-5 text-gray-500" />
-                    <span className="text-sm text-black dark:text-gray-300">
-                      {settings.name}
-                    </span>
-                  </Link>
-                ))}
+                {navList.settings.map((settings, index) => {
+                  const isActive = pathname === settings.url // or use pathname.startsWith(settings.url) for partial match
+
+                  return (
+                    <Link
+                      key={index}
+                      href={settings.url}
+                      className={`flex items-center space-x-2 rounded-md p-2 transition-colors ${isActive
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                        }`}
+                    >
+                      <settings.icon
+                        className={`h-5 w-5 ${isActive ? "text-primary" : "text-gray-500"
+                          }`}
+                      />
+                      <span
+                        className={`text-sm ${isActive ? "text-primary" : "text-black dark:text-gray-300"
+                          }`}
+                      >
+                        {settings.name}
+                      </span>
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           )}
@@ -128,18 +87,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 Others
               </h3>
               <div className="mt-2 space-y-1">
-                {navList.others.map((project, index) => (
-                  <Link
-                    key={index}
-                    href={project.url}
-                    className="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    <project.icon className="h-5 w-5 text-gray-500" />
-                    <span className="text-sm text-black dark:text-gray-300">
-                      {project.name}
-                    </span>
-                  </Link>
-                ))}
+                {navList.others.map((project, index) => {
+                  const isActive = pathname === project.url
+
+                  return (
+                    <Link
+                      key={index}
+                      href={project.url}
+                      className={`flex items-center space-x-2 rounded-md p-2 transition-colors ${isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                        }`}
+                    >
+                      <project.icon
+                        className={`h-5 w-5 ${isActive ? "text-primary" : "text-gray-500"
+                          }`}
+                      />
+                      <span
+                        className={`text-sm ${isActive ? "text-primary" : "text-black dark:text-gray-300"
+                          }`}
+                      >
+                        {project.name}
+                      </span>
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           )}

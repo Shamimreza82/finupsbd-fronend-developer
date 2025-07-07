@@ -94,21 +94,9 @@ export const updateUserProfile = async (payload: any) => {
 
     console.log("Response Status:", res);
 
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => null);
-      console.error("API Error Response:", errorData);
-      throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
-    }
-
-
     return res.json();
   } catch (error) {
     console.error("Error registering user:", error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : "An unknown error occurred",
-      error,
-    };
   }
 }
 

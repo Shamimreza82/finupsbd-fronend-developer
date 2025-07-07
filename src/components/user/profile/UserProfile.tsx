@@ -30,7 +30,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import {
   Tooltip,
   TooltipContent,
@@ -41,6 +41,7 @@ import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useUserInfo } from "@/hooks/useUserInfo";
+import ProfileSkeleton from "@/components/loading/ProfileSkeleton";
 
 interface ProfileField {
   label: string;
@@ -91,7 +92,7 @@ export default function UserProfile() {
   }
 
   const profileFields: ProfileField[] = [
-    { label: "Full Name", value: user?.name, icon: User, copyable: true },
+    { label: "Full Name", value: user?.profile?.nameAsNid, icon: User, copyable: true },
     {
       label: "Registered Mobile Number",
       value: user?.phone,
@@ -163,14 +164,6 @@ export default function UserProfile() {
             <div className="text-center sm:text-left">
               <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                 <h2 className="text-xl font-semibold truncate">{user?.name}</h2>
-                {user?.role && (
-                  <Badge
-                    variant="outline"
-                    className="border-primary/20 text-xs font-normal text-primary"
-                  >
-                    {user?.role}
-                  </Badge>
-                )}
               </div>
               <p className="text-sm text-muted-foreground break-all">
                 {user?.email}
@@ -295,32 +288,3 @@ export default function UserProfile() {
   );
 }
 
-function ProfileSkeleton() {
-  return (
-    <Card className="mx-auto w-full max-w-2xl">
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <Skeleton className="h-16 w-16 rounded-full" />
-            <div>
-              <Skeleton className="mb-2 h-6 w-40" />
-              <Skeleton className="h-4 w-60" />
-            </div>
-          </div>
-          <Skeleton className="h-9 w-24" />
-        </div>
-      </CardHeader>
-      <Separator />
-      <CardContent className="pt-6 space-y-5">
-        {Array(8)
-          .fill(0)
-          .map((_, i) => (
-            <div key={i} className="flex items-center justify-between">
-              <Skeleton className="h-4 w-40" />
-              <Skeleton className="h-4 w-32" />
-            </div>
-          ))}
-      </CardContent>
-    </Card>
-  );
-}

@@ -95,22 +95,22 @@ export const navList = {
     others: [
         {
             name: "Support",
-            url: "#",
+            url: "/user/other/support",
             icon: HelpCircleIcon,
         },
         {
             name: "Frequently Asked Qustions",
-            url: "#",
+            url: "/user/other/faq",
             icon: HelpCircle,
         },
         {
             name: "Terms & Conditions",
-            url: "#",
+            url: "/user/other/terms-conditions",
             icon: TerminalSquare,
         },
         {
             name: "Privacy Policy",
-            url: "#",
+            url: "/user/other/privacy-policy",
             icon: PanelRightInactiveIcon,
         },
     ],

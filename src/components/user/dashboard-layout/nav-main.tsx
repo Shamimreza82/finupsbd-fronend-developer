@@ -62,7 +62,7 @@ export function NavMain({
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton
                     tooltip={item.title}
-                    className={`mb-3 flex items-center justify-between gap-2 rounded-md px-3 py-3 transition-all duration-300 ${
+                    className={`mb-3 flex items-center justify-between gap-2 rounded-md px-4 py-3 transition-all duration-300  ${
                       isActive
                         ? "border-l-4 border-primary bg-[#E7FDE2] text-primary"
                         : "hover:scale-[1.02] hover:bg-slate-200 hover:text-primary"

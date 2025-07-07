@@ -54,6 +54,7 @@ export default function LoginForm() {
         await refetchUser();
         router.push(redirectPath);
       } else {
+        console.log(result)
         toast.error(result?.message);
       }
     } catch (error: any) {
