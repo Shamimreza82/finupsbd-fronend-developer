@@ -130,11 +130,6 @@ export const changePassword = async (payload: {oldPassword: string, newPassword:
             },
             body: JSON.stringify(payload),
         });
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => null);
-            console.error("API Error Response:", errorData);
-            throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
-        }
 
         return await res.json();
     } catch (error) {

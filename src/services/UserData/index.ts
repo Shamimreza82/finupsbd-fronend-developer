@@ -57,11 +57,7 @@ export const userInfo = async () => {
         "Authorization": `Bearer ${token}`
       },
       cache: "no-store"
-
     });
-
-    console.log("Response Status:", res.status);
-
 
     return await res.json();
   } catch (error) {
@@ -85,6 +81,7 @@ export const updateUserProfile = async (payload: any) => {
   if (!token) {
     throw new Error("No authentication token found in cookies");
   }
+  
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/profiles`, {

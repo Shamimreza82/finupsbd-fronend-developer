@@ -207,22 +207,22 @@ export default function EmploymentInfoPage() {
     setIsFormInitialized(true);
   }, [formData.employmentInfo, form.reset]);
 
-  useEffect(() => {
-    if (isFormInitialized) {
-      const currentProperties = form.getValues("properties");
-      if (
-        (!currentProperties || currentProperties.length === 0) &&
-        propertyFields.length === 0
-      ) {
-        appendProperty({ propertyType: "", propertyValue: "" });
-      }
-    }
-  }, [
-    isFormInitialized,
-    form.getValues,
-    appendProperty,
-    propertyFields.length,
-  ]);
+  // useEffect(() => {
+  //   if (isFormInitialized) {
+  //     const currentProperties = form.getValues("properties");
+  //     if (
+  //       (!currentProperties || currentProperties.length === 0) &&
+  //       propertyFields.length === 0
+  //     ) {
+  //       appendProperty({ propertyType: "OTHER", propertyValue: undefined });
+  //     }
+  //   }
+  // }, [
+  //   isFormInitialized,
+  //   form.getValues,
+  //   appendProperty,
+  //   propertyFields.length,
+  // ]);
 
   useEffect(() => {
     if (!isStepEditable("employmentInfo")) {
@@ -654,8 +654,7 @@ export default function EmploymentInfoPage() {
                       name={`properties.${index}.propertyType`}
                       label="Type of Property"
                       options={propertyTypeOptions}
-                      placeholder="Select property type"
-                    // `required` prop removed as per previous request
+                      placeholder="Select property type"    
                     />
                     <TextInput
                       form={form}
@@ -663,7 +662,6 @@ export default function EmploymentInfoPage() {
                       label="Approximate Value (in BDT)"
                       placeholder="Enter property value"
                       type="number"
-                    // `required` prop removed as per previous request
                     />
                   </div>
                 </div>

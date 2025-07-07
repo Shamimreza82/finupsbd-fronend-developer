@@ -2,11 +2,10 @@ import { z } from "zod";
 
 // Schema for a single property entry
 const propertyDetailSchema = z.object({
-  propertyType: z.string().optional(),
+  propertyType: z.string(),
   propertyValue: z
     .string()
     .regex(/^\d*$/, { message: "Property value must be a number if provided." })
-    .optional(),
 });
 
 // Income details schema
@@ -131,11 +130,9 @@ const employmentInfoBaseSchema = z
     // Property details
     properties: z
       .array(propertyDetailSchema)
-      .optional()
-      .default([])
       .refine((arr) => arr.length <= 3, {
         message: "You can add a maximum of 3 properties.",
-      }),
+      }).optional(),
   })
   .and(incomeDetailsSchema)
   .superRefine((data, ctx) => {
@@ -379,6 +376,41 @@ const employmentInfoBaseSchema = z
           path: ["tin"],
         });
       }
+    }
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   const props = data.properties;
+
+    if (props === undefined || props === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Profession type is required.",
+        path: ["properties"],
+      });
+      return;
+    }
+
+    // Empty array is valid
+    if (props.length === 0) {
+      return;
+    }
+
+    // Check if ALL items are empty strings
+    const allEmpty = props.every(
+      (p) =>
+        (p.propertyType?.trim() === "") &&
+        (p.propertyValue?.trim() === "")
+    );
+
+    if (allEmpty) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Profession type is required.",
+        path: ["properties"],
+      });
     }
   });
 
