@@ -58,7 +58,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    //"/(sitemap.xml|robots.txt).*)",
+    "/(sitemap.xml|robots.txt).*)",
     "/login",
     "/register",
     "/user/:path*",
