@@ -20,7 +20,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import Image from "next/image"
 import { toast } from "sonner"
-import { GuarantorFormData, guarantorSchema} from "./schema"
+import { GuarantorFormData, guarantorSchema } from "./schema"
 import { useRouter } from "next/navigation"
 
 
@@ -216,7 +216,12 @@ export default function BusinessGuarantorForm({ applicationId, id }: { applicati
                 setIsLoading(false)
                 router.push("/")
             } else {
-                toast.error("Server error please try again!")
+                if (result?.error?.code === "P2002") {
+                    setIsLoading(false)
+                    return toast.error("You have already fill up this from")
+                }
+                toast.error(result.message || "Server error please try again!")
+                console.log(result.error)
                 setIsLoading(false)
             }
             if (!result.success) {

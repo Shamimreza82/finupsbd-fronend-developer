@@ -16,13 +16,13 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
     title: string;
     icon: React.ReactNode;
     step?:
-      | "personalInfo"
-      | "residentialInfo"
-      | "employmentInfo"
-      | "loanInfo"
-      | "loanRequest"
-      | "documentInfo"
-      | "guarantorInfo";
+    | "personalInfo"
+    | "residentialInfo"
+    | "employmentInfo"
+    | "loanInfo"
+    | "loanRequest"
+    | "documentInfo"
+    | "guarantorInfo";
   }[];
 }
 
@@ -33,8 +33,8 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
   return (
     <nav
       className={cn(
-        "flex justify-evenly gap-2 space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1",
-        className,
+        "flex flex-wrap justify-center gap-2 px-2 sm:justify-start sm:gap-3 md:flex-nowrap md:justify-evenly lg:flex-col lg:space-y-1",
+        className
       )}
       {...props}
     >
@@ -45,15 +45,14 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
           : false;
         const isEditable = item.step ? isStepEditable(item.step as any) : true;
 
-        // If step is not editable, render a disabled button
         if (item.step && !isEditable) {
           return (
             <div
               key={item.href}
               className={cn(
                 buttonVariants({ variant: "ghost" }),
-                "cursor-not-allowed justify-start gap-2",
-                className,
+                "cursor-not-allowed justify-start gap-2 text-sm sm:text-base lg:py-4",
+                className
               )}
             >
               {item.icon}
@@ -73,9 +72,9 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
               buttonVariants({ variant: "ghost" }),
               isActive
                 ? "border-l-4 bg-green-lighter text-primary hover:bg-green-lighter hover:text-primary"
-                : "hover:bg-transparent",
-              "justify-start gap-2 text-sm lg:py-5 lg:text-base [&_svg]:size-5",
-              className,
+                : "hover:bg-transparent hover:bg-green-lighter",
+              "justify-start gap-2 text-sm sm:text-base lg:py-5 [&_svg]:size-5",
+              className
             )}
           >
             {item.icon}
@@ -83,10 +82,9 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
             {item.step && (
               <div className="ml-auto">
                 {isCompleted ? (
-                  // <CheckCircle className="h-4 w-4 text-primary" />
-                  <GoChecklist className="!size-6 h-6 w-6 text-primary" />
+                  <GoChecklist className="!size-6 text-primary" />
                 ) : (
-                  <AlertCircle className="!size-5 h-6 w-6 text-muted-foreground" />
+                  <AlertCircle className="!size-5 text-muted-foreground text-red-500" />
                 )}
               </div>
             )}

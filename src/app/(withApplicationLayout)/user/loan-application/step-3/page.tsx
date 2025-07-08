@@ -35,7 +35,7 @@ import {
 
 export default function EmploymentInfoPage() {
   const router = useRouter();
-  const { formData, updateFormData, isStepEditable, isDataLoaded } =
+  const { formData, updateFormData, isStepEditable, isDataLoaded, } =
     useAppFormContext();
   const [employmentStatus, setEmploymentStatus] = useState<string | undefined>(
     undefined,
@@ -46,6 +46,8 @@ export default function EmploymentInfoPage() {
   const [professionType, setProfessionType] = useState<string | undefined>(
     undefined,
   );
+
+
 
   const form = useForm<EmploymentInfoValues>({
     resolver: zodResolver(employmentInfoSchema),
@@ -728,11 +730,12 @@ export default function EmploymentInfoPage() {
               <Button
                 type="button"
                 variant="outline"
+                disabled={isDataLoaded}
                 onClick={() => router.push("/user/loan-application/step-2")}
               >
                 Back
               </Button>
-              <Button type="submit">Save and Continue</Button>
+              <Button type="submit"> Save and Continue</Button>
             </CardFooter>
           </form>
         </Form>

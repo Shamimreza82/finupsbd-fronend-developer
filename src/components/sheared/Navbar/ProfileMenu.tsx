@@ -72,10 +72,10 @@ const ProfileMenu = () => {
             <DropdownMenuItem className="cursor-pointer">
               <Package className="mr-2 h-4 w-4" />
               <Link
-                href="/user/my-application/loan-application"
+                href="/user/my-application/my-application-loan"
                 className="cursor-pointer"
               >
-                My Application
+                My Applications
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
@@ -89,7 +89,7 @@ const ProfileMenu = () => {
               <Link href="/user/profile">
                 <DropdownMenuItem className="cursor-pointer">
                   <User className="mr-2 h-4 w-4" />
-                  Profile
+                  My Profile
                 </DropdownMenuItem>
               </Link>
             )}

@@ -6,7 +6,7 @@ const propertyDetailSchema = z.object({
   propertyValue: z
     .string()
     .regex(/^\d*$/, { message: "Property value must be a number if provided." })
-});
+})
 
 // Income details schema
 const incomeDetailsSchema = z
