@@ -9,12 +9,13 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 
 export default function LoanApplicationTable({ data }: any) {
     const handleCheckStatus = (id: string) => {
         console.log("Checking status for Application ID:", id);
-        // Replace with API call, modal open, etc.
+        // Replace with API call, modal open, etc.    
     };
 
     return (
@@ -50,13 +51,11 @@ export default function LoanApplicationTable({ data }: any) {
                                     {item.isActive ? "Yes" : "No"}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleCheckStatus(item.id)}
-                                    >
-                                        Check Status
-                                    </Button>
+                                    <Link href={`/user/my-application/application-status/${item.id}`}>
+                                        <Button variant="outline" size="sm">
+                                            View Details
+                                        </Button>
+                                    </Link>
                                 </TableCell>
                             </TableRow>
                         ))}

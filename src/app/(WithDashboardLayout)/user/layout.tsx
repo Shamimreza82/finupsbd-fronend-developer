@@ -29,9 +29,8 @@ export default function UserLayout({
 
   const breadcrumbItems = segments.map((segment, index) => {
     const href = "/" + segments.slice(0, index + 1).join("/");
- 
+
     const isLast = index === segments.length - 1;
- console.log(isLast)
     const formatted = segment.replace(/-/g, " ") // convert kebab-case to words .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize words
 
     return (

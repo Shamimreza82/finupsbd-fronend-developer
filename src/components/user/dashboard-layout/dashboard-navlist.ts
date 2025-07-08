@@ -25,7 +25,6 @@ export const navList = {
             icon: User2,
         }
     ],
-
     myItems: [
         {
             title: "My Loans",
@@ -38,7 +37,7 @@ export const navList = {
                     url: "/user/loan-application",
                 },
                 {
-                    title: "My Application",
+                    title: "My Applications",
                     url: "/user/my-application/my-application-loan",
                 },
                 {
@@ -47,31 +46,31 @@ export const navList = {
                 },
             ],
         },
-        {
-            title: "My Cards",
-            url: "#",
-            icon: SquareTerminal,
-            isActive: false,
-            items: [
-                {
-                    title: "Loan Application",
-                    url: "/user/loan-application",
-                },
-            ],
-        },
-        {
-            title: "My Insurance",
-            url: "#",
-            icon: SquareTerminal,
-            isActive: false,
-            items: [
-                {
-                    title: "Loan Application",
-                    url: "/user/loan-application",
-                },
+        // {
+        //     title: "My Cards",
+        //     url: "#",
+        //     icon: SquareTerminal,
+        //     isActive: false,
+        //     items: [
+        //         {
+        //             title: "Loan Application",
+        //             url: "/user/loan-application",
+        //         },
+        //     ],
+        // },
+        // {
+        //     title: "My Insurance",
+        //     url: "#",
+        //     icon: SquareTerminal,
+        //     isActive: false,
+        //     items: [
+        //         {
+        //             title: "Loan Application",
+        //             url: "/user/loan-application",
+        //         },
 
-            ],
-        },
+        //     ],
+        // },
         // {
         //     name: "Favourite",
         //     url: "#",
@@ -91,7 +90,6 @@ export const navList = {
             icon: Languages,
         },
     ],
-
     others: [
         {
             name: "Support",

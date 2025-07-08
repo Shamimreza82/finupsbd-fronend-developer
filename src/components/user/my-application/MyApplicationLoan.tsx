@@ -17,8 +17,6 @@ const MyApplicationLoan = async () => {
   const data = await getAllApplicationFromUser(user?.userId ?? "")
 
 
-  console.log(data)
-
   return (
     <div>
       <LoanApplicationTable data={data} />
