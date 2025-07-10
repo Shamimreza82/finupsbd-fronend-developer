@@ -151,7 +151,7 @@ export default function UserProfile() {
           <div className="flex flex-col sm:flex-row sm:gap-4 gap-2 items-center sm:items-start">
             <Avatar className="h-24 w-24 border-2 border-primary/20 shadow-sm">
               <AvatarImage
-                src={user?.profile?.avatar || ""}
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.profile?.avatar}` || ""}
                 alt="Profile picture"
               />
               <AvatarFallback className="bg-primary/10 text-2xl font-semibold text-primary">

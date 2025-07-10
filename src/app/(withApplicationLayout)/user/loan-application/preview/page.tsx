@@ -80,7 +80,7 @@ export default function PreviewPage() {
       console.log("Submission result:", result);
       if (result.success) {
         toast.success(result.message || "Application create successfully");
-        // setModalOpen(true);
+        setModalOpen(true);
         setTrackingNumber(result?.data?.applicationId);
         // setIsFormSubmitted(true);
         // setSubmittedData(formData as AppFormData);

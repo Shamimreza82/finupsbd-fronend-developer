@@ -143,7 +143,7 @@ function EligibilityInstantLoanDataShow({
                   <div className="flex items-center">
                     <div>
                       <Image
-                        src={data?.coverImage}
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${data?.coverImage}`}
                         alt={`${data.bankName} Logo`}
                         width={100}
                         height={100}

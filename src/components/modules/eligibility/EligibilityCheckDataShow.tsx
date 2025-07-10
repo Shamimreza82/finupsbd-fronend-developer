@@ -298,7 +298,7 @@ function EligibilityCheckDataShow({ submissionData, onSendData }: PageProps) {
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-4">
                             <Image
-                              src={data?.coverImage}
+                              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${data?.coverImage}`}
                               alt={`${data.bankName} Logo`}
                               width={80}
                               height={80}

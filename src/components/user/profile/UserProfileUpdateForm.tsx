@@ -120,7 +120,14 @@ export default function UserProfileUpdateForm() {
         <div className="relative">
           <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border border-gray-300 relative">
             {profileImage ? (
-              <Image src={profileImage} alt="Profile" width={120} height={120} className="w-full h-full object-cover" />
+              <Image
+                src={ profileImage?.startsWith("data:") ? profileImage : `${process.env.NEXT_PUBLIC_IMAGE_URL}${profileImage}`
+                }
+                alt="Profile"
+                width={120}
+                height={120}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <Image src="/placeholder.svg" alt="Profile" width={120} height={120} className="w-full h-full object-cover" />
             )}
