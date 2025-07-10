@@ -202,7 +202,9 @@ export default function BusinessGuarantorForm({ applicationId, id }: { applicati
             })
         }
 
-        console.log(formData)
+       if (applicationId) {
+            formData.append("applicationId", applicationId)
+        }
 
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/application/applicant-guarator-info-business?id=${id}`, {

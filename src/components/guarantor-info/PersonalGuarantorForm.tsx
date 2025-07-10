@@ -203,7 +203,9 @@ export default function PersonalGuarantorForm({ applicationId, id }: { applicati
             })
         }
 
-        console.log(formData)
+        if (applicationId) {
+            formData.append("applicationId", applicationId)
+        }
 
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/application/applicant-guarator-info-personal?id=${id}`, {
@@ -212,7 +214,7 @@ export default function PersonalGuarantorForm({ applicationId, id }: { applicati
             })
             const result = await res.json()
             if (result.success) {
-                console.log(result)
+
                 toast.success(result.message || "guarantor form update successfully")
                 setIsLoading(false)
                 router.push("/")
