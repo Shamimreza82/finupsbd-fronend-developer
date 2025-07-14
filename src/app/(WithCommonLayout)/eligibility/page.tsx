@@ -63,6 +63,7 @@ const EligibilityPage = () => {
     fetchData();
   }, [queryData])
 
+  console.log(submissionData)
 
   if (isLoading) {
     return <LoadingComponent />;

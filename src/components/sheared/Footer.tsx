@@ -4,7 +4,6 @@ import Link from "next/link";
 import { FaFacebookF } from "react-icons/fa";
 import { FaLinkedin, FaXTwitter } from "react-icons/fa6";
 import logo from "/public/footer-logo.png";
-
 export default function Footer() {
   return (
     <footer className="bg-tertiary-dark text-white">

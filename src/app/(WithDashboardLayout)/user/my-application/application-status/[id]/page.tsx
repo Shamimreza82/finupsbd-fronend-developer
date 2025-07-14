@@ -8,19 +8,15 @@ import { notFound } from "next/navigation"
 const ApplicationStatusPage = async (props: { params: Promise<{ id: string }> }) => {
     const { id } = await props.params
 
-    // const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/super-admin/get-single-application/${id}`, {
-    //     cache: 'no-store',
-    // })
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/super-admin/get-single-application/${id}`)
+    const data = await res.json()
 
-    // const json = await res.json()
+    console.log(data)
 
-    // if (!json.success) {
-    //     notFound()
-    // }
 
     return (
         <div>
-            <h1>Application Status: {id}</h1>
+            <h1>Application Status: </h1>
         </div>
     )
 }

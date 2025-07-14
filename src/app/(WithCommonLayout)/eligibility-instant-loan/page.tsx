@@ -2,6 +2,7 @@
 
 import LoadingComponent from "@/components/loading/LoadingComponent";
 import EligibilityInstantLoanDataShow from "@/components/modules/eligibility/instantLoan/EligibilityInstantLoanDataShow";
+import RateLimitModal from "@/components/small-component/RateLimitModal";
 import { Button } from "@/components/ui/button";
 import { eligibilityCheckData } from "@/services/eligibilityCheck";
 import { useEffect, useState } from "react";
@@ -19,9 +20,15 @@ const InastantLoanPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [queryData, setQueryData] = useState<{ tenure: number }>();
 
+
+
+
+
   const handleQueryData = (data: QueryDataProps) => {
     setQueryData(data);
   };
+
+
 
 
   useEffect(() => {
@@ -34,6 +41,7 @@ const InastantLoanPage = () => {
           const result = await eligibilityCheckData(parsedData, queryData);
           setSubmissionData(result?.data);
         }
+
       } catch (error) {
         console.error("Error parsing eligibility data:", error);
       } finally {
@@ -48,6 +56,9 @@ const InastantLoanPage = () => {
   if (isLoading) {
     return <LoadingComponent />;
   }
+
+
+
 
   function handleStartEligibilityCheck(): void {
     window.location.href = "/";

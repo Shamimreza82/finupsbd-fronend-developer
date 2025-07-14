@@ -20,9 +20,7 @@ export default function LoanApplicationTable({ data }: any) {
 
     return (
         <>
-            <h2>My applications</h2>
             <div className="border rounded-lg overflow-x-auto">
-
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -47,13 +45,13 @@ export default function LoanApplicationTable({ data }: any) {
                                 <TableCell>
                                     {new Date(item.createdAt).toLocaleString()}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className={`${item.isActive ? "text-green-500" : "text-red-500"}`}>
                                     {item.isActive ? "Yes" : "No"}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Link href={`/user/my-application/application-status/${item.id}`}>
-                                        <Button variant="outline" size="sm">
-                                            View Details
+                                        <Button size="sm">
+                                            Check Status
                                         </Button>
                                     </Link>
                                 </TableCell>
