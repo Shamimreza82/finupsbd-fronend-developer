@@ -1,13 +1,6 @@
 import { calculateAge } from "@/utils";
 import { z } from "zod";
 
-const dateValidation = z.date().refine(
-  (dob) => {
-    const age = calculateAge(dob);
-    return age >= 22 && age <= 65;
-  },
-  { message: "Your age must be between 22 and 65 years old." },
-);
 
 // Step One Schema
 export const stepOneSchema = z.object({
@@ -43,6 +36,8 @@ export const stepOneSchema = z.object({
     invalid_type_error: "Expected Loan Tenure is required",
   }),
 });
+
+
 
 // Step Two Schema
 export const stepTwoSchema = z.object({
@@ -121,6 +116,8 @@ export const stepTwoSchema = z.object({
     .optional(),
 });
 
+
+
 // Step Three Schema
 export const stepThreeSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -129,6 +126,9 @@ export const stepThreeSchema = z.object({
 
 
 });
+
+
+
 
 // Combine manually in a new schema
 export const fullFormSchema = z

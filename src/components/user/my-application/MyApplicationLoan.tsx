@@ -1,5 +1,5 @@
 
-import { getAllApplicationFromUser } from '@/services/applications/userApplication';
+import { getAllNewLoans } from '@/services/applications/userApplication';
 import { getCurrentUser } from '@/services/AuthService';
 
 
@@ -12,40 +12,43 @@ import LoanApplicationTable from './LoanApplicationTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoanStatus } from '@/contants';
 import { NewLoanCards } from './NewLoansCard';
+import { TNewLoanTypes } from '@/types/applications';
 
 const MyApplicationLoan = async () => {
 
 
   const user = await getCurrentUser()
-  const data = await getAllApplicationFromUser(user?.userId ?? "")
+  const data = await getAllNewLoans(user?.userId ?? "")
 
   console.log(data)
 
-  const newLoans = data?.data.filter((loan: any) => loan.status !== LoanStatus.COMPLETED
-  );
-  const existingLoans = data?.data.filter((loan: any) => loan.status == LoanStatus.COMPLETED)
-  console.log(newLoans, existingLoans)
 
 
   return (
     <div>
       <Tabs defaultValue="newLoan" >
-        <TabsList className='w-[100%]'>
+        <TabsList className='w-[70%]'>
           <TabsTrigger className='w-1/2' value="newLoan">New Loans</TabsTrigger>
           <TabsTrigger className='w-1/2' value="existingLoan">Existing Loan</TabsTrigger>
         </TabsList>
         <TabsContent value="newLoan">
-          {
-            newLoans?.map((loan: any) => (
-              <NewLoanCards
-                key={loan.id}
-                loanId={loan.applicationId}
-                loanAmount={1200000}
-                status={loan.status}
-
-              />
-            ))
-          }
+          <div className='grid grid-cols-3 gap-5'>
+            {
+              data.data?.map((loan: TNewLoanTypes) => (
+                <NewLoanCards
+                  key={loan.id}
+                  id={loan.id}
+                  applicationId={loan.applicationId}
+                  image={loan.eligibleLoanOffer.bankImage}
+                  loanAmount={Number(loan.loanRequest.loanAmount)}
+                  interestRate={loan.eligibleLoanOffer.interestRate}
+                  tenure={loan.loanRequest.loanTenure}
+                  applicationOn={loan.createdAt}
+                  status={loan?.status}
+                />
+              ))
+            }
+          </div>
           <LoanApplicationTable data={data} />
         </TabsContent>
         <TabsContent value="existingLoan">Change your password here.</TabsContent>

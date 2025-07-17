@@ -10,7 +10,8 @@ import { getCurrentUser } from "../AuthService";
 
 const url = process.env.NEXT_PUBLIC_BASE_API
 
-export const getAllApplicationFromUser = async (id: string) => {
+
+export const getAllNewLoans = async (id: string) => {
 
     const token = (await cookies()).get("accessToken")?.value;
 
@@ -20,7 +21,7 @@ export const getAllApplicationFromUser = async (id: string) => {
 
 
     try {
-        const res = await fetch(`${url}/users/get_all_application/${id}`, {
+        const res = await fetch(`${url}/users/get-all-new-loans/${id}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`

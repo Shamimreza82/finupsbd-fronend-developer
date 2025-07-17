@@ -40,10 +40,6 @@ export const navList = {
                     title: "My Applications",
                     url: "/user/my-application/my-application-loan",
                 },
-                {
-                    title: "Application Status",
-                    url: "/user/my-application/application-status",
-                },
             ],
         },
         // {

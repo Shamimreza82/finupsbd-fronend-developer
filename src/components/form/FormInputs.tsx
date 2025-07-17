@@ -44,6 +44,8 @@ interface TextInputProps<T extends FieldValues> {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   maxLength?: number;
   minLength?: number;
+  errorMessage?: string;
+
 }
 export const TextInput = <T extends FieldValues>({
   form,
@@ -57,6 +59,7 @@ export const TextInput = <T extends FieldValues>({
   onChange,
   maxLength,
   minLength,
+  errorMessage
 }: TextInputProps<T>) => {
   return (
     <FormField
@@ -92,6 +95,11 @@ export const TextInput = <T extends FieldValues>({
               )}
             </div>
           </FormControl>
+          {errorMessage && (
+            <p className="text-[0.8rem] font-medium text-destructive">
+              {errorMessage}
+            </p>
+          )}
           <FormMessage />
         </FormItem>
       )}
@@ -164,6 +172,7 @@ interface SelectInputProps {
   options: SelectOption[];
   required?: boolean;
   disabled?: boolean;
+  errorMessage?: string;
 }
 
 export const SelectInput = ({
@@ -174,6 +183,7 @@ export const SelectInput = ({
   options,
   required = false,
   disabled = false,
+  errorMessage
 }: SelectInputProps) => {
   return (
     <FormField
@@ -221,6 +231,11 @@ export const SelectInput = ({
               ))}
             </SelectContent>
           </Select>
+          {errorMessage && (
+            <p className="text-[0.8rem] font-medium text-destructive">
+              {errorMessage}
+            </p>
+          )}
           <FormMessage />
         </FormItem>
       )}

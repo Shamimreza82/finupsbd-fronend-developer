@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const EGenderSchema = z.enum(["MALE", "FEMALE", "OTHER"]);
 const jobLocation = z.enum(["DHAKA"]);
-const ProfessionSchema = z.enum(["BUSINESS_OWNER", "SALARIED"]);
+const ProfessionSchema = z.enum(["BUSINESS_OWNER", "SALARIED", "SELF_EMPLOYED"]);
 const BusinessOwnerTypeSchema = z.enum([
   "PROPRIETOR",
   "PARTNER",
@@ -31,9 +31,15 @@ const CardTypeSchema = z.enum(["CREDIT_CARD"]);
 
 // Base schema with optional fields for conditional validations
 
-const dateValidation = z.date().refine(
+const dateValidation = z.date({
+  required_error: "Date of birth is required.",
+  invalid_type_error: "Invalid date format.",
+}).refine(
   (dob) => {
     const age = calculateAge(dob);
+    if (age >= 22) {
+
+    }
     return age >= 22 && age <= 65;
   },
   { message: "Your age must be between 22 and 65 years old." },
@@ -58,23 +64,21 @@ const baseEligibilityCheckSchema = z.object({
 
   // Additional info
   vehicleType: VehicleTypeSchema.optional(),
-  expectedLoanTenure: z
-    .number({ message: "Expected Loan Tenure required" })
-    .int({ message: "Expected loan tenure must be an integer." }),
-  monthlyIncome: z.preprocess(
-    (val) => (typeof val === "string" ? Number(val) : val),
-    z
-      .number({
-        required_error: "Monthly Income (BDT) is required",
-        invalid_type_error: "Monthly Income must be a number",
-      })
-      .int({ message: "Monthly income must be an integer." })
-      .min(30000, { message: "Your salary must be at least 30,000/- BDT" })
-      .max(1000000000, {
-        message: "Your salary must not exceed 1,000,000,000/- BDT",
-      }),
+  expectedLoanTenure: z.number({ message: "Expected Loan Tenure required" }).int({ message: "Expected loan tenure must be an integer." }),
+  monthlyIncome: z.preprocess((val) => (typeof val === "string" ? Number(val) : val), z
+    .number({
+      required_error: "Monthly Income (BDT) is required",
+      invalid_type_error: "Monthly Income must be a number",
+    })
+    .int({ message: "Monthly income must be an integer." })
+    .min(30000, { message: "Your salary must be at least 30,000/- BDT" })
+    .max(1000000000, {
+      message: "Your salary must not exceed 1,000,000,000/- BDT",
+    }),
   ),
-  jobLocation: jobLocation,
+  jobLocation: z.string({
+    required_error: "Job Location is required"
+  }),
 
   // Rental income
   haveAnyRentalIncome: z.boolean().optional(),
@@ -269,6 +273,7 @@ export const eligibilityCheckValidationSchema =
       });
     }
   });
+
 
 export type EligibilityCheckData = z.infer<
   typeof eligibilityCheckValidationSchema
