@@ -1,11 +1,6 @@
 
-import { getAllNewLoans } from '@/services/applications/userApplication';
+import { getAllExistingsLoans, getAllNewLoans } from '@/services/applications/userApplication';
 import { getCurrentUser } from '@/services/AuthService';
-
-
-
-
-
 
 import React from 'react'
 import LoanApplicationTable from './LoanApplicationTable';
@@ -16,11 +11,11 @@ import { TNewLoanTypes } from '@/types/applications';
 
 const MyApplicationLoan = async () => {
 
-
   const user = await getCurrentUser()
-  const data = await getAllNewLoans(user?.userId ?? "")
+  
+  const newLoans = await getAllNewLoans(user?.userId ?? "")
+  const existingLoans = await getAllExistingsLoans(user?.userId ?? "")
 
-  console.log(data)
 
 
 
@@ -34,7 +29,7 @@ const MyApplicationLoan = async () => {
         <TabsContent value="newLoan">
           <div className='grid grid-cols-3 gap-5'>
             {
-              data.data?.map((loan: TNewLoanTypes) => (
+              newLoans.data?.map((loan: TNewLoanTypes) => (
                 <NewLoanCards
                   key={loan.id}
                   id={loan.id}
@@ -49,7 +44,7 @@ const MyApplicationLoan = async () => {
               ))
             }
           </div>
-          <LoanApplicationTable data={data} />
+          <LoanApplicationTable data={newLoans} />
         </TabsContent>
         <TabsContent value="existingLoan">Change your password here.</TabsContent>
       </Tabs>
