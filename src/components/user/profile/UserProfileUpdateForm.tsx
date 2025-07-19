@@ -66,7 +66,7 @@ export default function UserProfileUpdateForm() {
       });
       setProfileImage(user.profile.avatar || null);
     }
-  }, [user?.profile]);
+  }, [user?.profile, form]);
 
   useEffect(() => {
     const errorKeys = Object.keys(form.formState.errors);
