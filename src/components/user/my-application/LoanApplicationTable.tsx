@@ -33,7 +33,7 @@ export default function LoanApplicationTable({ data }: any) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {data?.data.map((item: any) => (
+                        {data?.data?.map((item: any) => (
                             <TableRow key={item.id}>
                                 <TableCell>{item.applicationId}</TableCell>
                                 <TableCell>
