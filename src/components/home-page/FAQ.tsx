@@ -16,7 +16,7 @@ const accordion_data = [
     id: 1,
     title: "Do I have to pay to use FinupsBD?",
     description:
-      "Nope—our entire platform is 100% free for you. We partner with banks and insurers who may pay us a small commission when you successfully apply, but that never changes the rates or perks you see.",
+      "Nope, our entire platform is 100% free for you. We partner with banks and insurers who may pay us a small commission when you successfully apply, but that never changes the rates or perks you see.",
   },
   {
     id: 2,
@@ -38,7 +38,7 @@ const accordion_data = [
   },
   {
     id: 5,
-    title: "Is FinsUp BD free to use?",
+    title: "Is FinUps BD free to use?",
     description:
       "Yes, our platform is completely free for users to check their credit scores, compare products, and apply online",
   },

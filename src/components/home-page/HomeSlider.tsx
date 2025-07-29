@@ -60,7 +60,7 @@ const HomeSlider = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-      <div className="relative -bottom-[18%] left-0 right-0 z-10 lg:absolute">
+      <div className="relative left-0 right-0 z-10 lg:absolute lg:-bottom-[45%]">
         <EligibilityNavigation />
       </div>
     </section>
