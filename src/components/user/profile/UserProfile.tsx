@@ -64,7 +64,7 @@ export default function UserProfile() {
     setTimeout(() => {
       setCopiedField(null);
     }, 2000);
-  };
+  }; 
 
   console.log("user Profile data", user)
 
