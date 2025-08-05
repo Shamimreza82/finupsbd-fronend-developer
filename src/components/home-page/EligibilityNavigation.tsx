@@ -11,10 +11,9 @@ import { toast } from "sonner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
+import { CommingSoon } from "../comming-Soon/CommingSoon";
 import EligibilityCheckModal from "../modules/eligibility/EligibilityCheckModal";
 import { loanTypes } from "../modules/eligibility/form-steps/form-data-oprions";
-import { CommingSoon } from "../comming-Soon/CommingSoon";
-
 
 function EligibilityNavigation() {
   // Track the selected loan type
@@ -22,7 +21,7 @@ function EligibilityNavigation() {
   const [openEligibility, setOpenEligibility] = useState(false);
   const [error, setError] = useState(false);
   const router = useRouter();
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   // Send data to backend (Compare Loan)
   async function handleCompareLoan() {
@@ -33,33 +32,39 @@ function EligibilityNavigation() {
     router.push(`/eligibility?loanType=${loanType}&compare=true`);
   }
 
-
-
   // Send data to backend (Check Eligibility)
   async function handleCheckEligibility() {
     if (loanType == "") {
       setError(true);
       return toast.error("Select any loan");
     }
-    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "DEBIT_CARD" || loanType == "PREPAID_CARD") {
-      return setOpen(true)
+    if (
+      loanType == "HOME_LOAN" ||
+      loanType == "CAR_LOAN" ||
+      loanType == "SME_LOAN" ||
+      loanType == "DEBIT_CARD" ||
+      loanType == "PREPAID_CARD"
+    ) {
+      return setOpen(true);
     }
     setOpenEligibility(true);
   }
 
   useEffect(() => {
-    if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "DEBIT_CARD" || loanType == "PREPAID_CARD") {
-      setOpen(true)
+    if (
+      loanType == "HOME_LOAN" ||
+      loanType == "CAR_LOAN" ||
+      loanType == "SME_LOAN" ||
+      loanType == "DEBIT_CARD" ||
+      loanType == "PREPAID_CARD"
+    ) {
+      setOpen(true);
     }
 
     return () => {
-      setOpen(false)
-    }
-
-  }, [loanType])
-
-
-
+      setOpen(false);
+    };
+  }, [loanType]);
 
   useEffect(() => {
     if (loanType !== "") {
@@ -75,7 +80,7 @@ function EligibilityNavigation() {
           {/* Tabs List */}
 
           {/* Loans tab content */}
-          <div className="relative m-2 min-h-48 rounded-xl bg-white p-6 pt-10 shadow-[0px_0px_25px_2px_rgba(0,0,0,0.1)] lg:pt-14">
+          <div className="relative m-2 min-h-44 rounded-xl bg-white p-6 pt-10 shadow-[0px_0px_25px_2px_rgba(0,0,0,0.1)] lg:pt-10">
             <div className="flex items-center justify-center">
               <TabsList className="absolute -top-6 z-10 bg-white px-2 py-6 shadow-[0px_0px_25px_2px_rgba(0,0,0,0.1)] md:space-x-12">
                 <TabsTrigger
@@ -189,7 +194,7 @@ function EligibilityNavigation() {
                   </Button> */}
                   <Button
                     disabled={loanType === "HOME_LOAN"}
-                    className="h-12 w-full lg:w-1/3 flex items-center justify-center gap-2"
+                    className="flex h-12 w-full items-center justify-center gap-2 lg:w-1/3"
                     onClick={handleCheckEligibility}
                   >
                     Check Eligibility
@@ -198,10 +203,16 @@ function EligibilityNavigation() {
                 </div>
               </div>
             </TabsContent>
-            <TabsContent className="flex justify-center items-center" value="insurance">
+            <TabsContent
+              className="flex items-center justify-center"
+              value="insurance"
+            >
               <div>Comming Soon.........</div>
             </TabsContent>
-            <TabsContent className="flex justify-center items-center" value="investment">
+            <TabsContent
+              className="flex items-center justify-center"
+              value="investment"
+            >
               <div>Comming Soon.........</div>
             </TabsContent>
           </div>

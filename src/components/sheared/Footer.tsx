@@ -12,7 +12,11 @@ export default function Footer() {
           <div className="w-full lg:w-3/12">
             <div>
               <Link href="/" className="flex items-center space-x-2">
-                <Image src={logo} alt="Finups BD Logo" width={60} height={60} />
+                <Image
+                  src={logo}
+                  alt="Finups BD Logo"
+                  className="h-auto w-40"
+                />
               </Link>
               <p className="mt-2">
                 Brief info about FinsUp BD and its mission to empower financial
@@ -72,7 +76,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <Link href="#" className="hover:text-primary">
-                      FinsUp Islamic
+                      FinUps Islamic
                     </Link>
                   </li>
                 </ul>

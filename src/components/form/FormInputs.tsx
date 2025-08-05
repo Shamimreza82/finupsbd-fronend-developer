@@ -45,7 +45,6 @@ interface TextInputProps<T extends FieldValues> {
   maxLength?: number;
   minLength?: number;
   errorMessage?: string;
-
 }
 export const TextInput = <T extends FieldValues>({
   form,
@@ -59,7 +58,7 @@ export const TextInput = <T extends FieldValues>({
   onChange,
   maxLength,
   minLength,
-  errorMessage
+  errorMessage,
 }: TextInputProps<T>) => {
   return (
     <FormField
@@ -109,7 +108,7 @@ export const TextInput = <T extends FieldValues>({
 
 // Common Textarea Component
 interface TextAreaInputProps {
-  form: UseFormReturn;
+  form: UseFormReturn<any>;
   name: string;
   label: string;
   placeholder?: string;
@@ -138,7 +137,7 @@ export const TextAreaInput = ({
             <div className="relative">
               <Textarea
                 className={cn(
-                  "placeholder:text-primary-gray h-20 rounded-none bg-white lg:h-28",
+                  "placeholder:text-primary-gray h-20 border-[#D0D5DD] bg-white disabled:bg-gray-200 disabled:text-gray-900 disabled:opacity-100 lg:h-28",
                   icon && "pr-12",
                 )}
                 placeholder={placeholder}
@@ -183,7 +182,7 @@ export const SelectInput = ({
   options,
   required = false,
   disabled = false,
-  errorMessage
+  errorMessage,
 }: SelectInputProps) => {
   return (
     <FormField

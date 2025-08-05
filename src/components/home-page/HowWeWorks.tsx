@@ -42,61 +42,63 @@ const accordionData: AccordionData[] = [
 const HowWeWorks = () => {
   return (
     <SectionWrapper>
-      <div className="container-md flex flex-col items-center gap-4 md:flex-row lg:gap-16">
-        {/* Left Column */}
-        <div className="flex-1">
-          <div className="mb-10">
-            <SectionBadge className="!text-left before:bg-[#7BE963]">
-              How It Works
-            </SectionBadge>
-            <SectionTitle className="lg:text-[40px] lg:leading-[48px]">
-              Three Quick Steps to Finance in a Coffee Break
-            </SectionTitle>
-            <p className="mt-4 text-sm">
-              Don't waste time on paperwork marathons. You can find, qualify
-              for, and apply for the right financial product with FinupsBD in
-              the time it takes to drink your latte.
-            </p>
+      <div className="container mx-auto px-4 lg:px-14 xl:px-14 2xl:px-0">
+        <div className="flex flex-col items-center gap-4 md:flex-row lg:gap-16">
+          {/* Left Column */}
+          <div className="flex-1">
+            <div className="mb-10">
+              <SectionBadge className="!text-left before:bg-[#7BE963]">
+                How It Works
+              </SectionBadge>
+              <SectionTitle className="lg:text-[40px] lg:leading-[48px]">
+                Three Quick Steps to Finance in a Coffee Break
+              </SectionTitle>
+              <p className="mt-4 text-sm">
+                Don't waste time on paperwork marathons. You can find, qualify
+                for, and apply for the right financial product with FinupsBD in
+                the time it takes to drink your latte.
+              </p>
+            </div>
+            <div>
+              <Accordion
+                defaultValue="1"
+                className="fin-accordion with-numbers"
+                type="single"
+                collapsible
+              >
+                {accordionData.map(({ id, title, description }, index) => (
+                  <AccordionItem
+                    key={id}
+                    className="accordion-item group"
+                    value={id.toString()}
+                  >
+                    <AccordionTrigger className="accordion-title">
+                      <div className="flex items-center gap-4">
+                        <span className="number">{index + 1}</span>
+                        <span className="title-text">{title}</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="accordion-content">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: description.toString(),
+                        }}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           </div>
-          <div>
-            <Accordion
-              defaultValue="1"
-              className="fin-accordion with-numbers"
-              type="single"
-              collapsible
-            >
-              {accordionData.map(({ id, title, description }, index) => (
-                <AccordionItem
-                  key={id}
-                  className="accordion-item group"
-                  value={id.toString()}
-                >
-                  <AccordionTrigger className="accordion-title">
-                    <div className="flex items-center gap-4">
-                      <span className="number">{index + 1}</span>
-                      <span className="title-text">{title}</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="accordion-content">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: description.toString(),
-                      }}
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </div>
 
-        {/* Right Column (Image) */}
-        <div className="flex-1 rounded-2xl bg-[#F9FAFB] py-12">
-          <Image
-            src={sitelayot}
-            alt="Site Layout"
-            className="mx-auto object-cover"
-          />
+          {/* Right Column (Image) */}
+          <div className="flex-1 rounded-2xl bg-[#F9FAFB] py-12">
+            <Image
+              src={sitelayot}
+              alt="Site Layout"
+              className="mx-auto object-cover"
+            />
+          </div>
         </div>
       </div>
     </SectionWrapper>

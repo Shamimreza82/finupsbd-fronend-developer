@@ -41,7 +41,7 @@ const services = [
 const Services = () => {
   return (
     <SectionWrapper className="pt-0 lg:!pt-20">
-      <div className="container-md">
+      <div className="container mx-auto px-4 lg:px-14 xl:px-14 2xl:px-0">
         <div className="mb-4 text-center lg:mb-16">
           <SectionBadge className="before:bg-[#7BE963]">
             Our Services

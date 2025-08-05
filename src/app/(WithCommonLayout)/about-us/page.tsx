@@ -9,7 +9,7 @@ import check_icom from "/public/check-icon.svg";
 
 const AboutUsPage = () => {
   return (
-    <div className="container-md mx-auto px-4 py-8 lg:py-16">
+    <div className="container mx-auto px-4 py-8 lg:px-14 lg:py-16 xl:px-14">
       {/* <section className="mb-6 space-y-4 lg:mb-24 lg:space-y-6">
         <p className="font-bold text-primary">About Us</p>
         <h2 className="text-2xl font-semibold lg:text-4xl lg:leading-[50px]">
@@ -34,10 +34,10 @@ const AboutUsPage = () => {
       </section> */}
 
       <section className="mb-6 lg:mb-24">
-        <p className="mb-6 font-bold text-primary">About Us</p>
-        <h2 className="mb-2 text-2xl font-semibold lg:text-4xl lg:leading-[50px]">
+        <h2 className="mb-6 font-bold text-primary">About Us</h2>
+        <h3 className="mb-2 text-2xl font-semibold lg:text-4xl lg:leading-[50px]">
           Our Story
-        </h2>
+        </h3>
         <p className="w-full">
           Founded to bridge the gap between consumers and financial products,
           FinUps BD is Bangladesh’s premier all-in-one digital financial

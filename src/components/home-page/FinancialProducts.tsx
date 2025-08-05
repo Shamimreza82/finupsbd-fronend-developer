@@ -79,7 +79,7 @@ export default function FinancialProducts() {
   return (
     <SectionWrapper>
       <div className="bg-[#FFFCF5] py-16">
-        <div className="container-md">
+        <div className="container mx-auto px-4 lg:px-14 xl:px-14 2xl:px-0">
           <div className="mb-4 text-center lg:mb-16">
             <SectionBadge className="before:bg-[#FF5F00]">
               Featured Products

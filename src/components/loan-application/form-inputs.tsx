@@ -140,7 +140,7 @@ export const TextAreaInput = ({
             <div className="relative">
               <Textarea
                 className={cn(
-                  "placeholder:text-primary-gray h-20 rounded-none bg-white lg:h-28",
+                  "placeholder:text-primary-gray h-20 rounded-none border-[#D0D5DD] bg-white disabled:bg-gray-200 disabled:text-gray-900 disabled:opacity-100 lg:h-28",
                   icon && "pr-12",
                 )}
                 placeholder={placeholder}

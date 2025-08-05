@@ -15,7 +15,7 @@ const FeaturedArticles = ({ blog = [] }: TBlogProps) => {
   return (
     <SectionWrapper>
       <div className="py-0 lg:py-16">
-        <div className="container-md">
+        <div className="container mx-auto px-4 lg:px-14 xl:px-14 2xl:px-0">
           <div className="mb-16 text-center">
             <SectionBadge className="before:bg-[#FF5F00]">
               Blogs & Articles
