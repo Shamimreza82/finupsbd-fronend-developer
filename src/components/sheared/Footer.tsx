@@ -2,7 +2,7 @@ import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaFacebookF } from "react-icons/fa";
-import { FaLinkedin, FaXTwitter } from "react-icons/fa6";
+import { FaLinkedin } from "react-icons/fa6";
 import logo from "/public/footer-logo.png";
 export default function Footer() {
   return (
@@ -11,11 +11,14 @@ export default function Footer() {
         <div className="flex flex-col gap-4 py-16 lg:flex-row lg:gap-12">
           <div className="w-full lg:w-3/12">
             <div>
-              <Link href="/" className="flex items-center space-x-2">
+              <Link
+                href="/"
+                className="relative -left-2 flex items-center space-x-2"
+              >
                 <Image
                   src={logo}
                   alt="Finups BD Logo"
-                  className="h-auto w-40"
+                  className="h-auto w-44 lg:w-56"
                 />
               </Link>
               <p className="mt-2">
@@ -24,19 +27,21 @@ export default function Footer() {
               </p>
               <div className="mt-4 flex items-center gap-4">
                 <Link
-                  href="#"
+                  href="https://www.facebook.com/finupsbd"
+                  target="_blank"
                   className="h-[48px] w-[48px] rounded-full bg-[#0C131F] transition-all duration-100 ease-linear hover:bg-primary"
                 >
                   <FaFacebookF className="p-3 text-5xl" />
                 </Link>
-                <Link
+                {/* <Link
                   href="#"
                   className="h-[48px] w-[48px] rounded-full bg-[#0C131F] transition-all duration-100 ease-linear hover:bg-primary"
                 >
                   <FaXTwitter className="p-3 text-5xl" />
-                </Link>
+                </Link> */}
                 <Link
-                  href="#"
+                  href="https://www.linkedin.com/company/finupsbd"
+                  target="_blank"
                   className="h-[48px] w-[48px] rounded-full bg-[#0C131F] transition-all duration-100 ease-linear hover:bg-primary"
                 >
                   <FaLinkedin className="p-3 text-5xl" />
@@ -75,7 +80,7 @@ export default function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="#" className="hover:text-primary">
+                    <Link href="/islamic" className="hover:text-primary">
                       FinUps Islamic
                     </Link>
                   </li>
@@ -84,11 +89,6 @@ export default function Footer() {
               <div className="order-3 w-full lg:order-2">
                 <h3 className="mb-6 text-xl font-semibold">Usefull Links</h3>
                 <ul className="mt-2 space-y-2">
-                  <li>
-                    <Link href="#" className="hover:text-primary">
-                      Credit Guide
-                    </Link>
-                  </li>
                   <li>
                     <Link href="/about-us" className="hover:text-primary">
                       About Us
@@ -99,9 +99,32 @@ export default function Footer() {
                       Blogs
                     </Link>
                   </li>
+                  <li>
+                    <Link href="/privacy-policy" className="hover:text-primary">
+                      Privacy Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/terms-of-use" className="hover:text-primary">
+                      Terms of Use
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/do-not-disturb-registration"
+                      className="hover:text-primary"
+                    >
+                      Do Not Disturb (DND) Registration
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/disclaimer" className="hover:text-primary">
+                      Disclaimer
+                    </Link>
+                  </li>
                 </ul>
               </div>
-              <div className="order-1 w-full lg:order-3">
+              <div className="order-1 w-full space-y-4 lg:order-3">
                 <h3 className="mb-6 text-xl font-semibold">Contact Us</h3>
                 <p className="mt-2">Sector 4, Uttara, Dhaka, Bangladesh</p>
                 <p className="mt-2 flex items-center">

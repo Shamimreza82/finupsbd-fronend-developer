@@ -23,10 +23,11 @@ export const navItems: NavItem[] = [
     href: "#",
     icon: Banknote,
     subItems: [
-      { name: "Personal Loan", href: "/loans/personal" },
-      { name: "Home Loan", href: "/loans/home" },
-      { name: "Education Loan", href: "/loans/education" },
-      { name: "Business Loan", href: "/loans/business" },
+      { name: "Personal Loan", href: "/under-construction" },
+      { name: "Finups Agrim", href: "/under-constructionl" },
+      { name: "Home Loan", href: "/under-construction" },
+      { name: "Car Loan", href: "/under-construction" },
+      { name: "SME Loan", href: "/under-construction" },
     ],
   },
   {
@@ -34,9 +35,9 @@ export const navItems: NavItem[] = [
     href: "#",
     icon: FaRegCreditCard,
     subItems: [
-      { name: "Credit Cards", href: "/cards/credit" },
-      { name: "Debit Cards", href: "/cards/debit" },
-      { name: "Prepaid Cards", href: "/cards/prepaid" },
+      { name: "Credit Cards", href: "/under-construction" },
+      { name: "Debit Cards", href: "/under-construction" },
+      { name: "Prepaid Cards", href: "/under-construction" },
     ],
   },
   {
@@ -44,19 +45,19 @@ export const navItems: NavItem[] = [
     href: "#",
     icon: AppWindow,
     subItems: [
-      { name: "Insurance", href: "/products/insurance" },
-      { name: "Investment", href: "/products/investment" },
-      { name: "Savings Accounts", href: "/products/savings" },
+      { name: "Insurance", href: "/under-construction" },
+      { name: "Investment", href: "/under-construction" },
+      { name: "Savings Accounts", href: "/under-construction" },
     ],
   },
   {
     title: "FinUps Islamic",
-    href: "#",
+    href: "/islamic",
     icon: AppWindow,
     subItems: [
-      { name: "Islamic Banking", href: "/islamic-banking" },
-      { name: "Shariah-Compliant Loans", href: "/islamic-banking/loans" },
-      { name: "Zakat Calculator", href: "/islamic-banking/zakat-calculator" },
+      { name: "Islamic Banking", href: "/under-construction" },
+      { name: "Shariah-Compliant Loans", href: "/under-construction" },
+      { name: "Zakat Calculator", href: "/under-construction" },
     ],
   },
 ];

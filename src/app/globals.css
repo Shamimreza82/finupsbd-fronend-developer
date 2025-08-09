@@ -68,17 +68,6 @@ body {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
 @layer base {
   * {
     @apply border-border;
@@ -169,7 +158,7 @@ body {
         }
       }
       .accordion-content {
-        @apply text-tertiary-primary pl-14 text-base leading-7 lg:text-[18px];
+        @apply pl-14 text-base leading-7 text-tertiary-primary lg:text-[18px];
       }
       @apply border-none;
     }
@@ -185,7 +174,7 @@ body {
         }
       }
       .accordion-content {
-        @apply text-tertiary-primary text-base leading-7 lg:text-[18px];
+        @apply text-base leading-7 text-tertiary-primary lg:text-[18px];
       }
       @apply mb-6 border border-[#F2F4F7];
     }
@@ -245,4 +234,39 @@ body {
 
 .animate-fade {
   @apply duration-500 animate-in fade-in;
+}
+
+.privacy-policy-page {
+  .textbox {
+    ol {
+      li {
+        @apply marker:text-xl marker:font-semibold marker:lg:text-2xl;
+        h2 {
+          @apply mb-2 text-xl font-semibold lg:text-2xl lg:leading-[40px];
+        }
+        p {
+        }
+        ul {
+          li {
+            @apply marker:text-lg marker:font-semibold marker:lg:text-xl;
+            h2 {
+              @apply mb-1 text-lg font-semibold lg:text-xl;
+            }
+            p {
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.terms-of-use-page {
+  .textbox {
+    h2 {
+      @apply mb-2 text-xl font-semibold lg:text-2xl lg:leading-[40px];
+    }
+    p {
+    }
+  }
 }

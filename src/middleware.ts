@@ -4,7 +4,13 @@ import { TUser } from "./types/user";
 
 // Define allowed routes
 const authRoutes = ["/login", "/register"];
-const publicRoutes = ["/", "/about-us", "/contact-us", "/finups-islamic"];
+const publicRoutes = [
+  "/",
+  "/about-us",
+  "/contact-us",
+  "/islamic",
+  "/under-construction",
+];
 
 const roleBasedPrivateRoutes: Record<TUser["role"], RegExp[]> = {
   USER: [/^\/user/],
