@@ -205,8 +205,8 @@ const PrivacyPolicyPage = () => {
               <p>Finups BD</p>
               <p>
                 Email:{" "}
-                <a href="mailto:privacy@Finupsbd.com" className="text-primary">
-                  privacy@Finupsbd.com
+                <a href="mailto:privacy@finupsbd.com" className="text-primary">
+                  privacy@finupsbd.com
                 </a>
               </p>
               <p>
