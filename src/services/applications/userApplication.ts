@@ -14,14 +14,10 @@ const url = process.env.NEXT_PUBLIC_BASE_API
 
 
 export const getAllNewLoans = async (id: string) => {
-
     const token = (await cookies()).get("accessToken")?.value;
-
     if (!token) {
         throw new Error("No authentication token found in cookies");
     }
-
-
     try {
         const res = await fetch(`${url}/users/get-all-new-loans/${id}`, {
             method: "GET",
@@ -29,9 +25,7 @@ export const getAllNewLoans = async (id: string) => {
                 "Authorization": `Bearer ${token}`
             },
         })
-
         return res.json()
-
     } catch (error) {
         console.log(error)
     }
@@ -42,13 +36,10 @@ export const getAllNewLoans = async (id: string) => {
 
 
 export const getAllExistingsLoans = async (id: string) => {
-
     const token = (await cookies()).get("accessToken")?.value;
-
     if (!token) {
         throw new Error("No authentication token found in cookies");
     }
-
     try {
         const res = await fetch(`${url}/users/get-all-existing-loans/${id}`, {
             method: "GET",
@@ -56,11 +47,50 @@ export const getAllExistingsLoans = async (id: string) => {
                 "Authorization": `Bearer ${token}`
             },
         })
-
         return res.json()
-
     } catch (error) {
         console.log(error)
     }
+}
 
+
+export const getApplication = async (id: string) => {
+    const token = (await cookies()).get("accessToken")?.value;
+    if (!token) {
+        throw new Error("No authentication token found in cookies");
+    }
+    try {
+        const res = await fetch(`${url}/users/get-application/${id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        })
+        return res.json()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+
+
+
+export const createAppiDoc = async (id: string, fromData: any) => {
+    const token = (await cookies()).get("accessToken")?.value;
+    if (!token) {
+        throw new Error("No authentication token found in cookies");
+    }
+    try {
+        const res = await fetch(`${url}/users/create-addi-doc/${id}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: fromData
+        })
+        return res.json()
+    } catch (error) {
+        console.log(error)
+    }
 }

@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <Providers>
-      <html lang="en">
+      <html lang="en"  data-arp="" >
         <body className={`${inter.variable} antialiased`}>
           <Toaster position="top-center" richColors />
           <TooltipProvider>{children}</TooltipProvider>

@@ -55,6 +55,10 @@ export default function PreviewPage() {
     formData.documentInfo &&
     formData.guarantorInfo;
 
+
+
+//// handel submit button
+
   const handleSubmit = async () => {
     if (!isFormComplete) {
       toast.error("Please complete all required steps before submitting.");
@@ -99,9 +103,16 @@ export default function PreviewPage() {
     }
   };
 
+
+
+
+
   const navigateToStep = (step: string) => {
     router.push(`/user/loan-application/${step}`);
   };
+
+
+
 
   const renderPersonalInfo = () => {
     const info = formData.personalInfo;
@@ -929,6 +940,8 @@ export default function PreviewPage() {
       </div>
     );
   };
+
+
 
   return (
     <div className="space-y-6">

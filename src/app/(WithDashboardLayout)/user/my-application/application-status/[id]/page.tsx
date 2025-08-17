@@ -1,18 +1,35 @@
+
+import { ApplicationStatusForm, TApplicationData } from "@/components/application/application-status/application-status-page";
+import { getApplication } from "@/services/applications/userApplication"
 import { notFound } from "next/navigation"
+
+
 
 
 const ApplicationStatusPage = async (props: { params: Promise<{ id: string }> }) => {
     const { id } = await props.params
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/super-admin/get-single-application/${id}`)
-    const data = await res.json()
+    if (!id) {
+        notFound();
+    }
 
-    console.log(data)
+    let appData: TApplicationData | null = null;
 
+    try {
+        const res = await getApplication(id);
+        appData = res?.data as TApplicationData ?? null;
+    } catch (err) {
+        console.error("getApplication failed:", err);
+    }
+
+    if (!appData) {
+        // 404 page
+        notFound();
+    }
 
     return (
         <div>
-            <h1>Application Status: </h1>
+            <ApplicationStatusForm applicationData={appData} />
         </div>
     )
 }
