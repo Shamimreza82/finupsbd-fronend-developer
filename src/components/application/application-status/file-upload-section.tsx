@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Upload, FileText, X, Eye, Send, CheckCircle2, Download, ExternalLink } from "lucide-react"
 import Image from "next/image"
 import { createAppiDoc } from "@/services/applications/userApplication"
+import { toast } from "sonner"
 
 interface FileUploadSectionProps {
   uploadedFiles: File[]
@@ -100,17 +101,23 @@ export function FileUploadSection({
     setIsSubmitting(false)
     // Here you would typically make an API call to submit the files
     console.log("Files submitted:", uploadedFiles)
-    
- const formData = new FormData();
-  // append all files
+
+    const formData = new FormData();
+    // append all files
     Array.from(uploadedFiles).forEach((file) => {
       formData.append("files", file); // "files" must match your backend field name
     });
 
     try {
-        const result = await createAppiDoc(appicationId, formData)
+      const result = await createAppiDoc(appicationId, formData)
+      if (result.success) {
+        toast.success(result.message || "doc update successfull")
+        window.location.reload()
+      } else {
+        toast.error(result.message || "doc update Faild!")
+      }
     } catch (error) {
-        
+
     }
   }
 
@@ -241,11 +248,10 @@ export function FileUploadSection({
             <>
               {/* File Upload Area */}
               <div
-                className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  dragActive
+                className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
                     ? "border-blue-400 bg-blue-50 dark:bg-blue-950"
                     : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
-                }`}
+                  }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}

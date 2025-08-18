@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Calendar, Clock, FileText, User, AlertCircle, CheckCircle2, Send, PlayCircle, XCircle } from "lucide-react"
 import { AdminNotesSection } from "./admin-notes-section"
 import { FileUploadSection } from "./file-upload-section"
+import { ApplicationStatusBar } from "@/components/small-component/ApplicationStatusBar"
 
 export interface TApplicationData {
     additionalDocumentSubmit: boolean
@@ -68,6 +69,8 @@ export function ApplicationStatusForm({ applicationData }: ApplicationStatusPage
         }
     }
 
+
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("en-US", {
             year: "numeric",
@@ -78,14 +81,20 @@ export function ApplicationStatusForm({ applicationData }: ApplicationStatusPage
         })
     }
 
+
+
+
     return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="container mx-auto px-4 py-8 ">
             {/* Header Section */}
-            <div className="mb-8">
+            <div >
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Application Status</h1>
                 <p className="text-gray-600 dark:text-gray-400">
                     Track your application progress and manage required documents
                 </p>
+            </div>
+            <div className="my-10">
+                <ApplicationStatusBar status={applicationData?.status} />
             </div>
 
             {/* Status Overview Card */}
@@ -118,7 +127,7 @@ export function ApplicationStatusForm({ applicationData }: ApplicationStatusPage
                                 <p className="text-xs text-gray-600 dark:text-gray-400">{formatDate(applicationData.updatedAt)}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                        {/* <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
                             <User className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                             <div>
                                 <p className="text-sm font-medium text-gray-900 dark:text-white">User ID</p>
@@ -126,40 +135,24 @@ export function ApplicationStatusForm({ applicationData }: ApplicationStatusPage
                                     {applicationData.userId.slice(0, 8)}...
                                 </p>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </CardContent>
             </Card>
 
             {/* Admin Notes Section - Always show when additionalDocuments is true */}
-            {applicationData.additionalDocuments && applicationData.adminNotes && (
+            {applicationData.adminNotes && (
                 <AdminNotesSection adminNotes={applicationData.adminNotes} />
             )}
 
             {/* Conditional Content Based on additionalDocuments */}
-            {applicationData.additionalDocuments ? (
+            {applicationData.additionalDocuments && (
                 <FileUploadSection
                     uploadedFiles={uploadedFiles}
                     setUploadedFiles={setUploadedFiles}
                     additionalDocumentSubmit={applicationData.additionalDocumentSubmit}
                     appicationId={applicationData.id}
                 />
-            ) : (
-                <Card className="shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <AlertCircle className={getStatusColor(applicationData.status)} />
-                            Review our feedback
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Alert >
-                            <AlertDescription className={getStatusColor(applicationData.status)}>
-                                {applicationData?.adminNotes}
-                            </AlertDescription>
-                        </Alert>
-                    </CardContent>
-                </Card>
             )}
         </div>
     )
