@@ -94,3 +94,24 @@ export const createAppiDoc = async (id: string, fromData: any) => {
         console.log(error)
     }
 }
+
+
+
+
+export const getAgrementDoc = async (id: string) => {
+    const token = (await cookies()).get("accessToken")?.value;
+    if (!token) {
+        throw new Error("No authentication token found in cookies");
+    }
+    try {
+        const res = await fetch(`${url}/users/agreement-doc/${id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        })
+        return res.json()
+    } catch (error) {
+        console.log(error)
+    }
+}

@@ -126,7 +126,7 @@ export function FileUploadSection({
       return "🖼️"
     } else if (fileType === "application/pdf") {
       return "📄"
-    } else if (fileType.includes("word")) {
+    } else if (fileType.includes("word")) {        
       return "📝"
     }
     return "📎"

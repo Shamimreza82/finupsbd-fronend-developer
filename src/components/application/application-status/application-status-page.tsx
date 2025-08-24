@@ -9,12 +9,15 @@ import { Calendar, Clock, FileText, User, AlertCircle, CheckCircle2, Send, PlayC
 import { AdminNotesSection } from "./admin-notes-section"
 import { FileUploadSection } from "./file-upload-section"
 import { ApplicationStatusBar } from "@/components/small-component/ApplicationStatusBar"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export interface TApplicationData {
     additionalDocumentSubmit: boolean
     additionalDocuments: boolean
     adminNotes: string
     applicationId: string
+    eligibleLoanOffer: TEligibleLoanOffer
     createdAt: string
     id: string
     isActive: boolean
@@ -24,12 +27,19 @@ export interface TApplicationData {
     userId: string
 }
 
+interface TEligibleLoanOffer {
+    loanType: string
+}
+
 interface ApplicationStatusPageProps {
     applicationData: TApplicationData
 }
 
 export function ApplicationStatusForm({ applicationData }: ApplicationStatusPageProps) {
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+
+
+    console.log(applicationData)
 
     const getStatusColor = (status: string) => {
         switch (status.toUpperCase()) {
@@ -89,9 +99,18 @@ export function ApplicationStatusForm({ applicationData }: ApplicationStatusPage
             {/* Header Section */}
             <div >
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Application Status</h1>
-                <p className="text-gray-600 dark:text-gray-400">
-                    Track your application progress and manage required documents
-                </p>
+                <div className="flex justify-between">
+                    <p className="text-gray-600 dark:text-gray-400">
+                        Track your application progress and manage required documents
+                    </p>
+                    {
+                        applicationData?.eligibleLoanOffer?.loanType === "INSTANT_LOAN" && applicationData?.status === "APPROVED" || applicationData?.status === "IN_PROGRESS" &&
+                        <Link href={`/user/my-application/agreement-copy/${applicationData.id}`}>
+                            <Button>Print Agrement Copy</Button>
+                        </Link>
+                    }
+
+                </div>
             </div>
             <div className="my-10">
                 <ApplicationStatusBar status={applicationData?.status} />
@@ -102,7 +121,7 @@ export function ApplicationStatusForm({ applicationData }: ApplicationStatusPage
                 <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <CardTitle className="text-xl font-semibold">Application #{applicationData.applicationId}</CardTitle>
+                            <CardTitle className="text-xl font-semibold">Application ID #{applicationData.applicationId}</CardTitle>
                             <CardDescription className="mt-1">Submitted on {formatDate(applicationData.createdAt)}</CardDescription>
                         </div>
                         <Badge className={`${getStatusColor(applicationData.status)} flex items-center gap-1 px-3 py-1`}>

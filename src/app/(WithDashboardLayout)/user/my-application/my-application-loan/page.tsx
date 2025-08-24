@@ -4,7 +4,7 @@ import React from 'react'
 const MyApplicationLoanPage = () => {
   return (
     <div>
-      <MyApplicationLoan/>
+      <MyApplicationLoan />
     </div>
   )
 }

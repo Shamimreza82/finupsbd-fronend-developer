@@ -1,5 +1,6 @@
 
 import { ApplicationStatusForm, TApplicationData } from "@/components/application/application-status/application-status-page";
+import BankingArrangementLetter from "@/components/pdf/components/ArrangementLetter";
 import { getApplication } from "@/services/applications/userApplication"
 import { notFound } from "next/navigation"
 
@@ -9,11 +10,10 @@ import { notFound } from "next/navigation"
 const ApplicationStatusPage = async (props: { params: Promise<{ id: string }> }) => {
     const { id } = await props.params
 
-    if (!id) {
-        notFound();
-    }
 
     let appData: TApplicationData | null = null;
+
+    
 
     try {
         const res = await getApplication(id);
@@ -26,6 +26,8 @@ const ApplicationStatusPage = async (props: { params: Promise<{ id: string }> })
         // 404 page
         notFound();
     }
+
+
 
     return (
         <div>

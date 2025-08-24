@@ -33,3 +33,30 @@ export interface TNewLoanTypes {
   eligibleLoanOffer: EligibleLoanOffer;
   loanRequest: LoanRequest;
 }
+
+
+
+
+
+   export interface TAgreementDoc {
+        id: string;
+        applicationId: string;
+        fullName: string;
+        nid: string;
+        loanName: string;
+        loanType: "INSTANT_LOAN" | "PERSONAL_LOAN" | "HOME_LOAN" | "CAR_LOAN"; // extend as needed
+        presrntAddress: string; // typo? maybe "presentAddress"
+        requstedAmount: number;
+        eligibleLoan: number;
+        interestRate: number;
+        periodMonths: number;
+        monthlyEMI: number;
+        processingFee: number;
+        loanAmountInWord: string;
+        loanAmountInBangla: string;
+        loanTenure: number;
+        emiStartDate: number; // day of month (e.g., 25)
+        applicationDate: string; // ISO Date string
+        dueDate: string; // ISO Date string
+    }
+
