@@ -501,7 +501,7 @@ export default function ArrangementLetter({applicationData}: {applicationData: T
     <div className="min-h-screen bg-muted/40 py-8">
       <div className="mx-auto max-w-[820px] px-3">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Finups Arrangement Letter (Preview)</h2>
+          <h2 className="text-lg font-semibold">Finups Arrangement Letter. (Preview)</h2>
           {/* <PDFDownloadLink
             document={<LetterPDF data={data} />}
             fileName={`banking-arrangement-letter-${Date.now()}.pdf`}
