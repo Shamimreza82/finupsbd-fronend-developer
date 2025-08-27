@@ -37,7 +37,7 @@ export type LetterData = {
   title: string;
   subTitle?: string;
   customerName: string;
-  addressLines: string[];
+  addressLines: string;
   accountNo?: string;
   nid?: string;
   sanctionRef?: string;
@@ -130,7 +130,7 @@ const toLetterData = (app: TAgreementDoc): LetterData => {
     title: "Arrangement Letter",
     subTitle: "Customer Copy",
     customerName: app.fullName,
-    addressLines: splitAddress(app.presrntAddress),
+    addressLines: app.presrntAddress,
     accountNo: app.applicationId,
     nid: app.nid,
     sanctionRef: `FINUPS/${app.loanType}/${app.applicationId}`,
@@ -243,10 +243,10 @@ const LetterPDF: React.FC<{ data: LetterData }> = ({ data }) => (
 
       {/* To/Address */}
       <Text style={{ fontWeight: "bold" }}>{data.customerName}</Text>
-      {data.addressLines.map((line, i) => (
+      {/* {data.addressLines.map((line, i) => (
         <Text key={i}>{line}</Text>
-      ))}
-
+      ))} */}
+      <Text>{data.addressLines}</Text>
       {/* Meta rows */}
       <View style={{ marginTop: 8 }}>
         <Text style={pdfStyles.smallRow}>
@@ -393,9 +393,10 @@ const LetterDOM: React.FC<{ data: LetterData; amountWords?: string }> = ({
       {/* To/Address */}
       <div className="text-sm leading-6">
         <div className="font-semibold">{data.customerName}</div>
-        {data.addressLines.map((l, i) => (
+        <div>{data.addressLines}</div>
+        {/* {data.addressLines.map((l, i) => (
           <div key={i}>{l}</div>
-        ))}
+        ))} */}
       </div>
 
       {/* Meta */}
@@ -488,8 +489,8 @@ const LetterDOM: React.FC<{ data: LetterData; amountWords?: string }> = ({
 
 
 /* -------------------- Page Component -------------------- */
-export default function ArrangementLetter({applicationData}: {applicationData: TAgreementDoc}) {
-  
+export default function ArrangementLetter({ applicationData }: { applicationData: TAgreementDoc }) {
+
   const data = toLetterData(applicationData);
   // Provide amount-in-words to DOM for the parenthesis after amount:
   const amountWords =
