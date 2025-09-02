@@ -104,7 +104,7 @@ export function ApplicationStatusForm({ applicationData }: ApplicationStatusPage
                         Track your application progress and manage required documents
                     </p>
                     {
-                        applicationData?.eligibleLoanOffer?.loanType === "INSTANT_LOAN" && applicationData?.status === "APPROVED" || applicationData?.status === "IN_PROGRESS" &&
+                        applicationData?.eligibleLoanOffer?.loanType === "INSTANT_LOAN" && applicationData?.status === "APPROVED" &&
                         <Link href={`/user/my-application/agreement-copy/${applicationData.id}`}>
                             <Button>Print Agrement Copy</Button>
                         </Link>

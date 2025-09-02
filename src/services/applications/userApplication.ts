@@ -29,7 +29,7 @@ export const getAllNewLoans = async (id: string) => {
     } catch (error) {
         console.log(error)
     }
-
+ 
 }
 
 
@@ -41,7 +41,7 @@ export const getAllExistingsLoans = async (id: string) => {
         throw new Error("No authentication token found in cookies");
     }
     try {
-        const res = await fetch(`${url}/users/get-all-existing-loans/${id}`, {
+        const res = await fetch(`${url}/users/get-all-existing-loan/${id}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -52,6 +52,26 @@ export const getAllExistingsLoans = async (id: string) => {
         console.log(error)
     }
 }
+
+
+export const getAllRejectsLoans = async (id: string) => {
+    const token = (await cookies()).get("accessToken")?.value;
+    if (!token) {
+        throw new Error("No authentication token found in cookies");
+    }
+    try {
+        const res = await fetch(`${url}/users/get-all-rejects-loan/${id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        })
+        return res.json()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 
 export const getApplication = async (id: string) => {

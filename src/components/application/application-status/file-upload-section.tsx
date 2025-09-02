@@ -192,59 +192,7 @@ export function FileUploadSection({
           <CardDescription>Upload required documents to complete your application</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {additionalDocumentSubmit ? (
-            <>
-              <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800 dark:text-green-200">
-                  Your additional documents have been successfully submitted and are under review.
-                </AlertDescription>
-              </Alert>
-
-              <div className="space-y-3">
-                <h4 className="font-medium text-gray-900 dark:text-white">
-                  Submitted Documents ({submittedFiles.length})
-                </h4>
-                <div className="space-y-2">
-                  {submittedFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800"
-                    >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <span className="text-2xl">{getFileIcon(file.type)}</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {formatFileSize(file.size)} • Uploaded on {new Date(file.uploadDate).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <Badge
-                          variant="secondary"
-                          className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                        >
-                          Submitted
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 ml-4">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => {
-                            // In a real app, this would open the submitted file
-                            window.open(`/api/files/${file.name}`, "_blank")
-                          }}
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : (
+          {additionalDocumentSubmit &&  (
             <>
               {/* File Upload Area */}
               <div

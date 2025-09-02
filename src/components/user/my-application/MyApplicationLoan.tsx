@@ -1,5 +1,5 @@
 
-import { getAllExistingsLoans, getAllNewLoans } from '@/services/applications/userApplication';
+import { getAllExistingsLoans, getAllNewLoans, getAllRejectsLoans } from '@/services/applications/userApplication';
 import { getCurrentUser } from '@/services/AuthService';
 
 import React from 'react'
@@ -15,8 +15,8 @@ const MyApplicationLoan = async () => {
 
   const newLoans = await getAllNewLoans(user?.userId ?? "")
   const existingLoans = await getAllExistingsLoans(user?.userId ?? "")
-
-
+ const rejectedLoans = await getAllRejectsLoans(user?.userId ?? "")
+console.log(existingLoans)
 
 
   return (
@@ -28,9 +28,10 @@ const MyApplicationLoan = async () => {
         </p>
       </div>
       <Tabs defaultValue="newLoan" >
-        <TabsList className='w-[30%] mb-2'>
+        <TabsList className='w-[40%] mb-2 gap-2'>
           <TabsTrigger className='w-1/2' value="newLoan">New Loans</TabsTrigger>
           <TabsTrigger className='w-1/2' value="existingLoan">Existing Loan</TabsTrigger>
+          <TabsTrigger className='w-1/2 bg-red-600 text-white' value="rejects">Rejected Loan</TabsTrigger>
         </TabsList>
         <TabsContent value="newLoan">
           {/* <div className='grid grid-cols-3 gap-5'>
@@ -52,7 +53,12 @@ const MyApplicationLoan = async () => {
           </div> */}
           <LoanApplicationTable data={newLoans} />
         </TabsContent>
-        <TabsContent value="existingLoan">Change your password here.</TabsContent>
+        <TabsContent value="existingLoan">
+           <LoanApplicationTable data={existingLoans} />
+        </TabsContent>
+        <TabsContent value="rejects">
+           <LoanApplicationTable data={rejectedLoans} />
+        </TabsContent>
       </Tabs>
 
     </div>

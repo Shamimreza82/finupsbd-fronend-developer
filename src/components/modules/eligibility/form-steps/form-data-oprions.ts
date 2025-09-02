@@ -89,7 +89,6 @@ export const tenureOptions = [
   { label: "36 Months", value: 36 },
   { label: "48 Months", value: 48 },
   { label: "60 Months", value: 60 },
-  { label: "72 Months", value: 72 },
 ];
 
 export const tenureOptionsForInstantLoans = [
