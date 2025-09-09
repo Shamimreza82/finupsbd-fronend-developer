@@ -100,7 +100,14 @@ function EligibilityCheckModal({
   // };
 
   const validateStep = async () => {
-    const schema = step === 0 ? stepOneSchema : step === 1 ? stepTwoSchema : step === 2 ? stepThreeSchema : fullFormSchema;
+    const schema =
+      step === 0
+        ? stepOneSchema
+        : step === 1
+          ? stepTwoSchema
+          : step === 2
+            ? stepThreeSchema
+            : fullFormSchema;
     const valid = await form.trigger(
       Object.keys(
         "shape" in schema ? schema.shape : schema._def.schema.shape,
@@ -112,7 +119,10 @@ function EligibilityCheckModal({
   const onSubmit = (data: FullFormSchema) => {
     let formatedData: Partial<FullFormSchema> = { ...data };
 
-    if (data.profession !== "BUSINESS_OWNER" && data.profession !== "SELF_EMPLOYED") {
+    if (
+      data.profession !== "BUSINESS_OWNER" &&
+      data.profession !== "SELF_EMPLOYED"
+    ) {
       delete formatedData.businessOwnerType;
       delete formatedData.businessType;
       delete formatedData.sharePortion;
@@ -147,23 +157,19 @@ function EligibilityCheckModal({
       loanType,
     };
 
-    sessionStorage.setItem("eligibilityData", JSON.stringify(eligibilityData))
-
-
+    sessionStorage.setItem("eligibilityData", JSON.stringify(eligibilityData));
 
     if (loanType === "INSTANT_LOAN") {
       router.push("/eligibility-instant-loan");
     } else if (loanType === "CREDIT_CARD") {
       router.push("/eligibility-cards");
-    }
-    else {
+    } else {
       router.push("/eligibility");
     }
 
     // if (loanType == "HOME_LOAN" || loanType == "CAR_LOAN" || loanType == "SME_LOAN" || loanType == "CREDIT_CARDS" || loanType == "DEBIT_CARDS" || loanType == "PREPAID_CARDS") {
     //   setOpen(true)
     // }
-
   };
 
   const renderStepIndicator = () => {
@@ -196,9 +202,9 @@ function EligibilityCheckModal({
                     className={cn(
                       "relative flex h-5 w-5 transform items-center justify-center rounded-full border-2 transition-all duration-300",
                       isCompleted &&
-                      "border-primary bg-primary ring-4 ring-primary/30",
+                        "border-primary bg-primary ring-4 ring-primary/30",
                       isCurrent &&
-                      "border-primary bg-primary ring-4 ring-primary/30",
+                        "border-primary bg-primary ring-4 ring-primary/30",
                       !isCompleted && !isCurrent && "border-gray-300 bg-white",
                     )}
                   >
@@ -250,8 +256,9 @@ function EligibilityCheckModal({
       >
         {step !== 3 && (
           <DialogHeader>
-            <DialogTitle className="mb-2 text-center">
-              Find the best {loanType} Loan for you
+            <DialogTitle className="mb-2 text-center capitalize">
+              Find the best {loanType.replace(/_/g, " ").toLowerCase()} Loan for
+              you
             </DialogTitle>
 
             <DialogDescription className="text-center text-sm text-tertiary-primary">

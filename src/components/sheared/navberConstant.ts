@@ -25,9 +25,9 @@ export const navItems: NavItem[] = [
     subItems: [
       { name: "Personal Loan", href: "/under-construction" },
       { name: "Finups Agrim", href: "/under-constructionl" },
-      { name: "Home Loan", href: "/under-construction" },
-      { name: "Car Loan", href: "/under-construction" },
-      { name: "SME Loan", href: "/under-construction" },
+      // { name: "Home Loan", href: "/under-construction" },
+      // { name: "Car Loan", href: "/under-construction" },
+      // { name: "SME Loan", href: "/under-construction" },
     ],
   },
   {
@@ -36,20 +36,20 @@ export const navItems: NavItem[] = [
     icon: FaRegCreditCard,
     subItems: [
       { name: "Credit Cards", href: "/under-construction" },
-      { name: "Debit Cards", href: "/under-construction" },
-      { name: "Prepaid Cards", href: "/under-construction" },
+      // { name: "Debit Cards", href: "/under-construction" },
+      // { name: "Prepaid Cards", href: "/under-construction" },
     ],
   },
-  {
-    title: "Other Products",
-    href: "#",
-    icon: AppWindow,
-    subItems: [
-      { name: "Insurance", href: "/under-construction" },
-      { name: "Investment", href: "/under-construction" },
-      { name: "Savings Accounts", href: "/under-construction" },
-    ],
-  },
+  // {
+  //   title: "Other Products",
+  //   href: "#",
+  //   icon: AppWindow,
+  //   subItems: [
+  //     { name: "Insurance", href: "/under-construction" },
+  //     { name: "Investment", href: "/under-construction" },
+  //     { name: "Savings Accounts", href: "/under-construction" },
+  //   ],
+  // },
   {
     title: "FinUps Islamic",
     href: "/islamic",

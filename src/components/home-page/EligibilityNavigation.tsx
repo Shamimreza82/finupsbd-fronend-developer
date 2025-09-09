@@ -95,7 +95,8 @@ function EligibilityNavigation() {
                 >
                   Cards
                 </TabsTrigger>
-                <TabsTrigger
+                {/* TODO: WILL ENABLE FUTURE */}
+                {/* <TabsTrigger
                   value="insurance"
                   className="rounded-lg px-3 py-2 text-sm font-semibold !text-primary hover:bg-[#E7FDE2] data-[state=active]:!bg-primary data-[state=active]:!text-white lg:px-6 lg:text-base"
                 >
@@ -106,7 +107,7 @@ function EligibilityNavigation() {
                   className="rounded-lg px-3 py-2 text-sm font-semibold !text-primary hover:bg-[#E7FDE2] data-[state=active]:!bg-primary data-[state=active]:!text-white lg:px-6 lg:text-base"
                 >
                   Investment
-                </TabsTrigger>
+                </TabsTrigger> */}
               </TabsList>
             </div>
             <TabsContent value="loans">
@@ -172,14 +173,16 @@ function EligibilityNavigation() {
                     <RadioGroupItem id="PEOSONAL_LOAN" value="CREDIT_CARD" />
                     <Label htmlFor="PEOSONAL_LOAN">Credit Card</Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+
+                  {/* TODO: WILL ENABLE FUTURE */}
+                  {/* <div className="flex items-center space-x-2">
                     <RadioGroupItem id="HOME_LOAN" value="DEBIT_CARD" />
                     <Label htmlFor="HOME_LOAN">Debit Cards</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem id="CAR_LOAN" value="PREPAID_CARD" />
                     <Label htmlFor="CAR_LOAN">Prepaid Cards</Label>
-                  </div>
+                  </div> */}
                 </RadioGroup>
 
                 {/* Action buttons */}

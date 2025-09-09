@@ -1,9 +1,9 @@
 export const loanTypes = [
   { label: "Personal Loan", value: "PERSONAL_LOAN" },
   { label: "Finups Agrim", value: "INSTANT_LOAN" },
-  { label: "Home Loan", value: "HOME_LOAN" },
-  { label: "Car Loan", value: "CAR_LOAN" },
-  { label: "SME Loan", value: "SME_LOAN" },
+  // { label: "Home Loan", value: "HOME_LOAN" },
+  // { label: "Car Loan", value: "CAR_LOAN" },
+  // { label: "SME Loan", value: "SME_LOAN" },
 ];
 
 export const genderOptions = [
